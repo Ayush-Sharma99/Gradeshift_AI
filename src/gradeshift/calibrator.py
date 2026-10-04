@@ -280,8 +280,18 @@ class SplitConformalCalibrator:
 
     @classmethod
     def load(cls, path: str) -> "SplitConformalCalibrator":
+        from pathlib import Path
         import joblib
-        return cls.from_dict(joblib.load(path))
+        from .estimator import ensure_pickle_compat_shims
+
+        p = Path(path)
+        if not p.exists():
+            raise FileNotFoundError(
+                f"Persisted conformal calibrator artifact not found at: {p.resolve()}"
+            )
+        ensure_pickle_compat_shims()
+        return cls.from_dict(joblib.load(str(p)))
+
 
 
 # ── Coverage / width evaluation (reporting only; LOCKED after freeze) ────────
