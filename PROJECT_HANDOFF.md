@@ -12,7 +12,7 @@
 - **GitHub Repository URL:** `https://github.com/Ayush-Sharma99/Gradeshift_AI.git`
 - **Checkpoint Branch:** `primepath-phase13-complete`
 - **Checkpoint Tag:** `v0.13.0-phase13-complete`
-- **Commit SHA:** *(recorded upon checkpoint commit — see [`docs/CURRENT_STATE.md`](docs/CURRENT_STATE.md))*
+- **Baseline Commit SHA:** `9e6e394156e102e0a0a5a0fef51352daf6155b0c` (`9e6e394`)
 
 ---
 

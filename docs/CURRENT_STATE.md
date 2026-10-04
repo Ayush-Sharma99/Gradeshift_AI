@@ -13,7 +13,7 @@ Pairs with [`PROJECT_HANDOFF.md`](../PROJECT_HANDOFF.md), [`AGENTS.md`](../AGENT
 - **GitHub Repository URL:** `https://github.com/Ayush-Sharma99/Gradeshift_AI.git`
 - **Checkpoint Branch:** `primepath-phase13-complete`
 - **Checkpoint Tag:** `v0.13.0-phase13-complete`
-- **Commit SHA:** *(updated at checkpoint commit/tag step)*
+- **Baseline Commit SHA:** `9e6e394156e102e0a0a5a0fef51352daf6155b0c` (`9e6e394`)
 - **Evidence Ceiling:** `E2` (synthetic simulation) / `E3` (controlled prototype). **Nothing is HMEL-validated (`E4`/`E5` = 0).**
 
 ---
