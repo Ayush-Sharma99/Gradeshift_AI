@@ -388,7 +388,10 @@ def load_runtime_context(
     if _GLOBAL_CONTEXT is not None and not force_reload and artifacts_dir is None:
         return _GLOBAL_CONTEXT
 
-    adir = Path(artifacts_dir) if artifacts_dir else ARTIFACTS_DIR
+    from ..estimator import ensure_pickle_compat_shims, runtime_versions
+
+    ensure_pickle_compat_shims()
+    adir = (Path(artifacts_dir) if artifacts_dir else ARTIFACTS_DIR).resolve()
     gbm_path = adir / "phase5" / "gbm_mfi.joblib"
     calib_path = adir / "phase6" / "calibrator_gbm.joblib"
     det_path = adir / "phase7" / "applicability_detector.joblib"
@@ -399,20 +402,39 @@ def load_runtime_context(
     map_params = MaterialMapParams()
 
     if gbm_path.exists():
-        gbm = GBMQualityEstimator.load(str(gbm_path))
+        try:
+            gbm = GBMQualityEstimator.load(str(gbm_path))
+        except Exception as exc:
+            raise RuntimeError(
+                f"Failed to deserialize GBM estimator at {gbm_path} "
+                f"(runtime={runtime_versions()}): {exc}"
+            ) from exc
     else:
         raise FileNotFoundError(f"Missing persisted GBM estimator at {gbm_path}")
 
     if calib_path.exists():
-        calibrator = SplitConformalCalibrator.load(str(calib_path))
+        try:
+            calibrator = SplitConformalCalibrator.load(str(calib_path))
+        except Exception as exc:
+            raise RuntimeError(
+                f"Failed to deserialize conformal calibrator at {calib_path} "
+                f"(runtime={runtime_versions()}): {exc}"
+            ) from exc
     else:
         raise FileNotFoundError(f"Missing persisted conformal calibrator at {calib_path}")
 
     if det_path.exists():
-        detector = ApplicabilityDetector.load(str(det_path))
+        try:
+            detector = ApplicabilityDetector.load(str(det_path))
+        except Exception as exc:
+            raise RuntimeError(
+                f"Failed to deserialize applicability detector at {det_path} "
+                f"(runtime={runtime_versions()}): {exc}"
+            ) from exc
     else:
         train_events = [ev for ev in corpus if parts[ev.event_id] is Partition.TRAIN]
         detector = ApplicabilityDetector.fit(train_events, map_params=map_params)
+
 
     final_val = _load_json(adir / "final_validation.json")
     p5_manifest = _load_json(adir / "phase5" / "manifest.json")

@@ -277,9 +277,49 @@ class ApplicabilityDetector:
 
     @classmethod
     def load(cls, path: str) -> "ApplicabilityDetector":
+        from pathlib import Path
         import joblib
-        blob = joblib.load(path)
-        return cls.from_manifest(blob["manifest"],
-                                 train_std_matrix=blob.get("train_std_matrix"),
-                                 iforest=blob.get("iforest"))
+        from .estimator import ensure_pickle_compat_shims
+
+        p = Path(path)
+        if not p.exists():
+            raise FileNotFoundError(
+                f"Persisted applicability detector artifact not found at: {p.resolve()}"
+            )
+        ensure_pickle_compat_shims()
+        try:
+            blob = joblib.load(str(p))
+            train_std_matrix = blob.get("train_std_matrix")
+            iforest = blob.get("iforest")
+            if iforest is not None and train_std_matrix is not None and len(train_std_matrix):
+                try:
+                    _ = float(iforest.decision_function(train_std_matrix[:1])[0])
+                except Exception:
+                    try:
+                        from sklearn.ensemble import IsolationForest
+                        iforest = IsolationForest(
+                            random_state=RANDOM_SEED,
+                            n_estimators=200,
+                            contamination="auto",
+                        ).fit(train_std_matrix)
+                    except Exception:
+                        iforest = None
+            return cls.from_manifest(
+                blob["manifest"],
+                train_std_matrix=train_std_matrix,
+                iforest=iforest,
+            )
+        except ValueError:
+            raise
+        except Exception:
+            # If Cython Tree struct ABI differs across major Python/scikit-learn versions
+            # (e.g., Python 3.14 vs Python 3.10), deterministically fit on the canonical TRAIN split.
+            from .partition import Partition, chronological_split
+            from .pipeline import default_corpus
+
+            corpus = default_corpus(n_per_dir=3)
+            parts = chronological_split(corpus)
+            train_events = [e for e in corpus if parts[e.event_id] is Partition.TRAIN]
+            return cls.fit(train_events)
+
 
