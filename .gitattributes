@@ -1,0 +1,15 @@
+# Auto-normalize text files to LF in repository
+* text=auto eol=lf
+
+# PowerShell scripts retain CRLF for Windows compatibility
+*.ps1 text eol=crlf
+
+# Shell scripts enforce LF
+*.sh text eol=lf
+
+# Binary & serialized model artifacts
+*.joblib binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.pdf binary
