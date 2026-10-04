@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gradeshift-primepath"
+version = "0.13.0"
+description = "GradeShift PrimePath — uncertainty-aware, human-authorized commercial-disposition decision support for polyolefin grade transitions."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+authors = [
+    { name = "Ayush Sharma" }
+]
+dependencies = [
+    # Verified Phase-13 validation environment:
+    # Python 3.10.0 | numpy 1.26.4 | scipy 1.15.2 | pandas 2.2.3 | scikit-learn 1.6.1 | streamlit 1.62.0
+    "numpy>=1.24.0,<2.0.0",
+    "scipy>=1.10.0,<2.0.0",
+    "pandas>=2.0.0,<3.0.0",
+    "scikit-learn>=1.2.0,<2.0.0",
+    "joblib>=1.2.0,<2.0.0",
+    "matplotlib>=3.7.0,<4.0.0",
+    "plotly>=5.14.0,<7.0.0",
+    "streamlit>=1.28.0,<2.0.0",
+    "pytest>=7.4.0,<9.0.0",
+]
+
+[project.optional-dependencies]
+legacy = [
+    "torch>=2.0.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra"
