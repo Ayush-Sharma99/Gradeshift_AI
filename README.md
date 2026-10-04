@@ -256,5 +256,13 @@ See [`docs/KNOWN_LIMITATIONS.md`](docs/KNOWN_LIMITATIONS.md) for the complete li
 - **Phase:** Phase 17–28 — Competition-Ready Product & Defense Package Complete
 - **Branch:** `primepath-phase13-complete`
 - **Tags:** `v0.13.0-phase13-complete` (frozen validation), `v0.16.0-technical-ui-complete` (technical UI), `v0.17.0-competition-ready` (competition release)
-- **Status:** All domain modules (`src/gradeshift/`), UI presenter service (`src/gradeshift/ui/`), Streamlit Decision Cockpit (`app.py` + `pages/1..6`), 294 pytest tests (`tests/`), frozen validation artifacts (`artifacts/`), and competition defense documentation (`docs/`) are complete and verified.
+- **Status:** All domain modules (`src/gradeshift/`), UI presenter service (`src/gradeshift/ui/`), Streamlit Decision Cockpit (`app.py` + `pages/1..6`), 295 pytest tests (`tests/`), frozen validation artifacts (`artifacts/`), and competition defense documentation (`docs/`) are complete and verified.
+
+---
+
+## 16. Historical Prototype Lineage & Author
+
+- **Historical Prototype Archive:** The initial GradeShift AI prototype (CSTR fluidized-bed simulator, PyTorch/analytical soft sensor, and SciPy trajectory optimizer) originally documented on `main` is preserved for auditability in [`historical/legacy_prototype/`](historical/legacy_prototype/) and [`experiments/legacy_control_counterfactual.py`](experiments/legacy_control_counterfactual.py).
+- **Author:** Developed by [Ayush Sharma](https://github.com/Ayush-Sharma99).
+
 
