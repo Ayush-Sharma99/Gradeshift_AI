@@ -174,16 +174,32 @@ topbar(
 
 page_title(
     "PrimePath Decision Cockpit",
-    "Uncertainty-aware, human-authorized commercial-disposition decision layer for polyolefin grade transitions.",
-    eyebrow="GRADESHIFT PRIMEPATH · PHASE 14–17 PRODUCT INTERFACE",
+    "An uncertainty-aware, human-authorized commercial-disposition decision layer for polyolefin grade transitions. — Know when it is a prime-release candidate. Prove why. Learn every transition.",
+    eyebrow="GRADESHIFT PRIMEPATH · COMPETITION-READY PRODUCT INTERFACE",
 )
 
 mode_banner(view["mode_meta"])
 
+# ──────────────────────────────────────────────────────────────
+# 30-SECOND JUDGE STRIP: 5 QUESTIONS ANSWERED AT A GLANCE
+# ──────────────────────────────────────────────────────────────
+q_cols = st.columns(5, gap="small")
+for idx, q_item in enumerate(view.get("five_jury_questions", [])):
+    with q_cols[idx]:
+        st.markdown(
+            f"""
+            <div style="background:{COLOR['card']}; border:1px solid {COLOR['border']}; border-top:3px solid {COLOR['blue']}; border-radius:6px; padding:10px 12px; min-height:118px; margin-bottom:10px;">
+                <div style="font-size:0.66rem; font-weight:700; letter-spacing:0.06em; color:{COLOR['blue']}; text-transform:uppercase; margin-bottom:4px;">{q_item['question']}</div>
+                <div style="font-size:0.76rem; line-height:1.38; color:{COLOR['text']};">{q_item['answer']}</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
 tab_cockpit, tab_exec, tab_locked = st.tabs(
     [
-        "🎛️ Operator Decision Cockpit",
-        "📊 Executive Value View (30s Summary)",
+        "🎛️ Operator Decision Cockpit (Deep Technical View)",
+        "📊 Executive Value View (30-Second Judge View)",
         "🔒 Locked Validation & Claim Ledger",
     ]
 )
@@ -193,7 +209,7 @@ tab_cockpit, tab_exec, tab_locked = st.tabs(
 # ══════════════════════════════════════════════════════════════
 with tab_cockpit:
     if selected_mode == ExecutionMode.ILLUSTRATIVE_DEMO.value:
-        section_header("Canonical Walkthrough Stepper (DEMO-A2B)")
+        section_header("Canonical 6-Step Walkthrough Stepper (DEMO-A2B · 3–5 Minute Jury Demo)")
         bcols = st.columns(6)
         short_labels = [
             ("T1_HOLD", "T1 · HOLD"),
@@ -222,6 +238,28 @@ with tab_cockpit:
         approver_role=view["approver_role"],
         narrative=view["narrative"],
     )
+
+    # 10-Stage Decision Lineage Chain Strip
+    chain_items = view.get("central_lineage_chain", [])
+    if chain_items:
+        chain_html_parts = []
+        for c_idx, stage in enumerate(chain_items):
+            arrow = " → " if c_idx < len(chain_items) - 1 else ""
+            chain_html_parts.append(
+                f"<span style='display:inline-block; background:#F8FAFC; border:1px solid {COLOR['border']}; "
+                f"border-radius:4px; padding:4px 8px; margin:2px; font-size:0.73rem;'>"
+                f"<strong style='color:{COLOR['navy']};'>{stage['stage']}:</strong> "
+                f"<span style='color:{COLOR['text']}; font-family:monospace;'>{stage['value']}</span></span>"
+                f"<span style='color:{COLOR['text2']}; font-weight:700;'>{arrow}</span>"
+            )
+        st.markdown(
+            f"<div style='background:{COLOR['card']}; border:1px solid {COLOR['border']}; border-radius:6px; padding:8px 12px; margin-bottom:14px;'>"
+            f"<div style='font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:{COLOR['text2']}; margin-bottom:4px;'>"
+            f"End-to-End Auditable Decision Lineage Chain (Live State at t+{view['elapsed_min']:.0f}m)</div>"
+            + "".join(chain_html_parts)
+            + "</div>",
+            unsafe_allow_html=True,
+        )
 
     # 4-Column KPI Strip
     pred = view["prediction"]
@@ -345,7 +383,7 @@ with tab_cockpit:
                     symmetric=False,
                     array=[pred["upper_mfi"] - pred["point_mfi"]],
                     arrayminus=[pred["point_mfi"] - pred["lower_mfi"]],
-                    color= view["action_meta"]["color"],
+                    color=view["action_meta"]["color"],
                     thickness=3,
                     width=10,
                 ),
@@ -382,10 +420,11 @@ with tab_cockpit:
 
         # Causal Firewall Evidence Card
         st.markdown(
-            panel_open("Causal As-Of Firewall & Evidence Lineage")
+            panel_open("Causal As-Of Firewall & Step Transition Audit")
             + data_row("Decision Timestamp (UTC)", str(view["decision_time"]))
             + data_row("What PrimePath KNEW at t", str(view["what_knew"]))
             + data_row("What PrimePath Did NOT Know at t", str(view["what_did_not_know"]))
+            + data_row("Why the Action Changed", str(view.get("why_action_changed", "")))
             + data_row(
                 "Dwell Status (As-Of t)",
                 f"{view['dwell'].get('elapsed_min', 0.0):.1f}m / {view['dwell'].get('required_min', 30.0):.1f}m "
@@ -507,6 +546,7 @@ with tab_cockpit:
 # ══════════════════════════════════════════════════════════════
 with tab_exec:
     ex = build_executive_view(rt, scenario_name=selected_scenario)
+    hon = ex["locked_honest_explanation"]
     section_header("Executive Summary — Why PrimePath Exists")
     e1, e2 = st.columns(2, gap="large")
     with e1:
@@ -547,7 +587,7 @@ with tab_exec:
             f"On a 50.0 t mapped window with ₹{int(ex['illustrative_demo_summary']['scenario_spread_per_tonne']):,}/t "
             f"prime-vs-downgrade spread, identifying a verified prime candidate represents "
             f"<strong>₹{int(ex['illustrative_demo_summary']['counterfactual_opportunity_currency']):,}</strong> "
-            f"in counterfactual opportunity value (SIMULATED/ASSUMPTION)."
+            f"in counterfactual opportunity value (SIMULATED/ASSUMPTION — Not an HMEL savings claim)."
         )
 
     with c_lock:
@@ -571,9 +611,7 @@ with tab_exec:
                 )
         st.dataframe(pd.DataFrame(lock_rows), use_container_width=True, hide_index=True)
         insight(
-            "<strong>Verified Validation Finding:</strong> On the locked test split (B→C, C→B), "
-            "PrimePath's train-only OOD detector blocks all 235 rows (100% abstention), achieving "
-            "<strong>0.0 tonnes false-prime mass</strong> vs 1,356.0 t (SOP) and 588.0 t (Point Threshold)."
+            f"<strong>{hon['headline']}</strong><br>{hon['why_blocked']}"
         )
 
 
@@ -582,6 +620,33 @@ with tab_exec:
 # ══════════════════════════════════════════════════════════════
 with tab_locked:
     lv = build_locked_validation_view(rt)
+    hon_lv = lv["locked_honest_explanation"]
+
+    section_header("Honest Locked-Validation Interpretation & Three-Way Evidence Separation")
+    h1, h2 = st.columns([1.2, 1.0], gap="large")
+    with h1:
+        reasons_html = "".join(
+            f"<li style='margin-bottom:6px; font-size:0.84rem;'>{r}</li>"
+            for r in hon_lv["reasons"]
+        )
+        st.markdown(
+            panel_open(hon_lv["headline"])
+            + f"<p style='font-size:0.84rem; color:{COLOR['text']}; margin-bottom:8px;'>{hon_lv['why_blocked']}</p>"
+            + f"<ul style='margin:0; padding-left:18px; color:{COLOR['text']};'>{reasons_html}</ul>"
+            + panel_close(),
+            unsafe_allow_html=True,
+        )
+    with h2:
+        ev_types = hon_lv["evidence_types"]
+        st.markdown(
+            panel_open("Strict Evidence Type Separation")
+            + data_row("1. Observed / Frozen", ev_types["observed_frozen"])
+            + data_row("2. Diagnostic Oracle", ev_types["diagnostic_oracle"])
+            + data_row("3. Simulated / Illustrative", ev_types["simulated_illustrative"])
+            + panel_close(),
+            unsafe_allow_html=True,
+        )
+
     section_header("Phase-13 Reproducibility Fingerprints & Pass/Fail Criteria")
 
     f1, f2 = st.columns([1, 1.3], gap="large")
@@ -620,3 +685,4 @@ with tab_locked:
             if c in claims_df.columns
         ]
         st.dataframe(claims_df[cols_to_show], use_container_width=True, hide_index=True)
+

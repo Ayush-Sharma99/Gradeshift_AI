@@ -227,13 +227,15 @@ with col_p:
         unsafe_allow_html=True,
     )
 
-    section_header("4. Evidence Ladder (`E0` – `E5`) & Reproducibility Fingerprints")
+    section_header("4. Artifact Versions, Evidence Ladder (`E0` – `E5`) & Reproducibility Fingerprints")
     ev_ladder = mv["evidence_ladder"]
-    el_html = panel_open("PrimePath Evidence Classification Ladder")
-    for lvl, desc in ev_ladder.items():
-        el_html += data_row(lvl, str(desc))
+    el_html = panel_open("PrimePath Artifact Versions & Evidence Classification Ladder")
+    for k_ver, v_ver in mv["versions"].items():
+        el_html += data_row(f"Version [{k_ver}]", str(v_ver))
     for k_fp, v_fp in mv["fingerprints"].items():
         el_html += data_row(f"Fingerprint [{k_fp}]", str(v_fp))
+    for lvl, desc in ev_ladder.items():
+        el_html += data_row(lvl, str(desc))
     el_html += panel_close()
     st.markdown(el_html, unsafe_allow_html=True)
 
@@ -256,8 +258,9 @@ if not claims_df.empty:
     )
 
 insight(
-    "<strong>Jury Governance Rule:</strong> Transition Memory gives PrimePath auditable historical "
+    f"<strong>{mv['assurance_statement']}</strong> — Transition Memory gives PrimePath auditable historical "
     "context. It does <em>not</em> perform continuous online learning or silent threshold mutation — "
     "promoting reconciled episodes into a future model training cycle is an explicit, offline, "
     "human-governed engineering action."
 )
+

@@ -87,40 +87,39 @@ All 13 domain phases are implemented, unit-tested, and verified end-to-end:
 
 ---
 
-## 6. Current UI Status
+## 6. Current UI Status (Phase 14–17 Complete)
 
-- **Runnable:** Yes (`streamlit.testing.v1.AppTest` executes `app.py` with `0` exceptions).
-- **Important Gap:** Root [`app.py`](../app.py) and [`pages/1_Grade_Transition.py`](../pages/1_Grade_Transition.py) through [`pages/6_Digital_Twin.py`](../pages/6_Digital_Twin.py) still contain the **inherited pre-PrimePath prototype UI** (which calls legacy root scripts `reactor_simulator.py`, `soft_sensor.py`, `transition_optimizer.py` and contains the legacy defects D1–D7 documented in [`FINAL_BASELINE_AUDIT.md`](FINAL_BASELINE_AUDIT.md)).
-- **Theme Status:** [`gs_theme.py`](../gs_theme.py) is high quality and ready to be reused by the Phase-14 PrimePath UI views.
+- **Runnable:** Yes (`streamlit.testing.v1.AppTest` executes `app.py` and all 6 pages `pages/1..6` with `0` exceptions, including interactive stepper and mode transitions).
+- **Architecture:** Root [`app.py`](../app.py) and [`pages/1_Grade_Transition.py`](../pages/1_Grade_Transition.py) through [`pages/6_Digital_Twin.py`](../pages/6_Digital_Twin.py) are wired exclusively to [`src/gradeshift/ui/`](../src/gradeshift/ui/) (`RuntimeContext` and presenter functions). Zero legacy imports (`reactor_simulator.py`, `soft_sensor.py`, `transition_optimizer.py`) and zero random-noise mocks remain in active UI code.
 
 ---
 
 ## 7. Current Demo Status
 
-- **Domain / CLI Demo:** Complete and verified (`gradeshift.replay.demo_fixture`, accessible via `.\scripts\generate_demo.ps1` or `python scripts/generate_demo.py`).
+- **CLI & Interactive Demo:** Complete and verified (`python scripts/demo.py` or `.\scripts\demo.ps1`, and interactive `DEMO-A2B` stepper in `app.py`).
 - **Sequence:** Demonstrates an in-domain `A->B` episode progressing through:
-  - `T1`: `HOLD` (point estimate in-spec `7.92`, but 90% interval `[7.48, 8.36]` crosses lower spec `7.60`; no sample available).
-  - `T2`: `SAMPLE_NOW` (interval still crosses `7.60`, confirmatory sample available within `45 min` latency, positive VOI).
-  - `T3`: `PRIME_RELEASE_CANDIDATE` (interval `[7.72, 8.28]` fully inside `[7.60, 8.40]`, `30 min` dwell satisfied, material `WELL_SUPPORTED`, health & applicability `NORMAL`, requires `Shift Quality Approver (QC)`).
-  - `T4` (Robustness / Fault Branch): `ABSTAIN` when online analyzer freezes (`ABSTAIN_SENSOR_HEALTH`).
-- **Separation:** Kept strictly separate from `LOCKED_VALIDATION` (`zero_candidate_diagnostic.separation_note`).
+  - `T1_HOLD`: `HOLD` (point estimate in-spec `7.92`, but 90% interval `[7.48, 8.36]` crosses lower spec `7.60`; no sample available).
+  - `T2_SAMPLE_NOW`: `SAMPLE_NOW` (interval still crosses `7.60`, confirmatory sample available within `45 min` latency, positive VOI `₹95,000`).
+  - `T3_PRIME_CANDIDATE`: `PRIME_RELEASE_CANDIDATE` (interval `[7.72, 8.28]` fully inside `[7.60, 8.40]`, `30 min` dwell satisfied, material `WELL_SUPPORTED`, health & applicability `NORMAL`, requires `Shift Quality Approver (QC)`).
+  - `T4_TRUTH_RECONCILED`: Delayed lab sample arrives at `t+445m` (`7.95 g/10min`, in-spec), reconciling the episode in `TransitionMemoryStore`.
+  - `T5_ECONOMIC_LEDGER`: Episode ledger separating `₹40,00,000` realized downgrade routing from `₹10,00,000` (`₹10.0 Lakh`) counterfactual prime opportunity in `BASE`.
+  - `T6_FAULT_ABSTAIN`: Frozen analyzer fault (`FROZEN_MFI`) forces `ABSTAIN / FOLLOW SOP` (`ABSTAIN_SENSOR_HEALTH`).
+- **Separation:** Kept strictly separate from `LOCKED_VALIDATION`.
 
 ---
 
 ## 8. Current Known Limitations
 
 1. **Synthetic Data Only (`E2`/`E3`):** No HMEL historian, LIMS, or financial data is present.
-2. **Correlated Calibration Residuals:** `141` calibration rows come from only `3` independent episodes.
-3. **Chronological Direction Shift:** `LOCKED_TEST` directions (`B->C`, `C->B`) do not appear in `TRAIN`, causing 100% gate-justified abstention on the locked corpus.
+2. **Correlated Calibration Residuals:** `141` calibration rows come from only `3` independent episodes (`0.6596` empirical locked coverage vs `0.90` nominal).
+3. **Chronological Direction Shift:** `LOCKED_TEST` directions (`B->C`, `C->B`) do not appear in `TRAIN`, causing 100% gate-justified abstention on the locked corpus (`100% abstention is not commercial success. It is evidence that the current model refuses unsupported transitions.`).
 4. **Single Analyte (`MFI`):** Density is carried as static grade metadata only.
-5. **UI Not Yet Wired to Domain Engine:** Streamlit pages (`app.py`, `pages/1..6`) await Phase-14 refactoring.
+5. **Advisory Scope Only:** PrimePath never writes setpoints, never actuates plant equipment, and never certifies polymer quality.
 
 ---
 
-## 9. Current Repository Health & Next Development Target
+## 9. Current Repository Health
 
-- **Repository Hygiene:** Secret-scanned (0 secrets in working tree or git history), `.gitignore` hardened, reproducible `requirements.txt` and `pyproject.toml` in place, CLI scripts (`scripts/`) verified, all 266 tests passing.
-- **Next Development Target (Phase 14–17):**
-  1. Create `src/gradeshift/ui/` presenter layer over the frozen Phase-13 domain stack.
-  2. Refactor `app.py` (PrimePath Decision Cockpit) and `pages/1..6` (Transition Replay, Quality Evidence, Disposition Workbench, Transition Guardian, Economic Ledger, Transition Memory & Model Assurance).
-  3. Add UI smoke tests and finalize competition presentation assets in `competition/`.
+- **Repository Hygiene:** Secret-scanned (0 secrets in working tree or git history), `.gitignore` hardened, reproducible `requirements.txt` and `pyproject.toml` in place, CLI scripts (`scripts/`) verified, all **295 pytest tests passing** (`266` domain/validation + `28` UI presenter & `AppTest` smoke tests).
+- **Competition Package:** Complete in [`docs/COMPETITION_READINESS.md`](COMPETITION_READINESS.md), [`docs/JURY_DEMO_SCRIPT.md`](JURY_DEMO_SCRIPT.md), [`docs/CLAIMS_AND_EVIDENCE.md`](CLAIMS_AND_EVIDENCE.md), [`docs/KNOWN_LIMITATIONS.md`](KNOWN_LIMITATIONS.md), and [`docs/FINAL_TECHNICAL_STATUS.md`](FINAL_TECHNICAL_STATUS.md).
+

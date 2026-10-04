@@ -259,11 +259,11 @@ with col_o:
     )
     st.dataframe(rob_df, use_container_width=True, hide_index=True, height=340)
 
+hon = gv["locked_honest_explanation"]
+section_header("5. Honest Locked-Validation Interpretation (Why 100% Abstention Is Useful)")
+reasons_html = "".join(f"<li style='margin-bottom:4px;'>{r}</li>" for r in hon["reasons"])
 insight(
-    "<strong>Why PrimePath Abstains on Locked Test Events:</strong> The chronological <code>TRAIN</code> "
-    "partition covers transitions <code>A→B</code>, <code>B→A</code>, <code>A→C</code>, and <code>C→A</code>, "
-    "while the chronological <code>LOCKED_TEST</code> partition comprises <code>B→C</code> and <code>C→B</code>. "
-    "Rather than extrapolating silently into unseen grade pairs, the train-only <code>ApplicabilityDetector</code> "
-    "flags <code>UNKNOWN_GRADE_PAIR</code> (<code>UNSUPPORTED</code>), forcing <code>ABSTAIN / FOLLOW SOP</code> "
-    "and protecting against 1,356.0 t of false-prime exposure."
+    f"<strong>{hon['headline']}</strong><br>{hon['why_blocked']}"
+    f"<ul style='margin-top:6px; margin-bottom:0; padding-left:18px;'>{reasons_html}</ul>"
 )
+

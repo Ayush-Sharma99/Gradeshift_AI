@@ -302,8 +302,28 @@ with c2:
             )
     st.dataframe(pd.DataFrame(comp_items), use_container_width=True, hide_index=True, height=240)
 
-insight(
-    "<strong>Economic Honesty Rule:</strong> Every currency figure in PrimePath carries an explicit "
-    "<code>ASSUMPTION</code> / <code>SIMULATED</code> provenance tag derived from <code>config.ECON_SCENARIOS</code>. "
-    "No HMEL financial ledger data or verified plant savings are claimed."
+section_header("6. How This Number Is Constructed (Formula-by-Formula Audit)")
+ef = ev_view["economic_framing"]
+badge_html = " · ".join(f"<code>{b}</code>" for b in ef["badges"])
+st.markdown(
+    f"<div style='margin-bottom:8px; font-size:0.84rem;'><strong>Mandatory Economic Labels:</strong> {badge_html}</div>",
+    unsafe_allow_html=True,
 )
+how_rows = [
+    {
+        "Line Item": h["metric"],
+        "Category": h["category"],
+        "Formula": h["formula"],
+        "Inputs": h["inputs"],
+        "Amount (₹)": f"₹{float(h['value_currency']):,.0f}",
+        "Evidence Class": h["evidence_class"],
+        "Construction Rationale": h["explanation"],
+    }
+    for h in ev_view["how_constructed"]
+]
+st.dataframe(pd.DataFrame(how_rows), use_container_width=True, hide_index=True)
+
+insight(
+    f"<strong>Economic Honesty Rule (Not an HMEL Savings Claim):</strong> {ef['realized_vs_counterfactual_note']}"
+)
+

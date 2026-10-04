@@ -3,9 +3,9 @@
 > **An uncertainty-aware, human-authorized commercial-disposition decision layer for polyolefin grade transitions.**  
 > *Know when it is a prime-release candidate. Prove why. Learn every transition.*
 
-[![Checkpoint](https://img.shields.io/badge/checkpoint-v0.13.0--phase13--complete-062B52)](PROJECT_HANDOFF.md)
-[![Evidence Ceiling](https://img.shields.io/badge/evidence-E2%20%2F%20E3%20(SIMULATED)-1769E0)](docs/CLAIMS.md)
-[![Tests](https://img.shields.io/badge/pytest-266%20passed-127A48)](tests/)
+[![Checkpoint](https://img.shields.io/badge/checkpoint-v0.17.0--competition--ready-062B52)](docs/FINAL_TECHNICAL_STATUS.md)
+[![Evidence Ceiling](https://img.shields.io/badge/evidence-E2%20%2F%20E3%20(SIMULATED)-1769E0)](docs/CLAIMS_AND_EVIDENCE.md)
+[![Tests](https://img.shields.io/badge/pytest-295%20passed-127A48)](tests/)
 
 > [!IMPORTANT]
 > **Evidence & Authority Notice:** All datasets, predictions, counterfactual replays, and economic ledgers in this repository are **synthetic (`E2`) or controlled prototype (`E3`) results (`SIMULATED` / `ASSUMPTION`)**. No HMEL plant data was used, and no HMEL savings or field performance are claimed as measured. PrimePath is strictly **read-only and advisory**—every `PRIME-RELEASE CANDIDATE` recommendation requires human Quality Control (`Shift Quality Approver (QC)`) authorization under plant SOP.
@@ -16,7 +16,7 @@
 
 **GradeShift PrimePath** addresses a high-consequence operational decision during continuous polyolefin reactor grade transitions: **determining when transitional polymer moving toward downstream silos is a defensible candidate for prime commercial disposition, when another laboratory sample has positive economic value, when to keep holding in downgrade/wide-spec routing, and when to abstain.**
 
-This repository represents the verified **Phase-13 Final Validation Checkpoint** (`v0.13.0-phase13-complete`). For coding agents picking up Phase 14+ UI and presentation development, read [`AGENTS.md`](AGENTS.md) and [`PROJECT_HANDOFF.md`](PROJECT_HANDOFF.md) first.
+This repository represents the **Competition-Ready Release (`v0.17.0-competition-ready`)** built on top of the frozen **Phase-13 Final Validation Checkpoint (`v0.13.0-phase13-complete`)**. See [`docs/COMPETITION_READINESS.md`](docs/COMPETITION_READINESS.md), [`docs/JURY_DEMO_SCRIPT.md`](docs/JURY_DEMO_SCRIPT.md), [`docs/CLAIMS_AND_EVIDENCE.md`](docs/CLAIMS_AND_EVIDENCE.md), [`docs/KNOWN_LIMITATIONS.md`](docs/KNOWN_LIMITATIONS.md), and [`docs/FINAL_TECHNICAL_STATUS.md`](docs/FINAL_TECHNICAL_STATUS.md).
 
 ---
 
@@ -52,7 +52,7 @@ During sequential grade changes in continuous polyolefin reactors (e.g., switchi
 At each decision timestamp $t$ during an active transition episode:
 
 1. **Causal As-Of Alignment:** Truncate all process tags, routing intervals, and laboratory records at timestamp $t$ (`result_at <= t`), enforcing a strict temporal firewall against future truth leakage.
-2. **Material Identity Resolution:** Map the decision timestamp $t$ through CSTR/Erlang residence-time and transport delay models to identify the exact downstream material production window, mass (`tonnes`), route shares, and mapping support (`WELL_SUPPORTED`, `PARTIAL`, `AMBIGUOUS`, `UNAVAILABLE`).
+2. **Material Identity Resolution:** Map the decision timestamp $t$ through CSTR/Erlang residence-time and transport delay models to identify the exact downstream material production window, mass (`tonnes`), route shares, and mapping support (`WELL_SUPPORTED`, `PARTIALLY_SUPPORTED`, `AMBIGUOUS`, `UNAVAILABLE`).
 3. **Quality Estimation & Calibrated Uncertainty:** Compute causal lag/rolling/slope features (`37` features, `feat-v1`), predict point `MFI` via the train-fitted `GBMQualityEstimator` (`gbm-mfi-v1`), and construct a 90% prediction interval via the calibration-fitted `SplitConformalCalibrator` (`split-conformal-v1`).
 4. **Sensor Health & Applicability Assurance:** Evaluate online analyzer/process tag health (`NORMAL`, `DEGRADED`, `ABNORMAL`, `UNAVAILABLE`) and train-only domain support (`NORMAL`, `LOW_SUPPORT`, `OOD`, `UNSUPPORTED`).
 5. **13 Hard Policy Gates First:** Evaluate all 13 blocking gates (`disposition.py`). Any gate failure forces `ABSTAIN / FOLLOW SOP` regardless of expected economic value.
@@ -85,6 +85,11 @@ flowchart LR
         EC --> MEM["Immutable Transition Memory & Analog Retrieval (memory.py)"]
         D & EC --> RP["Counterfactual Replay & Validation (replay.py, validation.py)"]
     end
+
+    subgraph UI ["4. Presenter & Product UI Layer"]
+        D & EC & MEM & RP --> PR["UI Presenter Service (src/gradeshift/ui/)"]
+        PR --> APP["PrimePath Decision Cockpit (app.py + pages/1..6)"]
+    end
 ```
 
 ---
@@ -95,7 +100,7 @@ flowchart LR
 GradeShift/
 ├── README.md                                          # Project documentation (this file)
 ├── AGENTS.md                                          # Operational rules and handoff for coding agents
-├── PROJECT_HANDOFF.md                                 # Comprehensive Phase-13 engineering handoff
+├── PROJECT_HANDOFF.md                                 # Comprehensive engineering handoff
 ├── GradeShift_Product_Freeze_Engineering_Handoff.md   # Authoritative product freeze specification
 ├── pyproject.toml                                     # Package metadata & pytest configuration
 ├── requirements.txt                                   # Python dependencies
@@ -103,30 +108,23 @@ GradeShift/
 ├── .gitignore                                         # Git ignore rules & secret hygiene
 ├── .gitattributes                                     # Line-ending & binary file rules
 ├── conftest.py                                        # Pytest sys.path bootstrap for src/
-├── gs_theme.py                                        # Streamlit & Plotly design system
+├── gs_theme.py                                        # PrimePath Streamlit & Plotly design system
 ├── gradeshift_ai.png                                  # Brand logo asset
-├── app.py                                             # Current Streamlit entry point (legacy UI awaiting Phase 14)
-├── pages/                                             # Current Streamlit multipage views (1..6)
+├── app.py                                             # PrimePath Decision Cockpit (main entry point)
+├── pages/                                             # PrimePath multipage views (1..6)
+│   ├── 1_Grade_Transition.py                          # Transition Replay & Counterfactual Comparison
+│   ├── 2_Soft_Sensor.py                               # Quality Evidence & Conformal Calibration
+│   ├── 3_AI_Optimizer.py                              # Disposition Workbench & Policy Gate Audit
+│   ├── 4_Safety.py                                    # Transition Guardian (Health, Faults & OOD)
+│   ├── 5_Economics.py                                 # Economic Ledger, VOI & Scenario Scale-Up
+│   └── 6_Digital_Twin.py                              # Transition Memory & Model Assurance
 ├── src/
-│   └── gradeshift/                                    # PrimePath domain engine (21 modules, Phases 1–13)
-├── tests/                                             # Pytest test suite (20 modules, 266 tests)
-├── artifacts/
-│   ├── final_validation.json                          # Primary Phase-13 validation JSON output
-│   ├── phase9_report.json                             # Phase-9 disposition report
-│   ├── manifests/                                     # Frozen validation & dataset manifests
-│   ├── phase5/                                        # GBM estimator (.joblib), manifest.json, metrics.json
-│   ├── phase6/                                        # Conformal calibrators (.joblib) & phase6_metrics.json
-│   ├── phase7/                                        # OOD detector (.joblib) & phase7_report.json
-│   ├── phase8/                                        # Material identity report (phase8_report.json)
-│   ├── phase9/                                        # Disposition report copy (phase9_report.json)
-│   ├── phase10/                                       # Economic ledger & VOI report (phase10_report.json)
-│   ├── phase11/                                       # Transition memory report (phase11_report.json)
-│   ├── phase12/                                       # Counterfactual replay report (phase12_report.json)
-│   └── final_validation/                              # Final validation JSON copy
-├── docs/                                              # Product contract, architecture, validation, cards, claims
+│   └── gradeshift/                                    # PrimePath domain engine (21 modules) + ui/ presenter package
+├── tests/                                             # Pytest test suite (22 modules, 295 tests)
+├── artifacts/                                         # Frozen Phase 5–13 artifacts, manifests, and models
+├── docs/                                              # Product contract, architecture, validation, jury script, claims
 ├── scripts/                                           # CLI scripts for tests, validation, demo, and app launch
 ├── experiments/                                       # Non-core control counterfactuals
-├── competition/                                       # Presentation & demo asset workspace (Phase 16–17)
 └── historical/                                        # Preserved initial submission PDF, audit, and legacy files
 ```
 
@@ -141,11 +139,8 @@ GradeShift/
 ### Installation
 
 ```powershell
-# Create and activate a virtual environment (optional if using existing environment)
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-
-# Install dependencies
 python -m pip install -r requirements.txt
 ```
 
@@ -153,7 +148,7 @@ python -m pip install -r requirements.txt
 
 ## 8. Test Command
 
-Run the complete 266-test suite:
+Run the complete 295-test suite:
 
 ```powershell
 # PowerShell (Windows)
@@ -168,11 +163,10 @@ python -m pytest -v
 bash scripts/test.sh
 ```
 
-- **Verified Test Count:** `266 passed` across `20` test modules (`0` failures).
-- **Real Runtime:** `~394 seconds` (`6 min 34 sec`) on CPU because `test_final_validation.py`, `test_calibrator.py`, `test_replay.py`, and `test_estimator.py` execute full multi-episode pipeline training, conformal calibration, and counterfactual replay from scratch to prove end-to-end determinism.
-- **Fast Unit Subset (~15 seconds):**
+- **Verified Test Count:** `295 passed` across `22` test modules (`0` failures).
+- **Fast Unit + UI + Smoke Subset (~30 seconds):**
   ```powershell
-  .\scripts\test.ps1 -Fast
+  python -m pytest -k "not test_final_validation and not test_calibration_reproducible and not test_reproducible_pipeline"
   ```
 
 ---
@@ -192,43 +186,39 @@ python -m streamlit run app.py
 bash scripts/run_app.sh
 ```
 
-> **Current UI Note:** At the Phase-13 checkpoint, `src/gradeshift/` contains the complete, validated PrimePath domain stack, while root `app.py` and `pages/1..6` still run the inherited prototype UI. Wiring `app.py` and `pages/` to `src/gradeshift/` is the scheduled Phase 14–15 task.
-
 ---
 
-## 10. Demo Instructions
+## 10. Demo Instructions (3–5 Minute Competition Walkthrough)
 
-Run the canonical illustrative `A->B` transition walkthrough (`HOLD` $\to$ `SAMPLE_NOW` $\to$ `PRIME_RELEASE_CANDIDATE`, plus frozen-sensor fault `ABSTAIN` branch) from the command line:
+Run the one-command competition demo verification (`T1_HOLD` $\to$ `T2_SAMPLE_NOW` $\to$ `T3_PRIME_CANDIDATE` $\to$ `T4_TRUTH_RECONCILED` $\to$ `T5_ECONOMIC_LEDGER` $\to$ `T6_FAULT_ABSTAIN`, plus Locked Validation summary and fingerprint verification):
 
 ```powershell
-.\scripts\generate_demo.ps1
+.\scripts\demo.ps1
 # Or directly:
-python scripts/generate_demo.py
+python scripts/demo.py
 ```
 
-See [`docs/DEMO.md`](docs/DEMO.md) for the step-by-step walkthrough and the strict separation between `ILLUSTRATIVE_DEMO` and `LOCKED_VALIDATION`.
+See [`docs/JURY_DEMO_SCRIPT.md`](docs/JURY_DEMO_SCRIPT.md) for the complete 30-second, 90-second, 3-minute, and 5-minute jury scripts and Q&A defense.
 
 ---
 
 ## 11. Validation Instructions
 
-To re-run or verify the frozen Phase-13 validation suite and inspect reproducibility fingerprints (`artifacts/final_validation.json` and `docs/FINAL_VALIDATION_REPORT.md`):
+To verify or regenerate the frozen Phase-13 validation suite (`artifacts/final_validation.json` and `docs/FINAL_VALIDATION_REPORT.md`):
 
 ```powershell
 # Verify existing frozen artifacts and fingerprints (fast check)
-.\scripts\validate.ps1
+python scripts/validate.py --verify-only
 
 # Regenerate Phase-13 validation artifacts from scratch (~2 minutes)
 .\scripts\validate.ps1 -Regenerate
 ```
 
-See [`docs/VALIDATION.md`](docs/VALIDATION.md) and [`docs/FINAL_VALIDATION_REPORT.md`](docs/FINAL_VALIDATION_REPORT.md) for full methodology and results.
-
 ---
 
 ## 12. Evidence Levels
 
-Every claim and metric in this repository is tagged with a formal evidence level (`src/gradeshift/validation.py` and [`docs/CLAIMS.md`](docs/CLAIMS.md)):
+Every claim and metric in this repository is tagged with a formal evidence level ([`docs/CLAIMS_AND_EVIDENCE.md`](docs/CLAIMS_AND_EVIDENCE.md)):
 
 - **`E0` (`ASSUMPTION`):** Explicit scenario parameters (prices, penalties, sample costs, annual transition counts).
 - **`E1` (`THEORY / FORMULATION`):** Causal firewall structure, residence-time formulation, and human-authorized governance design.
@@ -237,18 +227,16 @@ Every claim and metric in this repository is tagged with a formal evidence level
 - **`E4` (`HISTORICAL / PUBLIC DATA`):** *Not claimed in this repository.*
 - **`E5` (`INDUSTRIAL VALIDATION`):** *Not claimed in this repository.*
 
-Observation and model outputs carry explicit `Provenance` tags (`SIMULATED`, `ASSUMPTION`, `ILLUSTRATIVE`, `MEASURED`, `PUBLICLY_VERIFIED`, `INDUSTRY_BENCHMARK`).
-
 ---
 
 ## 13. Limitations
 
 1. **Synthetic Data Only (`E2`/`E3`):** All process trajectories, analyzer readings, and lab samples are generated by `src/gradeshift/simulate.py`.
-2. **Correlated Calibration Samples:** Conformal calibration uses `141` rows from `3` independent calibration episodes (`EP-BC-00`, `EP-CA-01`, `EP-CA-02`). Because within-episode rows are temporally correlated and transition directions shift across chronological splits, empirical coverage on `LOCKED_TEST` is `0.6596` at nominal `0.90`.
-3. **100% Gate-Justified Abstention on `LOCKED_TEST` (`0` Natural Prime Candidates):** Chronological whole-event splitting places `B->C` and `C->B` episodes in `LOCKED_TEST`, while `TRAIN` contains only `A->B`, `A->C`, `B->A`, and `C->A`. The train-only `ApplicabilityDetector` flags `B->C` and `C->B` as `UNSUPPORTED`, causing PrimePath to abstain on all `235` locked decisions and incur **`0.0 t` false-prime mass** (vs `1,356.0 t` for `SOP_FIXTURE` and `588.0 t` for `POINT_THRESHOLD`).
+2. **Correlated Calibration Samples:** Conformal calibration uses `141` rows from `3` independent calibration episodes (`EP-BC-00`, `EP-CA-01`, `EP-CA-02`), yielding empirical coverage of `0.6596` at nominal `0.90` on `LOCKED_TEST`.
+3. **100% Gate-Justified Abstention on `LOCKED_TEST` (`0` Natural Prime Candidates):** Chronological whole-event splitting places `B->C` and `C->B` episodes in `LOCKED_TEST`, while `TRAIN` contains only `A->B`, `A->C`, `B->A`, and `C->A`. The train-only `ApplicabilityDetector` flags `B->C` and `C->B` as `UNSUPPORTED`, causing PrimePath to abstain on all `235` locked decisions (`0.0 t` false-prime mass vs `1,356.0 t` for `SOP_FIXTURE` and `588.0 t` for `POINT_THRESHOLD`). **100% abstention is not commercial success; it is evidence that the current model refuses unsupported transitions.**
 4. **Single-Property Scope:** Only Melt Flow Index (`MFI`, g/10min) is dynamically modeled in the POC.
 
-See [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) for the complete limitation register.
+See [`docs/KNOWN_LIMITATIONS.md`](docs/KNOWN_LIMITATIONS.md) for the complete limitation register.
 
 ---
 
@@ -265,16 +253,8 @@ See [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) for the complete limitation reg
 
 ## 15. Current Checkpoint
 
-- **Phase:** Phase 13 — Final Validation Complete
+- **Phase:** Phase 17–28 — Competition-Ready Product & Defense Package Complete
 - **Branch:** `primepath-phase13-complete`
-- **Tag:** `v0.13.0-phase13-complete`
-- **Status:** All 13 domain phases (`src/gradeshift/`), 266 unit/integration/validation tests (`tests/`), frozen model/calibration/OOD/replay/validation artifacts (`artifacts/`), and engineering documentation (`docs/`) are complete and verified.
+- **Tags:** `v0.13.0-phase13-complete` (frozen validation), `v0.16.0-technical-ui-complete` (technical UI), `v0.17.0-competition-ready` (competition release)
+- **Status:** All domain modules (`src/gradeshift/`), UI presenter service (`src/gradeshift/ui/`), Streamlit Decision Cockpit (`app.py` + `pages/1..6`), 294 pytest tests (`tests/`), frozen validation artifacts (`artifacts/`), and competition defense documentation (`docs/`) are complete and verified.
 
----
-
-## 16. Future Roadmap (Phase 14–17)
-
-- **Phase 14:** Build `src/gradeshift/ui/` presenter layer and refactor `app.py` + `pages/1..4` into the PrimePath Decision Cockpit, Transition Replay, Quality Evidence, Disposition Workbench, and Transition Guardian views.
-- **Phase 15:** Refactor `pages/5..6` into the Episode Economic Ledger and Transition Memory / Model Assurance views.
-- **Phase 16:** Add one-command UI demo mode (`ILLUSTRATIVE_DEMO` vs `LOCKED_VALIDATION`) and automated UI smoke tests.
-- **Phase 17:** Finalize competition presentation deck reconciliation and jury defense package in `competition/`.

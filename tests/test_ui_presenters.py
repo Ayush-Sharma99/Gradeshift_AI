@@ -230,3 +230,128 @@ def test_active_ui_files_free_of_legacy_imports_and_mocks():
         text = path.read_text(encoding="utf-8")
         for token in forbidden:
             assert token not in text, f"Forbidden legacy token '{token}' found in {path.name}"
+
+
+def test_human_authorization_cannot_override_hard_gate_failure(rt):
+    """Phase 25 #8: Human authorization state cannot override hard-gate failure or non-prime action."""
+    # Fault step T6 forces ABSTAIN even if HUMAN_AUTHORIZED_IN_DEMO is requested
+    v_fault = build_cockpit_view(
+        rt,
+        mode=ExecutionMode.ILLUSTRATIVE_DEMO.value,
+        demo_step="T6_FAULT_ABSTAIN",
+        approval_status=ApprovalStatus.HUMAN_AUTHORIZED_IN_DEMO.value,
+    )
+    assert v_fault["action"] == "ABSTAIN"
+    assert v_fault["approval_status"] == ApprovalStatus.NOT_APPLICABLE.value
+
+    # Locked validation OOD step forces ABSTAIN even if HUMAN_AUTHORIZED_IN_DEMO is requested
+    v_locked = build_cockpit_view(
+        rt,
+        mode=ExecutionMode.LOCKED_VALIDATION.value,
+        event_id="EP-BC-01",
+        step_idx=12,
+        approval_status=ApprovalStatus.HUMAN_AUTHORIZED_IN_DEMO.value,
+    )
+    assert v_locked["action"] == "ABSTAIN"
+    assert v_locked["approval_status"] == ApprovalStatus.NOT_APPLICABLE.value
+
+    # Hold step T1 stays HOLD and NOT_APPLICABLE even if HUMAN_AUTHORIZED_IN_DEMO is requested
+    v_hold = build_cockpit_view(
+        rt,
+        mode=ExecutionMode.ILLUSTRATIVE_DEMO.value,
+        demo_step="T1_HOLD",
+        approval_status=ApprovalStatus.HUMAN_AUTHORIZED_IN_DEMO.value,
+    )
+    assert v_hold["action"] == "HOLD"
+    assert v_hold["approval_status"] == ApprovalStatus.NOT_APPLICABLE.value
+
+
+def test_pre_reconciliation_views_hide_future_truth(rt):
+    """Phase 25 #10: Future truth is strictly hidden in pre-reconciliation decision views."""
+    demo = build_demo_walkthrough(rt)
+    for pre_key in ("T1_HOLD", "T2_SAMPLE_NOW", "T3_PRIME_CANDIDATE", "T6_FAULT_ABSTAIN"):
+        step = demo["steps_by_id"][pre_key]
+        assert step["revealed_mfi"] is None, f"Future truth leaked in {pre_key}"
+        assert step["was_in_spec"] is None, f"Future truth leaked in {pre_key}"
+
+    # Cockpit in SYNTHETIC_REPLAY and LOCKED_VALIDATION never leaks future truth
+    v_rep = build_cockpit_view(
+        rt, mode=ExecutionMode.SYNTHETIC_REPLAY.value, event_id="EP-AB-00", step_idx=10
+    )
+    assert v_rep["revealed_mfi"] is None
+    assert v_rep["was_in_spec"] is None
+
+    # Replay view with reveal_future_truth=False masks timeline, step_trace, and future labs
+    rv = build_replay_view(rt, event_id="EP-AB-00", step_idx=2, reveal_future_truth=False)
+    assert rv["step_trace"]["later_truth"]["revealed_mfi"] is None
+    assert rv["step_trace"]["later_truth"]["was_in_spec"] is None
+    assert rv["step_trace"]["outcome"]["false_prime_tonnes"] is None
+    for lw in rv["lab_windows"]:
+        if not lw["known_as_of_step"]:
+            assert lw["mfi"] is None
+
+
+def test_five_jury_questions_and_ten_stage_lineage_chain(rt):
+    """Phase 17/20/21/22: Verify jury strip, 10-stage lineage chain, economic construction, and honest locked framing."""
+    v = build_cockpit_view(
+        rt, mode=ExecutionMode.ILLUSTRATIVE_DEMO.value, demo_step="T3_PRIME_CANDIDATE"
+    )
+    assert len(v["five_jury_questions"]) == 5
+    assert len(v["central_lineage_chain"]) == 10
+    assert "why_action_changed" in v and len(v["why_action_changed"]) > 10
+    assert (
+        v["locked_honest_explanation"]["headline"]
+        == "100% abstention is not commercial success. It is evidence that the current model refuses unsupported transitions."
+    )
+
+    ev = build_economic_view(rt, scenario_name="BASE")
+    assert len(ev["how_constructed"]) == 5
+    assert "Not an HMEL savings claim" in ev["economic_framing"]["badges"]
+
+    mv = build_memory_assurance_view(rt, query_event_id="DEMO-A2B")
+    assert (
+        mv["assurance_statement"]
+        == "Historical context is retrieved for auditability. It is not silently used to retrain the locked evaluation."
+    )
+
+
+def test_artifacts_and_fingerprints_unchanged_after_ui_operations(rt):
+    """Phase 25 #12 & #13: Memory retrieval and UI presenters never mutate frozen artifacts or SHAs."""
+    import hashlib
+
+    tracked = [
+        REPO_ROOT / "artifacts" / "final_validation.json",
+        REPO_ROOT / "artifacts" / "manifests" / "frozen_validation_manifest.json",
+        REPO_ROOT / "artifacts" / "phase5" / "gbm_mfi.joblib",
+        REPO_ROOT / "artifacts" / "phase6" / "calibrator_gbm.joblib",
+        REPO_ROOT / "artifacts" / "phase7" / "applicability_detector.joblib",
+    ]
+    before = {p: hashlib.sha256(p.read_bytes()).hexdigest() for p in tracked}
+
+    # Exercise all presenter views
+    build_cockpit_view(rt, mode=ExecutionMode.ILLUSTRATIVE_DEMO.value, demo_step="T3_PRIME_CANDIDATE")
+    build_cockpit_view(rt, mode=ExecutionMode.LOCKED_VALIDATION.value, event_id="EP-BC-01")
+    build_memory_assurance_view(rt, query_event_id="DEMO-A2B", k=3)
+    build_economic_view(rt, scenario_name="HIGH")
+
+    after = {p: hashlib.sha256(p.read_bytes()).hexdigest() for p in tracked}
+    assert before == after
+
+
+def test_cli_demo_script_succeeds():
+    """Phase 25 #14: CLI demo command executes cleanly with exit code 0."""
+    import subprocess
+    import sys
+
+    res = subprocess.run(
+        [sys.executable, str(REPO_ROOT / "scripts" / "demo.py")],
+        cwd=str(REPO_ROOT),
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    assert res.returncode == 0, f"scripts/demo.py failed: {res.stderr}"
+    assert "T3_PRIME_CANDIDATE" in res.stdout
+    assert "100% abstention is not commercial success." in res.stdout
+    assert "All 10 Phase-13 Validation Criteria Passed: True" in res.stdout
+

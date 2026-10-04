@@ -56,6 +56,7 @@ def main() -> int:
             f"Candidacy {s['candidacy_gates_passed']}/{s['candidacy_gates_total']} PASS | "
             f"Reasons: {', '.join(s['reason_codes'])}"
         )
+        print(f"    Why     : {s['why_action_changed']}")
         if s.get("revealed_mfi") is not None:
             print(
                 f"    Truth   : Revealed Lab MFI = {s['revealed_mfi']:.2f} g/10m "
@@ -64,6 +65,8 @@ def main() -> int:
 
     print("\n[SECTION B] LOCKED VALIDATION EVIDENCE (5 UNSEEN EPISODES, 235 DECISIONS)")
     print("-" * 80)
+    hon = lv["locked_honest_explanation"]
+    print(f"  HONEST INTERPRETATION: {hon['headline']}")
     lb = lv["level_b_decision"]
     lc = lv["level_c_economic"]
     for pol in ["SOP_FIXTURE", "POINT_THRESHOLD", "PRIMEPATH", "ORACLE_DIAGNOSTIC_ONLY"]:

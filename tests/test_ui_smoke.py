@@ -35,3 +35,22 @@ def test_streamlit_page_renders_without_exception(page_rel_path: str):
         f"{[e.value for e in at.exception]}"
     )
     assert len(at.markdown) > 0
+
+
+def test_cockpit_interactive_stepper_and_mode_transitions():
+    """Phase 25 #15: Verify interactive stepper buttons and mode switching in app.py."""
+    at = AppTest.from_file(str(REPO_ROOT / "app.py"), default_timeout=60)
+    at.run(timeout=60)
+    assert len(at.exception) == 0
+
+    # Click Demo Stepper buttons (T1_HOLD -> T2_SAMPLE_NOW -> T6_FAULT_ABSTAIN -> T3_PRIME_CANDIDATE)
+    for btn_key in ("btn_T1_HOLD", "btn_T2_SAMPLE_NOW", "btn_T6_FAULT_ABSTAIN", "btn_T3_PRIME_CANDIDATE"):
+        at.button(key=btn_key).click().run(timeout=60)
+        assert len(at.exception) == 0
+
+    # Switch Operating Mode to LOCKED_VALIDATION and SYNTHETIC_REPLAY
+    at.sidebar.selectbox[0].select("LOCKED_VALIDATION").run(timeout=60)
+    assert len(at.exception) == 0
+    at.sidebar.selectbox[0].select("SYNTHETIC_REPLAY").run(timeout=60)
+    assert len(at.exception) == 0
+

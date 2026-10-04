@@ -156,6 +156,7 @@ def build_demo_walkthrough(
         narrative: str,
         what_knew: str,
         what_did_not_know: str,
+        why_action_changed: str,
         fault_health: Optional[SensorHealthReport] = None,
         revealed_mfi: Optional[float] = None,
     ) -> Dict[str, Any]:
@@ -224,6 +225,7 @@ def build_demo_walkthrough(
             "narrative": narrative,
             "what_knew": what_knew,
             "what_did_not_know": what_did_not_know,
+            "why_action_changed": why_action_changed,
             "action": disp.action,
             "action_meta": ACTION_META[disp.action],
             "reason_codes": list(disp.reason_codes),
@@ -294,6 +296,10 @@ def build_demo_walkthrough(
         ),
         what_knew="Online MFI=7.88, H2/C2 stabilized, point=7.90, 90% interval=[7.50, 8.30].",
         what_did_not_know="True laboratory MFI at pelletizer (45-min lab delay still pending).",
+        why_action_changed=(
+            "Baseline transition state: Although the point estimate (7.90) is inside spec, "
+            "the lower conformal bound (7.50) violates 7.60 and grab sampling is unavailable → HOLD."
+        ),
     )
     s2 = _eval_step(
         step_id="T2_SAMPLE_NOW",
@@ -310,6 +316,10 @@ def build_demo_walkthrough(
         ),
         what_knew="Interval crosses spec [7.50 < 7.60]; grab sample latency (45m) <= horizon (240m).",
         what_did_not_know="Whether the boundary packet is genuinely >= 7.60 g/10min.",
+        why_action_changed=(
+            "Changed from HOLD → SAMPLE NOW because confirmatory lab sampling became available "
+            "within the 240-min horizon and resolves the boundary uncertainty [7.50, 8.30]."
+        ),
     )
     s3 = _eval_step(
         step_id="T3_PRIME_CANDIDATE",
@@ -326,6 +336,10 @@ def build_demo_walkthrough(
         ),
         what_knew="90% interval [7.70, 8.30] strictly inside [7.60, 8.40]; dwell 60m >= 30m; all 13 hard gates PASS.",
         what_did_not_know="Post-hoc laboratory confirmation sample result (arrives at T4).",
+        why_action_changed=(
+            "Changed from SAMPLE NOW → PRIME-RELEASE CANDIDATE because the entire 90% conformal "
+            "interval [7.70, 8.30] converged inside [7.60, 8.40] with 60m dwell and all hard gates passing."
+        ),
     )
     s4 = _eval_step(
         step_id="T4_TRUTH_RECONCILED",
@@ -341,6 +355,10 @@ def build_demo_walkthrough(
         ),
         what_knew="As-of T3 decision was locked before T4 lab result arrived (causal firewall).",
         what_did_not_know="At T3, future truth 7.95 g/10min was hidden; revealed only now at T4 for reconciliation.",
+        why_action_changed=(
+            "As-of T3 recommendation is preserved; delayed ASTM D1238 lab truth (7.95 g/10min) "
+            "arrives at t=445m and reconciles the candidate window as genuinely in-spec."
+        ),
         revealed_mfi=7.95,
     )
     s5 = _eval_step(
@@ -358,6 +376,10 @@ def build_demo_walkthrough(
         ),
         what_knew="Confirmed lab MFI = 7.95 g/10min (in-spec); mapped mass = 50.0 t.",
         what_did_not_know="N/A — Post-reconciliation audit ledger.",
+        why_action_changed=(
+            f"Reconciled outcome is posted to the Phase-10 Economic Ledger ({sc.name} scenario): "
+            f"₹{int(50.0 * sc.downgrade_spread):,} counterfactual opportunity value separated from realized routing."
+        ),
         revealed_mfi=7.95,
     )
 
@@ -379,6 +401,10 @@ def build_demo_walkthrough(
         ),
         what_knew="MFI_online repeated constant value 7.92 over 35 min -> FROZEN_VALUE health fault.",
         what_did_not_know="True polymer state while primary online analyzer is frozen.",
+        why_action_changed=(
+            "Changed from PRIME-RELEASE CANDIDATE → ABSTAIN / FOLLOW SOP because a frozen MFI "
+            "analyzer fault tripped the sensor_health hard gate (Severity.BLOCK). Policy overrides interval."
+        ),
         fault_health=fault_hr,
     )
 
@@ -387,7 +413,7 @@ def build_demo_walkthrough(
     }
     active = steps_by_id.get(selected_step, s3)
 
-    # Human authorization state handling
+    # Human authorization state handling — NEVER applies if action != PRIME_RELEASE_CANDIDATE
     if active["action"] == D.PRIME_RELEASE_CANDIDATE:
         eff_approval = (
             approval_status
@@ -448,6 +474,117 @@ def build_demo_walkthrough(
     }
 
 
+def _build_five_jury_questions(view_data: Dict[str, Any], scenario_name: str) -> List[Dict[str, str]]:
+    """Construct the 5 immediate judge landing-state Q&A cards."""
+    pred = view_data["prediction"]
+    spec = view_data["spec_band"]
+    mw = view_data["material_window"]
+    return [
+        {
+            "question": "1. WHAT IS THE PROBLEM?",
+            "answer": (
+                "During polyolefin grade transitions (~50 t/h throughput), lab MFI results lag "
+                "production by 45–75 min. Fixed-time SOP rules either downgrade good prime resin "
+                "(false hold) or risk routing off-spec resin to prime silos (false prime)."
+            ),
+        },
+        {
+            "question": "2. WHY DOES IT MATTER?",
+            "answer": (
+                "Point-only soft sensors ignore prediction intervals, residence-time mixing, and "
+                "out-of-domain shifts — exposing the plant to off-spec prime claims (₹40k–₹90k/t "
+                "assumption) or lost prime-vs-downgrade margin (₹12k–₹25k/t assumption, E0/E2)."
+            ),
+        },
+        {
+            "question": "3. WHAT DOES PRIMEPATH DECIDE?",
+            "answer": (
+                f"Active Recommendation: {view_data['action_meta']['display']}. "
+                "PrimePath is strictly read-only and advisory — it never writes DCS setpoints or "
+                "certifies product; PRIME-RELEASE CANDIDATE always requires Human QC sign-off."
+            ),
+        },
+        {
+            "question": "4. WHAT EVIDENCE SUPPORTS THE DECISION?",
+            "answer": (
+                f"90% Conformal Interval [{pred['lower_mfi']:.2f}, {pred['upper_mfi']:.2f}] g/10m "
+                f"vs Grade {spec['grade_id']} Spec [{spec['mfi_low']:.2f}, {spec['mfi_high']:.2f}]; "
+                f"Mapped Window: {mw['mapped_mass_tonnes']:.1f} t ({mw['mapping_quality']}); "
+                f"Hard Gates: {view_data['hard_gates_passed']}/{view_data['hard_gates_total']} PASS."
+            ),
+        },
+        {
+            "question": "5. WHAT HAPPENS WHEN EVIDENCE IS BAD?",
+            "answer": (
+                "PrimePath does not guess when evidence is insufficient. Any sensor health fault "
+                "(frozen, missing, stale, spike), unsupported grade direction (OOD), or ambiguous "
+                "material window trips a BLOCK hard gate and forces ABSTAIN / FOLLOW SOP."
+            ),
+        },
+    ]
+
+
+def _build_central_lineage_chain(view_data: Dict[str, Any]) -> List[Dict[str, str]]:
+    """Build the 10-stage end-to-end PrimePath decision lineage chain."""
+    pred = view_data["prediction"]
+    spec = view_data["spec_band"]
+    mw = view_data["material_window"]
+    econ = view_data["economics"]
+    rev = view_data.get("revealed_mfi")
+    return [
+        {
+            "stage": "1. EVIDENCE",
+            "value": f"As-of t={view_data['elapsed_min']}m",
+            "detail": "Causal firewall strips future labs/tags",
+        },
+        {
+            "stage": "2. UNCERTAINTY",
+            "value": f"[{pred['lower_mfi']:.2f}, {pred['upper_mfi']:.2f}] g/10m",
+            "detail": f"Point {pred['point_mfi']:.2f} vs Spec [{spec['mfi_low']:.2f}, {spec['mfi_high']:.2f}]",
+        },
+        {
+            "stage": "3. MATERIAL ID",
+            "value": f"{mw['mapped_mass_tonnes']:.1f}t ({mw['mean_age_min']:.0f}m age)",
+            "detail": f"Quality: {mw['mapping_quality']}",
+        },
+        {
+            "stage": "4. HEALTH / OOD",
+            "value": f"Health: {view_data['health_state']}",
+            "detail": f"Domain: {view_data['applicability_state']}",
+        },
+        {
+            "stage": "5. POLICY GATES",
+            "value": f"{view_data['hard_gates_passed']}/{view_data['hard_gates_total']} Hard PASS",
+            "detail": f"{view_data['candidacy_gates_passed']}/{view_data['candidacy_gates_total']} Candidacy PASS",
+        },
+        {
+            "stage": "6. DISPOSITION",
+            "value": view_data["action"],
+            "detail": ", ".join(view_data["reason_codes"][:2]),
+        },
+        {
+            "stage": "7. HUMAN QC AUTH",
+            "value": view_data["approval_status"],
+            "detail": view_data["approver_role"],
+        },
+        {
+            "stage": "8. ECONOMICS",
+            "value": f"EL: ₹{float(econ.get('expected_loss_chosen_currency', 0.0)):,.0f}",
+            "detail": f"Permitted: {', '.join(view_data['permitted_actions'])}",
+        },
+        {
+            "stage": "9. RECONCILIATION",
+            "value": f"Lab: {rev:.2f} g/10m" if rev is not None else "Pending (Blind Window)",
+            "detail": f"In-Spec: {view_data.get('was_in_spec')}" if rev is not None else "Withheld until result_at",
+        },
+        {
+            "stage": "10. MEMORY",
+            "value": "Append-Only Store",
+            "detail": "No online learning / TRAIN-isolated",
+        },
+    ]
+
+
 # ──────────────────────────────────────────────────────────────────────────
 # 2. DECISION COCKPIT VIEW (Supports Demo, Replay, and Locked Validation)
 # ──────────────────────────────────────────────────────────────────────────
@@ -472,7 +609,7 @@ def build_cockpit_view(
             approval_status=approval_status,
         )
         step = demo["active_step"]
-        return {
+        out = {
             "mode": mode,
             "mode_meta": MODE_META[mode],
             "event_id": demo["event_id"],
@@ -503,15 +640,20 @@ def build_cockpit_view(
             "narrative": step["narrative"],
             "what_knew": step["what_knew"],
             "what_did_not_know": step["what_did_not_know"],
+            "why_action_changed": step["why_action_changed"],
             "revealed_mfi": step["revealed_mfi"],
             "was_in_spec": step["was_in_spec"],
             "mfi_series": demo["mfi_series"],
             "h2_series": demo["h2_series"],
             "lab_points": demo["lab_points"],
             "demo_steps": demo["steps"],
+            "locked_honest_explanation": LOCKED_HONEST_EXPLANATION,
             "versions": rt.versions,
             "fingerprints": rt.fingerprints,
         }
+        out["five_jury_questions"] = _build_five_jury_questions(out, scenario_name)
+        out["central_lineage_chain"] = _build_central_lineage_chain(out)
+        return out
 
     # SYNTHETIC_REPLAY or LOCKED_VALIDATION on a real corpus event
     if mode == ExecutionMode.LOCKED_VALIDATION.value:
@@ -537,7 +679,6 @@ def build_cockpit_view(
         fault_kind=fault_kind,
     )
     spec = C.get_grade(ev.grade_to)
-    truth = R.reveal_truth(ev, t, spec)
 
     if disp.action == D.PRIME_RELEASE_CANDIDATE:
         eff_approval = (
@@ -579,7 +720,7 @@ def build_cockpit_view(
 
     mws = ctx.material_window_summary
     me = ctx.material_eligibility
-    return {
+    out = {
         "mode": mode,
         "mode_meta": MODE_META[mode],
         "event_id": ev.event_id,
@@ -649,20 +790,63 @@ def build_cockpit_view(
             f"{len(ctx.snapshot.lab_results)} completed labs."
         ),
         "what_did_not_know": (
-            f"Future lab truth ({truth.get('revealed_mfi'):.3f} g/10min) and post-t trajectory "
-            "strictly excluded by structural as-of firewall."
-            if truth.get("revealed_mfi") is not None
-            else "Future observations strictly excluded by structural as-of firewall."
+            "Future laboratory grab-sample results (result_at > t) and post-t trajectory "
+            "are strictly withheld by the structural as-of causal firewall."
         ),
-        "revealed_mfi": truth.get("revealed_mfi"),
-        "was_in_spec": truth.get("was_in_spec"),
+        "why_action_changed": (
+            f"Evaluated at step {idx} (t+{int(ctx.elapsed_min)}m): "
+            f"Hard gates {sum(1 for g in disp.gates if g.severity == D.Severity.BLOCK and g.passed)}/"
+            f"{sum(1 for g in disp.gates if g.severity == D.Severity.BLOCK)} PASS → {disp.action} "
+            f"({', '.join(disp.reason_codes)})."
+        ),
+        # Pre-reconciliation decision cockpit never leaks future truth
+        "revealed_mfi": None,
+        "was_in_spec": None,
         "mfi_series": mfi_series,
         "h2_series": h2_series,
         "lab_points": lab_points,
         "demo_steps": [],
+        "locked_honest_explanation": LOCKED_HONEST_EXPLANATION,
         "versions": rt.versions,
         "fingerprints": rt.fingerprints,
     }
+    out["five_jury_questions"] = _build_five_jury_questions(out, scenario_name)
+    out["central_lineage_chain"] = _build_central_lineage_chain(out)
+    return out
+
+
+LOCKED_HONEST_EXPLANATION: Dict[str, Any] = {
+    "headline": (
+        "100% abstention is not commercial success. "
+        "It is evidence that the current model refuses unsupported transitions."
+    ),
+    "why_blocked": (
+        "Chronological event partitioning placed directions A→B, A→C, B→A, C→A in TRAIN (10 episodes), "
+        "while LOCKED_TEST (5 episodes, 235 decision rows) comprises unseen directions B→C and C→B. "
+        "The train-only ApplicabilityDetector flags all 235 locked rows as UNSUPPORTED (ood hard gate), "
+        "and 40 rows additionally fail material_mapping."
+    ),
+    "reasons": [
+        "Prevents unsupported prime candidacy on transition directions (B→C, C→B) absent from the chronological training split.",
+        "Exposes the exact applicability boundary via the train-only OOD detector (235/235 locked rows blocked by ood gate; 40/235 additionally blocked by material_mapping).",
+        "Creates a clear, auditable engineering path for future data collection (expanding directional training and multi-episode calibration before enabling prime candidacy on new grade pairs).",
+        "Demonstrates that quality and applicability policy gates strictly dominate economic upside (0.0 t false-prime mass vs 1,356.0 t for SOP_FIXTURE and 588.0 t for POINT_THRESHOLD, at an explicit 984.0 t false-hold opportunity cost).",
+    ],
+    "evidence_types": {
+        "observed_frozen": (
+            "Observed / Frozen Validation Evidence (LOCKED_VALIDATION — 5 unseen test episodes, "
+            "235 decisions, frozen SHA-256 artifacts, E2/E3 ceiling)"
+        ),
+        "diagnostic_oracle": (
+            "Diagnostic Oracle Evidence (ORACLE_DIAGNOSTIC_ONLY — non-causal hindsight benchmark "
+            "using future laboratory truth; never deployable as a live policy)"
+        ),
+        "simulated_illustrative": (
+            "Simulated / Illustrative Evidence (ILLUSTRATIVE_DEMO — controlled in-domain A→B walkthrough "
+            "demonstrating HOLD → SAMPLE NOW → PRIME-RELEASE CANDIDATE → RECONCILED → ABSTAIN)"
+        ),
+    },
+}
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -686,7 +870,22 @@ def build_replay_view(
 
     n_steps = len(ep.decision_times)
     idx = max(0, min(step_idx, n_steps - 1))
-    trace = R.event_trace(ep, policy=R.PRIMEPATH, step=idx)
+    current_dt = ep.decision_times[idx]
+    raw_trace = dict(R.event_trace(ep, policy=R.PRIMEPATH, step=idx))
+    if not reveal_future_truth:
+        raw_trace["later_truth"] = {
+            "revealed_mfi": None,
+            "was_in_spec": None,
+            "actual_route": None,
+            "note": "Withheld by structural as-of causal firewall prior to reconciliation.",
+        }
+        raw_trace["outcome"] = {
+            "false_prime_tonnes": None,
+            "false_hold_tonnes": None,
+            "true_prime_tonnes": None,
+            "note": "Withheld by structural as-of causal firewall prior to reconciliation.",
+        }
+    trace = raw_trace
 
     # Timeline rows across all steps
     timeline_rows: List[Dict[str, Any]] = []
@@ -715,13 +914,15 @@ def build_replay_view(
         timeline_rows.append(row)
 
     # Lab blind spots: intervals between sample collection and result arrival
+    # Mask future lab MFI values when reveal_future_truth is False and result_at > current_dt
     lab_windows = [
         {
             "sample_id": l.sample_id,
             "collected_min": round((l.collected_at - ev.started_at).total_seconds() / 60.0, 1),
             "result_min": round((l.result_at - ev.started_at).total_seconds() / 60.0, 1),
             "latency_min": round(l.latency_min, 1),
-            "mfi": round(l.mfi, 4),
+            "known_as_of_step": l.result_at <= current_dt,
+            "mfi": round(l.mfi, 4) if (reveal_future_truth or l.result_at <= current_dt) else None,
         }
         for l in ev.labs
     ]
@@ -748,6 +949,7 @@ def build_replay_view(
         "lab_windows": lab_windows,
         "locked_summary": rt.phase12_report.get("locked_evaluation", {}),
         "firewall_info": rt.phase12_report.get("future_truth_firewall", {}),
+        "locked_honest_explanation": LOCKED_HONEST_EXPLANATION,
     }
 
 
@@ -1077,6 +1279,7 @@ def build_guardian_view(
         "gates": [g.to_dict() for g in disp.gates],
         "robustness_matrix": robustness,
         "abstention_decomposition": abstention_decomp,
+        "locked_honest_explanation": LOCKED_HONEST_EXPLANATION,
         "phase7_summary": rt.phase7_report,
     }
 
@@ -1159,12 +1362,93 @@ def build_economic_view(
         scenario=scenario_name,
     )
 
+    vs = econ_good.value_split
+    how_constructed = [
+        {
+            "metric": "REALIZED VALUE (Current Plant Routing)",
+            "category": "REALIZED VALUE",
+            "formula": "mapped_mass_tonnes × actual_route_value_per_tonne (downgrade_price)",
+            "inputs": f"{mass_tonnes:.1f} t × ₹{sc.downgrade_price:,.0f}/t",
+            "value_currency": vs.realized_value_currency,
+            "evidence_class": "E0 / E2 (Simulated Mass × Assumption Price)",
+            "explanation": (
+                "Baseline revenue of transitional material routed to the wide-spec/downgrade silo "
+                "prior to prime disposition authorization."
+            ),
+        },
+        {
+            "metric": "COUNTERFACTUAL PRIME VALUE (Reconciled In-Spec Lot)",
+            "category": "COUNTERFACTUAL VALUE",
+            "formula": "recoverable_mass_tonnes × prime_price + unrecoverable_mass × downgrade_price − workflow_cost",
+            "inputs": f"{rec_mass:.1f} t × ₹{sc.prime_price:,.0f}/t − ₹{sc.workflow_cost:,.0f}",
+            "value_currency": vs.counterfactual_prime_value_currency,
+            "evidence_class": "E2 (Counterfactual Simulation after Delayed Lab Reconciliation)",
+            "explanation": (
+                "Value of the mapped downstream pellet window if routed to prime silo after "
+                "Shift Quality Approver (QC) authorization and confirmed in-spec by delayed laboratory truth."
+            ),
+        },
+        {
+            "metric": "COUNTERFACTUAL OPPORTUNITY VALUE (Net Episode Uplift)",
+            "category": "COUNTERFACTUAL VALUE",
+            "formula": "recoverable_mass_tonnes × (prime_price − downgrade_price) − workflow_cost",
+            "inputs": f"{rec_mass:.1f} t × ₹{sc.downgrade_spread:,.0f}/t − ₹{sc.workflow_cost:,.0f}",
+            "value_currency": vs.counterfactual_opportunity_currency,
+            "evidence_class": "E0 / E2 (Illustrative Scenario — Not Realized HMEL Savings)",
+            "explanation": (
+                "Incremental commercial spread between prime and downgrade routing on a single reconciled "
+                "in-spec window. Explicitly separated from realized plant accounting."
+            ),
+        },
+        {
+            "metric": "FALSE-PRIME EXPOSURE (Prevented Contamination Consequence)",
+            "category": "COUNTERFACTUAL VALUE",
+            "formula": "false_prime_mass_tonnes × false_prime_consequence_per_t",
+            "inputs": f"0.0 t (PrimePath) vs 1,356.0 t (SOP) × ₹{sc.false_prime_consequence:,.0f}/t",
+            "value_currency": 0.0,
+            "evidence_class": "E2 / E3 (Frozen Locked Validation Replay)",
+            "explanation": (
+                "Customer claim / silo blending penalty incurred when off-spec polymer is falsely "
+                "released as prime. PrimePath achieves 0.0 t false-prime mass on locked test episodes."
+            ),
+        },
+        {
+            "metric": "ANNUAL SCENARIO SCALE-UP (Parameterized Plant Projection)",
+            "category": "ILLUSTRATIVE SCENARIO",
+            "formula": "episode_opportunity × eligible_transitions_per_year × availability × adoption",
+            "inputs": (
+                f"₹{ep_val:,.0f} × {eligible_transitions_per_year:.0f} tx/yr "
+                f"× {availability:.0%} avail × {adoption:.0%} adoption"
+            ),
+            "value_currency": annual.annual_value_currency,
+            "evidence_class": "E0 (Assumption-Based Scenario Projection — Not an HMEL Savings Claim)",
+            "explanation": (
+                "Parameterized sensitivity projection showing how single-episode counterfactual value "
+                "scales with transition frequency, analyzer availability, and QC adoption."
+            ),
+        },
+    ]
+
     return {
         "scenario": sc,
         "scenario_comparison": scenario_comparison,
         "active_ledger": econ_good.to_ledger(),
         "sanity_checks": sanity,
         "annual_scale_up": annual.to_dict(),
+        "economic_framing": {
+            "badges": [
+                "Illustrative scenario",
+                "Assumption-based economics (E0/E2)",
+                "Not an HMEL savings claim",
+            ],
+            "realized_vs_counterfactual_note": (
+                "PrimePath strictly separates REALIZED VALUE (actual downgrade routing), "
+                "COUNTERFACTUAL VALUE (simulated prime uplift after delayed laboratory truth reconciliation), "
+                "and ILLUSTRATIVE SCENARIO projections (parameterized annual scale-up). "
+                "No figure in this ledger represents measured or audited HMEL Bathinda plant savings."
+            ),
+        },
+        "how_constructed": how_constructed,
         "locked_level_b": rt.final_validation.get("level_b_decision", {}),
         "locked_level_c": rt.final_validation.get("level_c_economic", {}),
         "diagnostic_sensitivity": rt.final_validation.get("diagnostic_sensitivity", {}),
@@ -1224,6 +1508,10 @@ def build_memory_assurance_view(
     retrieved_ids = [a.event_id for a in analogs]
 
     return {
+        "assurance_statement": (
+            "Historical context is retrieved for auditability. "
+            "It is not silently used to retrain the locked evaluation."
+        ),
         "store_stats": rt.memory_store.statistics(),
         "query_record": rec.to_dict(),
         "scope": scope.to_dict(),
@@ -1247,6 +1535,7 @@ def build_memory_assurance_view(
         "fingerprints": rt.fingerprints,
         "versions": rt.versions,
         "limitations": rt.final_validation.get("limitations", []),
+        "locked_honest_explanation": LOCKED_HONEST_EXPLANATION,
     }
 
 
@@ -1299,6 +1588,7 @@ def build_executive_view(
                     "action": s["action"],
                     "interval": f"[{s['prediction']['lower_mfi']:.2f}, {s['prediction']['upper_mfi']:.2f}]",
                     "narrative": s["narrative"],
+                    "why_action_changed": s["why_action_changed"],
                 }
                 for s in demo["steps"]
             ],
@@ -1314,6 +1604,7 @@ def build_executive_view(
             "abstention_decomposition": lv.get("abstention_decomposition", {}),
             "zero_candidate_diagnostic": lv.get("zero_candidate_diagnostic", {}),
         },
+        "locked_honest_explanation": LOCKED_HONEST_EXPLANATION,
         "versions": rt.versions,
         "fingerprints": rt.fingerprints,
     }
@@ -1347,4 +1638,6 @@ def build_locked_validation_view(rt: RuntimeContext) -> Dict[str, Any]:
         "claim_ledger": lv.get("claim_ledger", []),
         "evidence_ladder": lv.get("evidence_ladder", {}),
         "limitations": lv.get("limitations", []),
+        "locked_honest_explanation": LOCKED_HONEST_EXPLANATION,
     }
+

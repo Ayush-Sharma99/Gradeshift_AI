@@ -47,8 +47,10 @@ COLOR = {
     "white": "#FFFFFF",
     "text": "#142033",
     "text2": "#5B687A",
+    "muted": "#5B687A",
     "border": "#DCE3EA",
     "card": "#FFFFFF",
+    "panel": "#FFFFFF",
     # Chart aliases
     "baseline": "#8C99A8",
     "ai_traj": "#1769E0",
