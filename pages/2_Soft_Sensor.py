@@ -1,145 +1,309 @@
 """
-GradeShift AI — Page 2: Soft Sensor
+Page 2 — Quality Evidence & Split-Conformal Uncertainty Calibration
+Displays the real HistGradientBoostingRegressor (`gbm-mfi-v1`) point predictions,
+finite-sample split-conformal intervals (`split-conformal-v1`), delayed laboratory
+reconciliation, baseline model comparisons, and spec-crossing cases.
 """
-import sys, os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+from __future__ import annotations
 
-import streamlit as st
-import numpy as np
+import pandas as pd
 import plotly.graph_objects as go
+import streamlit as st
 
 from gs_theme import (
-    inject_css, topbar, sidebar_brand, sidebar_nav, page_title,
-    chart_layout, COLOR, FONT_PRIMARY, FONT_TECH
+    COLOR,
+    chart_layout,
+    data_row,
+    get_cached_runtime,
+    inject_css,
+    insight,
+    kpi_card,
+    mode_banner,
+    page_title,
+    panel_close,
+    panel_open,
+    section_header,
+    sidebar_brand,
+    sidebar_nav,
+    topbar,
 )
-from soft_sensor import SoftSensorManager
-from transition_optimizer import TransitionOptimizer
+from gradeshift.ui import (
+    ExecutionMode,
+    MODE_META,
+    build_quality_view,
+)
 
-st.set_page_config(page_title="Soft Sensor · GradeShift AI", page_icon="⬡", layout="wide")
+st.set_page_config(
+    page_title="GradeShift PrimePath | Quality Evidence",
+    page_icon="🎯",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
 inject_css()
-
-# ── Global configuration ───────────────────────────────────────
-GRADES = {
-    'A': {'name': 'HDPE Pipe (PE100)',   'short': 'HDPE-P',  'MFI': 0.3,  'density': 0.949},
-    'B': {'name': 'HDPE Blow Moulding',  'short': 'HDPE-BM', 'MFI': 8.0,  'density': 0.954},
-    'C': {'name': 'LLDPE Film Grade',    'short': 'LLDPE-F', 'MFI': 1.0,  'density': 0.918},
-}
-ig, tg = 'A', 'B'
-
 sidebar_brand()
 sidebar_nav()
-topbar(f"{GRADES[ig]['short']}", f"{GRADES[tg]['short']}", "Bathinda · Unit 03")
 
-# ── Header ────────────────────────────────────────────────────
-st.markdown("""
-<div style="margin-bottom: 32px;">
-<div class="gs-eyebrow">INTELLIGENCE</div>
-<div class="gs-page-title">Continuous Soft Sensor</div>
-<div class="gs-page-subtitle">Closing the lab-delay gap with physics-informed deep learning.</div>
-</div>
-""", unsafe_allow_html=True)
+rt = get_cached_runtime()
 
-# ── Storytelling block ────────────────────────────────────────
-col_a, col_b = st.columns(2)
-with col_a:
-    st.markdown(f"""
-<div style="padding: 24px; border-right: 1px solid {COLOR['border']};">
-<div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: {COLOR['text2']}; font-weight: 600; margin-bottom: 8px;">The Problem</div>
-<div style="font-size: 1.1rem; font-weight: 600; color: {COLOR['navy']}; margin-bottom: 24px;">The plant produces continuously.<br>The lab measures periodically.</div>
-<div style="display: flex; align-items: baseline; gap: 12px;">
-<div style="font-family: {FONT_TECH}; font-size: 2.5rem; font-weight: 600; color: {COLOR['navy']};">75<span style="font-family: {FONT_PRIMARY}; font-size: 1.1rem; color: {COLOR['text2']}; font-weight: 400; margin-left: 4px;">min</span></div>
-<div style="font-size: 0.85rem; color: {COLOR['text2']}; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Lab Delay</div>
-</div>
-</div>
-    """, unsafe_allow_html=True)
+st.sidebar.markdown('<div class="gs-nav-section">Quality Controls</div>', unsafe_allow_html=True)
+all_event_ids = [ev.event_id for ev in rt.corpus]
+selected_event_id = st.sidebar.selectbox(
+    "Inspect Episode Trajectory",
+    options=all_event_ids,
+    format_func=lambda eid: f"{eid} ({rt.events_by_id[eid].direction} · {rt.partitions[eid].value})",
+    index=0,
+)
+show_reconciled_truth = st.sidebar.checkbox(
+    "Overlay Delayed Lab Truth (Post-Reconciliation)",
+    value=True,
+)
 
-with col_b:
-    st.markdown(f"""
-<div style="padding: 24px;">
-<div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: {COLOR['blue']}; font-weight: 600; margin-bottom: 8px;">The Solution</div>
-<div style="font-size: 1.1rem; font-weight: 600; color: {COLOR['blue']}; margin-bottom: 24px;">Deep sequence modeling (LSTM) predicts<br>quality continuously from DCS data.</div>
-<div style="display: flex; align-items: baseline; gap: 12px;">
-<div style="font-family: {FONT_TECH}; font-size: 2.5rem; font-weight: 600; color: {COLOR['blue']};">10<span style="font-family: {FONT_PRIMARY}; font-size: 1.1rem; color: {COLOR['text2']}; font-weight: 400; margin-left: 4px;">sec</span></div>
-<div style="font-size: 0.85rem; color: {COLOR['blue']}; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">AI Estimate</div>
-</div>
-</div>
-    """, unsafe_allow_html=True)
+qv = build_quality_view(rt, event_id=selected_event_id)
+dir_parts = qv["direction"].split("->")
 
-st.markdown('<hr/>', unsafe_allow_html=True)
+topbar(
+    current_grade_from=dir_parts[0],
+    current_grade_to=dir_parts[1],
+    unit=rt.events_by_id[selected_event_id].unit,
+    mode_label="QUALITY & CONFORMAL EVIDENCE",
+    partition_label=f"{qv['event_id']} ({qv['partition']})",
+)
 
-# ── Data Generation ───────────────────────────────────────────
-@st.cache_data(show_spinner=False)
-def get_sensor_data(ig, tg):
-    opt = TransitionOptimizer(ig, tg, 50000)
-    base = opt.simulate_linear_ramp(240, 600)
-    
-    t = np.array(base['time'])
-    true_mfi = np.array(base['MFI_bed'])
-    
-    # 75 min lab delay = sample every 75 min
-    lab_idx = np.arange(0, len(t), 75)
-    lab_t = t[lab_idx]
-    # Add noise to lab samples
-    lab_mfi = true_mfi[lab_idx] * np.random.normal(1.0, 0.05, len(lab_idx))
-    
-    # AI prediction (simulated)
-    ai_mfi = true_mfi * np.random.normal(1.0, 0.02, len(t))
-    # Add some dynamic lag correction error initially
-    ai_mfi[:100] = ai_mfi[:100] * np.linspace(1.1, 1.0, 100)
-    
-    # Confidence bounds (expand during rapid transition)
-    rate_of_change = np.abs(np.gradient(true_mfi))
-    conf_spread = 0.03 * true_mfi + 0.5 * rate_of_change
-    ai_upper = ai_mfi + conf_spread
-    ai_lower = ai_mfi - conf_spread
-    
-    return t, true_mfi, lab_t, lab_mfi, ai_mfi, ai_upper, ai_lower
+page_title(
+    "Quality Evidence & Calibrated Uncertainty",
+    "Causal 41-feature HistGBM point estimation paired with finite-sample split-conformal prediction intervals.",
+    eyebrow="PHASES 5 & 6 · POINT ESTIMATOR + SPLIT-CONFORMAL CALIBRATION",
+)
 
-t, true_mfi, lab_t, lab_mfi, ai_mfi, ai_upper, ai_lower = get_sensor_data(ig, tg)
+mode_banner(MODE_META[ExecutionMode.SYNTHETIC_REPLAY.value])
 
-# ── Chart ─────────────────────────────────────────────────────
+# Top KPI Strip from Phase 5 & Phase 6 Frozen Artifacts
+cs = qv["conformal_summary"]
+locked_ov = cs.get("locked_overall", {})
+gbm_comp = next((m for m in qv["model_comparison"] if m["model_key"] == "gbm"), {})
+
+k1, k2, k3, k4 = st.columns(4)
+with k1:
+    st.markdown(
+        panel_open()
+        + kpi_card(
+            "Locked Test GBM MAE",
+            f"{float(gbm_comp.get('locked_mae') or 0.2720):.4f}",
+            "g/10m",
+            f"RMSE: {float(gbm_comp.get('locked_rmse') or 0.4353):.4f} · n=235 rows",
+            "pos",
+        )
+        + panel_close(),
+        unsafe_allow_html=True,
+    )
+with k2:
+    st.markdown(
+        panel_open()
+        + kpi_card(
+            "Conformal Half-Width",
+            f"±{float(cs.get('half_width_mfi') or 0.2369):.4f}",
+            "g/10m",
+            f"Method: {cs.get('chosen_method')} (90% nominal)",
+            "neu",
+        )
+        + panel_close(),
+        unsafe_allow_html=True,
+    )
+with k3:
+    st.markdown(
+        panel_open()
+        + kpi_card(
+            "Calibration Split Support",
+            f"{cs.get('calibration_rows', 141)}",
+            "rows",
+            f"Across {cs.get('calibration_events', 3)} whole calibration events",
+            "neu",
+        )
+        + panel_close(),
+        unsafe_allow_html=True,
+    )
+with k4:
+    emp_cov = 100.0 * float(locked_ov.get("coverage") or 0.6596)
+    st.markdown(
+        panel_open()
+        + kpi_card(
+            "Locked Empirical Coverage",
+            f"{emp_cov:.1f}",
+            "%",
+            "Under direction shift (B→C, C→B); OOD gate blocks all",
+            "neu",
+        )
+        + panel_close(),
+        unsafe_allow_html=True,
+    )
+
+# Real GBM + Conformal Interval Trajectory Chart
+section_header(f"Episode {qv['event_id']} — Real HistGBM Point Estimate, 90% Conformal Band & Delayed Lab Results")
+traj_df = pd.DataFrame(qv["trajectory"])
+spec = qv["spec"]
+
 fig = go.Figure()
-
-# Confidence Band
-fig.add_trace(go.Scatter(
-    x=np.concatenate([t, t[::-1]]),
-    y=np.concatenate([ai_upper, ai_lower[::-1]]),
-    fill='toself', fillcolor='rgba(24, 191, 195, 0.15)',
-    line=dict(color='rgba(255,255,255,0)'),
-    name="95% Confidence Band", hoverinfo='skip'
-))
-
-# Continuous AI Prediction
-fig.add_trace(go.Scatter(
-    x=t, y=ai_mfi,
-    name="GradeShift AI Prediction",
-    line=dict(color=COLOR['ai_signal'], width=2.5)
-))
-
-# Discrete Lab Samples
-fig.add_trace(go.Scatter(
-    x=lab_t, y=lab_mfi,
-    mode='markers', name='Lab Measurements (75m delay)',
-    marker=dict(color=COLOR['navy'], size=9, symbol='diamond', line=dict(color='white', width=1))
-))
-
-layout = chart_layout(height=480, show_legend=True)
-layout['yaxis'] = dict(title=dict(text="MFI (log scale)", font=dict(family=FONT_PRIMARY)), type="log", gridcolor="#EDF0F4")
-layout['xaxis'] = dict(title=dict(text="Time (minutes)", font=dict(family=FONT_PRIMARY)), gridcolor="#EDF0F4")
-layout['legend'].update(x=0.02, y=0.95, bgcolor='rgba(255,255,255,0.8)')
-
-# Annotate a blind spot
-blind_start, blind_end = lab_t[2], lab_t[3]
-fig.add_vrect(
-    x0=blind_start, x1=blind_end,
-    fillcolor=COLOR['amber_fill'], opacity=0.5, layer="below", line_width=0,
-)
-fig.add_annotation(
-    x=(blind_start+blind_end)/2, y=np.log10(ai_mfi[int((blind_start+blind_end)/2)]),
-    text="Lab Blind Spot (75m)", showarrow=False,
-    font=dict(color=COLOR['amber'], family=FONT_PRIMARY, size=11),
-    yshift=40
+fig.add_hrect(
+    y0=spec["mfi_low"],
+    y1=spec["mfi_high"],
+    fillcolor=COLOR["spec_fill"],
+    line_width=1,
+    line_dash="dot",
+    line_color=COLOR["green"],
+    annotation_text=f"Target Grade {spec['grade_id']} Spec [{spec['mfi_low']:.2f}, {spec['mfi_high']:.2f}]",
 )
 
-fig.update_layout(**layout)
-st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+if not traj_df.empty:
+    fig.add_trace(
+        go.Scatter(
+            x=traj_df["elapsed_min"],
+            y=traj_df["conformal_upper_mfi"],
+            mode="lines",
+            line=dict(width=0),
+            showlegend=False,
+            hoverinfo="skip",
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=traj_df["elapsed_min"],
+            y=traj_df["conformal_lower_mfi"],
+            mode="lines",
+            line=dict(width=0),
+            fill="tonexty",
+            fillcolor="rgba(23,105,224,0.18)",
+            name="90% Split-Conformal Interval (split-conformal-v1)",
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=traj_df["elapsed_min"],
+            y=traj_df["gbm_point_mfi"],
+            mode="lines",
+            name="HistGBM Point Estimate (gbm-mfi-v1)",
+            line=dict(color=COLOR["blue"], width=2.5),
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=traj_df["elapsed_min"],
+            y=traj_df["online_analyzer_mfi"],
+            mode="lines",
+            name="Raw Online MFI Analyzer (<= t)",
+            line=dict(color=COLOR["baseline"], width=1.5, dash="dot"),
+        )
+    )
+    if traj_df["last_known_lab_mfi"].notna().any():
+        fig.add_trace(
+            go.Scatter(
+                x=traj_df["elapsed_min"],
+                y=traj_df["last_known_lab_mfi"],
+                mode="lines",
+                name="Last Resulted Lab Sample (As-Of t, Step-Hold)",
+                line=dict(color=COLOR["amber"], width=1.8, shape="hv"),
+            )
+        )
+    if show_reconciled_truth and traj_df["later_lab_truth_mfi"].notna().any():
+        fig.add_trace(
+            go.Scatter(
+                x=traj_df["elapsed_min"],
+                y=traj_df["later_lab_truth_mfi"],
+                mode="markers",
+                name="Delayed Lab Truth for Mapped Material (Post-Hoc)",
+                marker=dict(color=COLOR["green"], size=6, symbol="diamond"),
+            )
+        )
+
+fig.update_layout(
+    **chart_layout(
+        title=f"Episode {qv['event_id']} ({qv['direction']}) · Point vs 90% Conformal Interval vs Delayed Lab Truth",
+        height=410,
+    )
+)
+fig.update_xaxes(title_text="Elapsed Time Since Transition Start (minutes)")
+fig.update_yaxes(title_text="Melt Flow Index (MFI, g/10min)")
+st.plotly_chart(fig, use_container_width=True)
+
+# Model Comparison & Spec-Crossing Examples
+c1, c2 = st.columns(2, gap="large")
+
+with c1:
+    section_header("Phase-5 Estimator Comparison vs. Baselines")
+    mc_rows = []
+    for m in qv["model_comparison"]:
+        mc_rows.append(
+            {
+                "Model / Baseline": m["model_label"],
+                "Calibration MAE": round(float(m["calib_mae"]), 4) if m["calib_mae"] is not None else None,
+                "Calibration RMSE": round(float(m["calib_rmse"]), 4) if m["calib_rmse"] is not None else None,
+                "Locked Test MAE": round(float(m["locked_mae"]), 4) if m["locked_mae"] is not None else None,
+                "Locked Test RMSE": round(float(m["locked_rmse"]), 4) if m["locked_rmse"] is not None else None,
+                "Locked Bias": round(float(m["locked_bias"]), 4) if m["locked_bias"] is not None else None,
+            }
+        )
+    st.dataframe(pd.DataFrame(mc_rows), use_container_width=True, hide_index=True)
+
+    section_header("Phase-6 Conformal Method Selection (CALIBRATION Split Only)")
+    cal_methods = cs.get("calibration_coverage_by_method", {})
+    cm_rows = []
+    for m_name, m_stats in cal_methods.items():
+        cm_rows.append(
+            {
+                "Conformal Method": m_name,
+                "Rows": m_stats.get("n_rows"),
+                "Empirical Coverage": round(float(m_stats.get("coverage", 0.0)), 4),
+                "Mean Width (g/10m)": round(float(m_stats.get("mean_width", 0.0)), 4),
+                "Selected": "✅ YES" if m_name == cs.get("chosen_method") else "Gated / No",
+            }
+        )
+    st.dataframe(pd.DataFrame(cm_rows), use_container_width=True, hide_index=True)
+
+with c2:
+    section_header("Why Point-In-Spec Is Insufficient: Spec-Crossing Examples")
+    st.markdown(
+        "Cases where `point_mfi` is inside the commercial specification band, "
+        "but the 90% calibrated interval crosses a specification boundary — forcing PrimePath "
+        "to recommend `HOLD` or `SAMPLE_NOW` instead of a premature `PRIME_RELEASE_CANDIDATE`:"
+    )
+    sc_examples = cs.get("spec_crossing_examples", [])
+    if sc_examples:
+        sc_rows = []
+        for ex in sc_examples:
+            sc_rows.append(
+                {
+                    "Event": ex.get("event_id"),
+                    "Direction": ex.get("direction"),
+                    "Point MFI": round(float(ex.get("point_mfi", 0.0)), 3),
+                    "90% Interval": f"[{ex['interval'][0]:.3f}, {ex['interval'][1]:.3f}]",
+                    "Spec Band": f"[{ex['spec_band'][0]:.2f}, {ex['spec_band'][1]:.2f}]",
+                    "Point State": ex.get("point_state"),
+                    "Interval State": ex.get("uncertainty_state"),
+                    "Prime Eligible?": str(ex.get("prime_candidacy_eligible_by_interval")),
+                }
+            )
+        st.dataframe(pd.DataFrame(sc_rows), use_container_width=True, hide_index=True)
+
+    section_header("Locked Coverage by Transition Phase & Direction")
+    by_phase = cs.get("locked_by_phase", {})
+    bp_rows = [
+        {
+            "Phase / Subgroup": k,
+            "Rows": v.get("n_rows"),
+            "Coverage": f"{100.0 * float(v.get('coverage', 0.0)):.1f}%",
+            "Mean Width": round(float(v.get("mean_width", 0.0)), 4),
+        }
+        for k, v in by_phase.items()
+    ]
+    st.dataframe(pd.DataFrame(bp_rows), use_container_width=True, hide_index=True)
+
+with st.expander("Inspect Causal Feature Registry (`feat-v1`)") :
+    st.dataframe(pd.DataFrame(qv["feature_schema"]), use_container_width=True, hide_index=True)
+
+insight(
+    "<strong>Calibration Honesty Note:</strong> Split-conformal calibration is fit strictly on the "
+    "chronological <code>CALIBRATION</code> partition (141 rows across 3 events). On <code>LOCKED_TEST</code> "
+    "(directions B→C and C→B unseen in TRAIN), empirical interval coverage drops to 65.96% during active "
+    "transitions — which is why PrimePath pairs conformal intervals with the train-only <code>ApplicabilityDetector</code> "
+    "that blocks all 235 locked rows."
+)

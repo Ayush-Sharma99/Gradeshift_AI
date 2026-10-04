@@ -1,0 +1,341 @@
+{
+  "phase": 7,
+  "health_rules_version": "health-rules-v1",
+  "applicability_version": "applicability-v1",
+  "assurance_version": "assurance-v1",
+  "feature_version": "feat-v1",
+  "random_seed": 42,
+  "n_events": 18,
+  "partitions": {
+    "TRAIN": [
+      "EP-AB-00",
+      "EP-AB-01",
+      "EP-AB-02",
+      "EP-AC-00",
+      "EP-AC-01",
+      "EP-AC-02",
+      "EP-BA-00",
+      "EP-BA-01",
+      "EP-BA-02",
+      "EP-CA-00"
+    ],
+    "CALIBRATION": [
+      "EP-BC-00",
+      "EP-CA-01",
+      "EP-CA-02"
+    ],
+    "LOCKED_TEST": [
+      "EP-BC-01",
+      "EP-BC-02",
+      "EP-CB-00",
+      "EP-CB-01",
+      "EP-CB-02"
+    ]
+  },
+  "train_only_isolation": {
+    "n_train_events": 10,
+    "train_event_ids": [
+      "EP-AB-00",
+      "EP-AB-01",
+      "EP-AB-02",
+      "EP-AC-00",
+      "EP-AC-01",
+      "EP-AC-02",
+      "EP-BA-00",
+      "EP-BA-01",
+      "EP-BA-02",
+      "EP-CA-00"
+    ],
+    "calibration_or_locked_in_detector": [],
+    "train_only_fit_verified": true
+  },
+  "detector_manifest": {
+    "applicability_version": "applicability-v1",
+    "detector_version": "iforest-knn-v1",
+    "feature_version": "feat-v1",
+    "known_units": [
+      "SIM-UNIT-1"
+    ],
+    "known_directions": [
+      "A->B",
+      "A->C",
+      "B->A",
+      "C->A"
+    ],
+    "ood_features": [
+      "MFI_online_last",
+      "MFI_online_mean_30",
+      "H2_ratio_last",
+      "bed_temp_last",
+      "time_since_start_min"
+    ],
+    "support": {
+      "MFI_online_last": [
+        0.291306129372169,
+        8.267094155391085,
+        2.2471600170331043,
+        2.7408143967017033
+      ],
+      "MFI_online_mean_30": [
+        0.29818216895235683,
+        8.048023045232604,
+        2.2465832445257927,
+        2.7395272773013892
+      ],
+      "H2_ratio_last": [
+        0.05,
+        0.35,
+        0.1720652735771784,
+        0.12500963124521033
+      ],
+      "bed_temp_last": [
+        83.74003952002985,
+        86.40000617388444,
+        84.99864754865668,
+        0.5103750255591809
+      ],
+      "time_since_start_min": [
+        30.0,
+        950.0,
+        490.0,
+        271.29319932501073
+      ]
+    },
+    "margin_frac": 0.25,
+    "nn_threshold": 6.0,
+    "train_event_ids": [
+      "EP-AB-00",
+      "EP-AB-01",
+      "EP-AB-02",
+      "EP-AC-00",
+      "EP-AC-01",
+      "EP-AC-02",
+      "EP-BA-00",
+      "EP-BA-01",
+      "EP-BA-02",
+      "EP-CA-00"
+    ],
+    "n_train_rows": 470,
+    "iforest_fitted": true,
+    "provenance": "SIMULATED"
+  },
+  "fault_fixture_results": [
+    {
+      "fixture": "A_missing",
+      "signal": "MFI_online",
+      "overall_state": "UNAVAILABLE",
+      "reason_codes": [
+        "MISSING_SIGNAL"
+      ],
+      "detected": true
+    },
+    {
+      "fixture": "B_frozen",
+      "signal": "MFI_online",
+      "overall_state": "ABNORMAL",
+      "reason_codes": [
+        "FROZEN_VALUE"
+      ],
+      "detected": true
+    },
+    {
+      "fixture": "C_biased",
+      "signal": "MFI_online",
+      "overall_state": "ABNORMAL",
+      "reason_codes": [
+        "RANGE_HIGH",
+        "RATE_SPIKE"
+      ],
+      "detected": true
+    },
+    {
+      "fixture": "D_spike",
+      "signal": "MFI_online",
+      "overall_state": "ABNORMAL",
+      "reason_codes": [
+        "RATE_SPIKE"
+      ],
+      "detected": true
+    },
+    {
+      "fixture": "E_gap",
+      "signal": "MFI_online",
+      "overall_state": "DEGRADED",
+      "reason_codes": [
+        "TIME_GAP"
+      ],
+      "detected": true
+    },
+    {
+      "fixture": "F_disorder",
+      "signal": "MFI_online",
+      "overall_state": "ABNORMAL",
+      "reason_codes": [
+        "TIMESTAMP_DISORDER"
+      ],
+      "detected": true
+    },
+    {
+      "fixture": "G_stale",
+      "signal": "MFI_online",
+      "overall_state": "ABNORMAL",
+      "reason_codes": [
+        "STALE"
+      ],
+      "detected": true
+    },
+    {
+      "fixture": "H_multi",
+      "signal": "multiple",
+      "overall_state": "ABNORMAL",
+      "reason_codes": [
+        "FROZEN_VALUE",
+        "RANGE_HIGH",
+        "RATE_SPIKE"
+      ],
+      "detected": true
+    }
+  ],
+  "ood_fixture_results": [
+    {
+      "fixture": "A_in_domain",
+      "state": "NORMAL",
+      "reason_codes": [
+        "IN_DOMAIN"
+      ],
+      "score": 0.0,
+      "note": "normal in-domain -> NORMAL"
+    },
+    {
+      "fixture": "B_unseen_pair",
+      "state": "UNSUPPORTED",
+      "reason_codes": [
+        "UNKNOWN_GRADE_PAIR"
+      ],
+      "score": NaN,
+      "note": "unknown grade pair -> UNSUPPORTED"
+    },
+    {
+      "fixture": "C_unknown_unit",
+      "state": "UNSUPPORTED",
+      "reason_codes": [
+        "UNKNOWN_UNIT"
+      ],
+      "score": NaN,
+      "note": "unknown unit -> UNSUPPORTED"
+    },
+    {
+      "fixture": "D_feature_shift",
+      "state": "OUT_OF_DOMAIN",
+      "reason_codes": [
+        "FEATURE_OUT_OF_SUPPORT"
+      ],
+      "score": 9.378961381268464,
+      "note": "beyond support -> OOD"
+    },
+    {
+      "fixture": "E_mild_unusual",
+      "state": "NORMAL",
+      "reason_codes": [
+        "IN_DOMAIN"
+      ],
+      "score": 0.0,
+      "note": "mildly unusual but supported -> NOT automatically OOD"
+    },
+    {
+      "fixture": "F_missing_feature",
+      "state": "UNAVAILABLE",
+      "reason_codes": [
+        "REQUIRED_FEATURE_UNAVAILABLE"
+      ],
+      "score": NaN,
+      "note": "missing required feature -> UNAVAILABLE (health, not OOD)"
+    },
+    {
+      "fixture": "G_artifact_unavailable",
+      "state": "UNAVAILABLE",
+      "reason_codes": [
+        "DETECTOR_UNAVAILABLE"
+      ],
+      "score": NaN,
+      "note": "detector artifact unavailable -> UNAVAILABLE (ABSTAIN-safe)"
+    }
+  ],
+  "baseline_assurance": {
+    "assurance_state": "ELIGIBLE_FOR_FURTHER_DECISION",
+    "prediction_available": true,
+    "sensor_health_state": "NORMAL",
+    "applicability_state": "NORMAL",
+    "forced_action": null,
+    "fallback_action": "FOLLOW_SOP",
+    "reason_codes": [
+      "IN_DOMAIN"
+    ],
+    "gate_results": [
+      {
+        "gate_id": "prediction_availability",
+        "passed": true,
+        "forces_action": null,
+        "reason_codes": [],
+        "severity": 0,
+        "detail": "point estimate and required features present"
+      },
+      {
+        "gate_id": "sensor_health",
+        "passed": true,
+        "forces_action": null,
+        "reason_codes": [],
+        "severity": 0,
+        "detail": "sensor health NORMAL"
+      },
+      {
+        "gate_id": "applicability",
+        "passed": true,
+        "forces_action": null,
+        "reason_codes": [
+          "IN_DOMAIN"
+        ],
+        "severity": 0,
+        "detail": "applicability NORMAL"
+      }
+    ],
+    "note": "all evidence layers sound; eligible for Phase 8 decision",
+    "assurance_version": "assurance-v1"
+  },
+  "frozen_sensor_scenario": {
+    "before": {
+      "sensor_health": "NORMAL",
+      "assurance": "ELIGIBLE_FOR_FURTHER_DECISION"
+    },
+    "after": {
+      "sensor_health": "ABNORMAL",
+      "assurance": "BLOCKED_BY_SENSOR_HEALTH",
+      "forced_action": "ABSTAIN",
+      "fallback": "FOLLOW_SOP",
+      "reason_codes": [
+        "FROZEN_VALUE",
+        "IN_DOMAIN"
+      ]
+    },
+    "message": "NORMAL -> frozen critical sensor detected -> assurance blocked -> PrimePath must later ABSTAIN / FOLLOW SOP (not a safety claim)."
+  },
+  "ood_scenario": {
+    "before": {
+      "applicability": "NORMAL",
+      "assurance": "ELIGIBLE_FOR_FURTHER_DECISION"
+    },
+    "after": {
+      "applicability": "OUT_OF_DOMAIN",
+      "assurance": "BLOCKED_BY_APPLICABILITY",
+      "forced_action": "ABSTAIN",
+      "support_exceedance": 9.378961381268464,
+      "reason_codes": [
+        "FEATURE_OUT_OF_SUPPORT"
+      ]
+    },
+    "message": "NORMAL -> operating point beyond trained support -> OOD detected -> assurance blocked -> later decision engine must ABSTAIN."
+  },
+  "decision_example_event": "EP-CA-02",
+  "decision_example_time": "2026-01-16T13:20:00+00:00",
+  "note": "Assurance is NOT a disposition action; Phase 8 owns HOLD / SAMPLE NOW / PRIME-RELEASE CANDIDATE / ABSTAIN."
+}

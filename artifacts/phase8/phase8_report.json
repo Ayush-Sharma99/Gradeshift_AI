@@ -1,0 +1,342 @@
+{
+  "phase": 8,
+  "material_service_version": "material-service-v1",
+  "residence_model_version": "residence-map-v1",
+  "reused_mapper": "material_identity.map_material (Phase 4) \u2014 NOT reimplemented",
+  "feature_version": "feat-v1",
+  "random_seed": 42,
+  "n_events": 18,
+  "partitions": {
+    "TRAIN": [
+      "EP-AB-00",
+      "EP-AB-01",
+      "EP-AB-02",
+      "EP-AC-00",
+      "EP-AC-01",
+      "EP-AC-02",
+      "EP-BA-00",
+      "EP-BA-01",
+      "EP-BA-02",
+      "EP-CA-00"
+    ],
+    "CALIBRATION": [
+      "EP-BC-00",
+      "EP-CA-01",
+      "EP-CA-02"
+    ],
+    "LOCKED_TEST": [
+      "EP-BC-01",
+      "EP-BC-02",
+      "EP-CB-00",
+      "EP-CB-01",
+      "EP-CB-02"
+    ]
+  },
+  "decision_context": {
+    "map_params_version": "residence-map-v1",
+    "kernel": "CSTR",
+    "tau_min": 150.0,
+    "coverage": 0.9,
+    "window_min": 60.0,
+    "min_support_fraction": 0.5,
+    "route_dominance_threshold": 0.85,
+    "mass_tol_frac": 0.05,
+    "target_grade": "B",
+    "spec_band": [
+      7.6,
+      8.4
+    ],
+    "service_version": "material-service-v1"
+  },
+  "boundary_case_results": [
+    {
+      "case": "A_single_route",
+      "mapping_quality": "WELL_SUPPORTED",
+      "route_known": true,
+      "primary_destination": "DOWNGRADE",
+      "route_shares": {
+        "DOWNGRADE": 1.0
+      },
+      "route_ambiguity": 0.0,
+      "support_fraction": 1.0,
+      "mass_reconciled": true,
+      "unexplained_mass_t": 0.0,
+      "reason_codes": [
+        "MATERIAL_WELL_SUPPORTED"
+      ],
+      "blocking": [],
+      "note": "band within one route -> WELL_SUPPORTED, route known"
+    },
+    {
+      "case": "B_boundary_split",
+      "mapping_quality": "AMBIGUOUS",
+      "route_known": false,
+      "primary_destination": null,
+      "route_shares": {
+        "DOWNGRADE": 0.5,
+        "PRIME": 0.5
+      },
+      "route_ambiguity": 0.5,
+      "support_fraction": 1.0,
+      "mass_reconciled": true,
+      "unexplained_mass_t": 0.0,
+      "reason_codes": [
+        "ROUTE_AMBIGUOUS"
+      ],
+      "blocking": [],
+      "note": "band straddles a routing boundary -> mass split across both"
+    },
+    {
+      "case": "C_destination_change",
+      "mapping_quality": "AMBIGUOUS",
+      "route_known": false,
+      "primary_destination": null,
+      "route_shares": {
+        "DOWNGRADE": 0.5,
+        "PRIME": 0.5
+      },
+      "route_ambiguity": 0.5,
+      "support_fraction": 1.0,
+      "mass_reconciled": true,
+      "unexplained_mass_t": 0.0,
+      "reason_codes": [
+        "ROUTE_AMBIGUOUS"
+      ],
+      "blocking": [],
+      "note": "near-equal split -> AMBIGUOUS, no silent destination choice"
+    },
+    {
+      "case": "D_partial_mapping",
+      "mapping_quality": "PARTIALLY_SUPPORTED",
+      "route_known": true,
+      "primary_destination": "DOWNGRADE",
+      "route_shares": {
+        "DOWNGRADE": 1.0
+      },
+      "route_ambiguity": 0.0,
+      "support_fraction": 0.5,
+      "mass_reconciled": false,
+      "unexplained_mass_t": 6.0,
+      "reason_codes": [
+        "MASS_UNRECONCILED",
+        "PARTIAL_MATERIAL_WINDOW"
+      ],
+      "blocking": [],
+      "note": "routing gap inside band -> partial support / unexplained mass"
+    },
+    {
+      "case": "E_residence_ambiguity",
+      "mapping_quality": "AMBIGUOUS",
+      "route_known": false,
+      "primary_destination": null,
+      "route_shares": {
+        "DOWNGRADE": 1.0
+      },
+      "route_ambiguity": 0.0,
+      "support_fraction": 1.0,
+      "mass_reconciled": true,
+      "unexplained_mass_t": 0.0,
+      "reason_codes": [
+        "ROUTE_AMBIGUOUS"
+      ],
+      "blocking": [],
+      "note": "upstream switch within residence spread -> AMBIGUOUS"
+    },
+    {
+      "case": "F_rate_change_same_dest",
+      "mapping_quality": "WELL_SUPPORTED",
+      "route_known": true,
+      "primary_destination": "DOWNGRADE",
+      "route_shares": {
+        "DOWNGRADE": 1.0
+      },
+      "route_ambiguity": 0.0,
+      "support_fraction": 1.0,
+      "mass_reconciled": true,
+      "unexplained_mass_t": 0.0,
+      "reason_codes": [
+        "MATERIAL_WELL_SUPPORTED"
+      ],
+      "blocking": [],
+      "note": "rate change, same destination -> route still known"
+    },
+    {
+      "case": "G_before_support",
+      "mapping_quality": "UNAVAILABLE",
+      "route_known": false,
+      "primary_destination": null,
+      "route_shares": {
+        "DOWNGRADE": 1.0
+      },
+      "route_ambiguity": 0.0,
+      "support_fraction": 0.166667,
+      "mass_reconciled": true,
+      "unexplained_mass_t": 0.0,
+      "reason_codes": [
+        "INSUFFICIENT_MATERIAL_SUPPORT",
+        "PARTIAL_MATERIAL_WINDOW"
+      ],
+      "blocking": [
+        "INSUFFICIENT_MATERIAL_SUPPORT"
+      ],
+      "note": "decided before enough material -> INSUFFICIENT -> UNAVAILABLE"
+    }
+  ],
+  "mass_reconciliation_demo": {
+    "expected_mass_tonnes": 12.0,
+    "mapped_mass_tonnes": 12.0,
+    "unexplained_mass_tonnes": 0.0,
+    "tolerance_frac": 0.05,
+    "reconciled": true
+  },
+  "causality_evidence": {
+    "future_routing_invariant": true,
+    "future_routing_mass_invariant": true,
+    "note": "Appending routing/throughput AFTER t cannot alter the as-of material map; full-episode reconciliation stays a separate NON-CAUSAL post-hoc audit (reconcile_episode)."
+  },
+  "material_resolution": {
+    "event_id": "EP-CB-00",
+    "decision_time": "2026-01-22T04:10:00+00:00",
+    "material_window": {
+      "event_id": "EP-CB-00",
+      "decision_time": "2026-01-22T04:10:00+00:00",
+      "mean_age_min": 162.0,
+      "age_spread_min": 150.0,
+      "mapped_mass_tonnes": 12.0,
+      "material_time_start": "2026-01-22T03:10:00+00:00",
+      "material_time_end": "2026-01-22T04:10:00+00:00",
+      "production_time_start": "2026-01-21T19:28:38.409538+00:00",
+      "production_time_end": "2026-01-22T03:50:18.360351+00:00",
+      "destinations": [
+        [
+          "DOWNGRADE",
+          12.0
+        ]
+      ],
+      "kernel": "CSTR",
+      "tau_min": 150.0,
+      "transport_delay_min": 12.0,
+      "extra_delay_min": 0.0,
+      "coverage": 0.9,
+      "version": "residence-map-v1",
+      "mapping_provenance": "ASSUMPTION"
+    },
+    "mapping_quality": "WELL_SUPPORTED",
+    "route_known": true,
+    "primary_destination": "DOWNGRADE",
+    "route_shares": {
+      "DOWNGRADE": 1.0
+    },
+    "route_ambiguity": 0.0,
+    "boundary_within_residence_spread": false,
+    "residence_uncertainty_min": 150.0,
+    "support_fraction": 1.0,
+    "mass_reconciliation": {
+      "expected_mass_tonnes": 12.0,
+      "mapped_mass_tonnes": 12.0,
+      "unexplained_mass_tonnes": 0.0,
+      "tolerance_frac": 0.05,
+      "reconciled": true
+    },
+    "reason_codes": [
+      "MATERIAL_WELL_SUPPORTED"
+    ],
+    "blocking_reason_codes": [],
+    "rule_provenance": {
+      "MATERIAL_WELL_SUPPORTED": ""
+    },
+    "detail": {
+      "covered_minutes": 60.0,
+      "band_minutes": 60.0,
+      "reference_rate_tph": 12.0,
+      "dominant_share": 1.0,
+      "boundary_within_residence_spread": false,
+      "visible_routing_intervals": 1,
+      "version_ok": true,
+      "residence_model_version": "residence-map-v1"
+    },
+    "provenance": "ASSUMPTION",
+    "service_version": "material-service-v1"
+  },
+  "material_eligibility": {
+    "material_window_available": true,
+    "mapping_quality": "WELL_SUPPORTED",
+    "route_known": true,
+    "mass_reconciled": true,
+    "residence_uncertainty_min": 150.0,
+    "route_ambiguity": 0.0,
+    "blocking_reason_codes": [],
+    "reason_codes": [
+      "MATERIAL_WELL_SUPPORTED"
+    ],
+    "provenance": "ASSUMPTION",
+    "service_version": "material-service-v1"
+  },
+  "canonical_demo_artifact": {
+    "decision_time": "2026-01-22T04:10:00+00:00",
+    "process_evidence_at_t_online_mfi": 7.2051248632781535,
+    "predicted_material_quality_mfi": 7.1141,
+    "prediction_interval": [
+      6.8772,
+      7.351
+    ],
+    "material_production_window": [
+      "2026-01-21T19:28:38.409538+00:00",
+      "2026-01-22T03:50:18.360351+00:00"
+    ],
+    "downstream_destination": "DOWNGRADE",
+    "route_shares": {
+      "DOWNGRADE": 1.0
+    },
+    "mapped_mass_tonnes": 12.0,
+    "mapping_support": "WELL_SUPPORTED",
+    "residence_uncertainty_min": 150.0,
+    "route_ambiguity": 0.0,
+    "lineage": {
+      "process_evidence_at_t": {
+        "decision_time": "2026-01-22T04:10:00+00:00",
+        "point_mfi": 7.114090867258056
+      },
+      "predicted_material_quality": {
+        "event_id": "EP-CB-00",
+        "decision_time": "2026-01-22T04:10:00+00:00",
+        "point_mfi": 7.114090867258056,
+        "lower_mfi": 6.8772235703283116,
+        "upper_mfi": 7.3509581641878,
+        "nominal_coverage": 0.9,
+        "prob_bad": 0.0,
+        "model_version": "gbm-mfi-v1",
+        "calibration_version": "split-conformal-v1:marginal_symmetric",
+        "provenance": "SIMULATED"
+      },
+      "prediction_interval": [
+        6.8772235703283116,
+        7.3509581641878
+      ],
+      "material_production_window": {
+        "production_time_start": "2026-01-21T19:28:38.409538+00:00",
+        "production_time_end": "2026-01-22T03:50:18.360351+00:00",
+        "mean_age_min": 162.0,
+        "age_spread_min": 150.0
+      },
+      "downstream_route": {
+        "primary_destination": "DOWNGRADE",
+        "route_shares": {
+          "DOWNGRADE": 1.0
+        },
+        "route_known": true
+      },
+      "applicable_commercial_spec": {
+        "target_grade": "B",
+        "spec_band": [
+          7.6,
+          8.4
+        ]
+      },
+      "mapping_support": "WELL_SUPPORTED",
+      "note": "Prediction describes the material in the mapped PRODUCTION window, not the reactor state at the decision timestamp; the two differ by transport delay + residence time. SIMULATION/ASSUMPTION \u2014 not HMEL-validated."
+    },
+    "message": "PrimePath refers to the MATERIAL in the production window (offset from t by transport delay + residence time), with its route, mass and mapping support \u2014 not the reactor state at the current timestamp."
+  },
+  "note": "Material identity is an EVIDENCE input, NOT a disposition action; HOLD / SAMPLE NOW / PRIME-RELEASE CANDIDATE / ABSTAIN is decided later. SIMULATION/ASSUMPTION \u2014 not HMEL-validated."
+}

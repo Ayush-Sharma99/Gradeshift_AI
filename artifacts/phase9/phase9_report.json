@@ -1,0 +1,2357 @@
+{
+  "phase": 9,
+  "disposition_version": "disposition-v1",
+  "policy": {
+    "base_policy_version": "policy-v1",
+    "nominal_coverage": 0.9,
+    "decision_horizon_min": 240.0,
+    "sample_result_latency_min": 45.0,
+    "recommendation_expiry_min": 30.0,
+    "required_approver": "Shift Quality Approver (QC)",
+    "ambiguous_route_action": "ABSTAIN",
+    "require_well_supported_for_prime": true,
+    "max_residence_uncertainty_min": 180.0,
+    "expected_model_version": null,
+    "expected_calibration_version": null,
+    "disposition_version": "disposition-v1",
+    "provenance": "ASSUMPTION \u2014 POLICY values, not HMEL operating limits"
+  },
+  "action_vocabulary": [
+    "HOLD",
+    "SAMPLE_NOW",
+    "PRIME_RELEASE_CANDIDATE",
+    "ABSTAIN"
+  ],
+  "hard_gate_order": [
+    "valid_transition",
+    "timestamp_alignment",
+    "prediction_available",
+    "calibrated_interval",
+    "material_window_available",
+    "material_support_sufficient",
+    "route_known",
+    "sensor_health",
+    "applicability",
+    "specification_available",
+    "mapping_uncertainty",
+    "model_version",
+    "approval_path_configured"
+  ],
+  "real_end_to_end_decision": {
+    "event_id": "EP-CB-00",
+    "decision_time": "2026-01-22T04:10:00+00:00",
+    "action": "ABSTAIN",
+    "fallback_action": "ABSTAIN",
+    "reason_codes": [
+      "ABSTAIN_OOD"
+    ],
+    "gates": [
+      {
+        "gate_id": "valid_transition",
+        "passed": true,
+        "severity": 3,
+        "severity_name": "BLOCK",
+        "reason_code": "ABSTAIN_INVALID_TRANSITION",
+        "detail": "",
+        "provenance": "SIMULATED",
+        "version": "disposition-v1"
+      },
+      {
+        "gate_id": "timestamp_alignment",
+        "passed": true,
+        "severity": 3,
+        "severity_name": "BLOCK",
+        "reason_code": "ABSTAIN_TIMESTAMP_ALIGNMENT",
+        "detail": "",
+        "provenance": "SIMULATED",
+        "version": "disposition-v1"
+      },
+      {
+        "gate_id": "prediction_available",
+        "passed": true,
+        "severity": 3,
+        "severity_name": "BLOCK",
+        "reason_code": "ABSTAIN_NO_PREDICTION",
+        "detail": "",
+        "provenance": "SIMULATED",
+        "version": "disposition-v1"
+      },
+      {
+        "gate_id": "calibrated_interval",
+        "passed": true,
+        "severity": 3,
+        "severity_name": "BLOCK",
+        "reason_code": "ABSTAIN_NO_CALIBRATION",
+        "detail": "",
+        "provenance": "SIMULATED",
+        "version": "disposition-v1"
+      },
+      {
+        "gate_id": "material_window_available",
+        "passed": true,
+        "severity": 3,
+        "severity_name": "BLOCK",
+        "reason_code": "ABSTAIN_MATERIAL_MAPPING",
+        "detail": "",
+        "provenance": "SIMULATED",
+        "version": "disposition-v1"
+      },
+      {
+        "gate_id": "material_support_sufficient",
+        "passed": true,
+        "severity": 3,
+        "severity_name": "BLOCK",
+        "reason_code": "ABSTAIN_MATERIAL_MAPPING",
+        "detail": "",
+        "provenance": "SIMULATED",
+        "version": "disposition-v1"
+      },
+      {
+        "gate_id": "route_known",
+        "passed": true,
+        "severity": 1,
+        "severity_name": "CANDIDACY",
+        "reason_code": "PRIME_MATERIAL_SUPPORTED",
+        "detail": "",
+        "provenance": "SIMULATED",
+        "version": "disposition-v1"
+      },
+      {
+        "gate_id": "sensor_health",
+        "passed": true,
+        "severity": 3,
+        "severity_name": "BLOCK",
+        "reason_code": "ABSTAIN_SENSOR_HEALTH",
+        "detail": "health=NORMAL",
+        "provenance": "SIMULATED",
+        "version": "disposition-v1"
+      },
+      {
+        "gate_id": "applicability",
+        "passed": false,
+        "severity": 3,
+        "severity_name": "BLOCK",
+        "reason_code": "ABSTAIN_OOD",
+        "detail": "applicability=UNSUPPORTED",
+        "provenance": "SIMULATED",
+        "version": "disposition-v1"
+      },
+      {
+        "gate_id": "specification_available",
+        "passed": true,
+        "severity": 3,
+        "severity_name": "BLOCK",
+        "reason_code": "ABSTAIN_NO_SPECIFICATION",
+        "detail": "",
+        "provenance": "SIMULATED",
+        "version": "disposition-v1"
+      },
+      {
+        "gate_id": "mapping_uncertainty",
+        "passed": true,
+        "severity": 3,
+        "severity_name": "BLOCK",
+        "reason_code": "ABSTAIN_MAPPING_UNCERTAINTY",
+        "detail": "residence_uncertainty_min=150.0",
+        "provenance": "SIMULATED",
+        "version": "disposition-v1"
+      },
+      {
+        "gate_id": "model_version",
+        "passed": true,
+        "severity": 3,
+        "severity_name": "BLOCK",
+        "reason_code": "ABSTAIN_MODEL_VERSION",
+        "detail": "",
+        "provenance": "SIMULATED",
+        "version": "disposition-v1"
+      },
+      {
+        "gate_id": "approval_path_configured",
+        "passed": true,
+        "severity": 3,
+        "severity_name": "BLOCK",
+        "reason_code": "ABSTAIN_NO_APPROVAL_PATH",
+        "detail": "",
+        "provenance": "SIMULATED",
+        "version": "disposition-v1"
+      },
+      {
+        "gate_id": "interval_within_spec",
+        "passed": false,
+        "severity": 1,
+        "severity_name": "CANDIDACY",
+        "reason_code": "HOLD_INTERVAL_CROSSES_SPEC",
+        "detail": "calibrated interval crosses a spec limit",
+        "provenance": "SIMULATED",
+        "version": "disposition-v1"
+      },
+      {
+        "gate_id": "dwell_satisfied",
+        "passed": false,
+        "severity": 1,
+        "severity_name": "CANDIDACY",
+        "reason_code": "HOLD_DWELL_INCOMPLETE",
+        "detail": "target-grade dwell not yet satisfied",
+        "provenance": "SIMULATED",
+        "version": "disposition-v1"
+      },
+      {
+        "gate_id": "health_normal_for_prime",
+        "passed": true,
+        "severity": 1,
+        "severity_name": "CANDIDACY",
+        "reason_code": "PRIME_HEALTH_PASS",
+        "detail": "health=NORMAL",
+        "provenance": "SIMULATED",
+        "version": "disposition-v1"
+      },
+      {
+        "gate_id": "applicability_for_prime",
+        "passed": false,
+        "severity": 1,
+        "severity_name": "CANDIDACY",
+        "reason_code": "ABSTAIN_OOD",
+        "detail": "applicability=UNSUPPORTED",
+        "provenance": "SIMULATED",
+        "version": "disposition-v1"
+      },
+      {
+        "gate_id": "material_well_supported",
+        "passed": true,
+        "severity": 1,
+        "severity_name": "CANDIDACY",
+        "reason_code": "PRIME_MATERIAL_SUPPORTED",
+        "detail": "",
+        "provenance": "SIMULATED",
+        "version": "disposition-v1"
+      }
+    ],
+    "expected_loss_table": {
+      "rows": [
+        {
+          "action": "PRIME_RELEASE_CANDIDATE",
+          "expected_loss": 0.0,
+          "cost_model_version": "illustrative-cost-v0",
+          "scenario": "BASE",
+          "inputs_used": {
+            "scenario": "BASE",
+            "provisional_prob_bad_ILLUSTRATIVE": 0.0,
+            "prime_price": 95000,
+            "downgrade_price": 75000,
+            "false_prime_consequence": 60000,
+            "sample_cost": 20000,
+            "workflow_cost": 8000
+          },
+          "provenance": "SIMULATED"
+        },
+        {
+          "action": "HOLD",
+          "expected_loss": 20000.0,
+          "cost_model_version": "illustrative-cost-v0",
+          "scenario": "BASE",
+          "inputs_used": {
+            "scenario": "BASE",
+            "provisional_prob_bad_ILLUSTRATIVE": 0.0,
+            "prime_price": 95000,
+            "downgrade_price": 75000,
+            "false_prime_consequence": 60000,
+            "sample_cost": 20000,
+            "workflow_cost": 8000
+          },
+          "provenance": "SIMULATED"
+        },
+        {
+          "action": "SAMPLE_NOW",
+          "expected_loss": 28000,
+          "cost_model_version": "illustrative-cost-v0",
+          "scenario": "BASE",
+          "inputs_used": {
+            "scenario": "BASE",
+            "provisional_prob_bad_ILLUSTRATIVE": 0.0,
+            "prime_price": 95000,
+            "downgrade_price": 75000,
+            "false_prime_consequence": 60000,
+            "sample_cost": 20000,
+            "workflow_cost": 8000
+          },
+          "provenance": "SIMULATED"
+        },
+        {
+          "action": "ABSTAIN",
+          "expected_loss": 8000,
+          "cost_model_version": "illustrative-cost-v0",
+          "scenario": "BASE",
+          "inputs_used": {
+            "scenario": "BASE",
+            "provisional_prob_bad_ILLUSTRATIVE": 0.0,
+            "prime_price": 95000,
+            "downgrade_price": 75000,
+            "false_prime_consequence": 60000,
+            "sample_cost": 20000,
+            "workflow_cost": 8000
+          },
+          "provenance": "SIMULATED"
+        }
+      ],
+      "cost_model_version": "illustrative-cost-v0",
+      "provenance": "SIMULATED",
+      "note": "SIMULATED/ILLUSTRATIVE \u2014 not a validated economic result and NOT used to select the Phase-9 action."
+    },
+    "sample_eligibility": {
+      "sample_available": false,
+      "sample_cost_available": true,
+      "expected_result_latency_min": 45.0,
+      "decision_horizon_min": 240.0,
+      "current_decision_uncertainty": 0.5921682423243596,
+      "eligible": false,
+      "reason_codes": [
+        "SAMPLE_UNAVAILABLE"
+      ],
+      "provenance": "SIMULATED"
+    },
+    "prediction_summary": {
+      "point_mfi": 7.114090867258056,
+      "nominal_coverage": 0.9,
+      "model_version": "gbm-mfi-v1",
+      "calibration_version": "split-conformal-v1:marginal_symmetric",
+      "prob_bad_PROVISIONAL": 0.0,
+      "prob_bad_note": "ILLUSTRATIVE/PROVISIONAL \u2014 not used for prime candidacy"
+    },
+    "interval": [
+      6.8772235703283116,
+      7.3509581641878
+    ],
+    "spec_band": [
+      7.6,
+      8.4
+    ],
+    "dwell_status": {
+      "required_min": 30.0,
+      "elapsed_min": 0.0,
+      "satisfied": false,
+      "in_spec_now": false,
+      "as_of": "2026-01-22T04:10:00+00:00",
+      "provenance": "SIMULATED"
+    },
+    "material_mapping_quality": "WELL_SUPPORTED",
+    "material_route_known": true,
+    "health_state": "NORMAL",
+    "applicability_state": "UNSUPPORTED",
+    "assurance_state": null,
+    "approver_role": "Shift Quality Approver (QC)",
+    "expiry": "2026-01-22T04:40:00+00:00",
+    "expired": false,
+    "versions": {
+      "disposition": "disposition-v1",
+      "policy": "policy-v1",
+      "cost_model": "illustrative-cost-v0",
+      "model": "gbm-mfi-v1",
+      "calibration": "split-conformal-v1:marginal_symmetric",
+      "material_service": "material-service-v1"
+    },
+    "note": "ABSTAIN / FOLLOW SOP \u2014 a hard gate blocked disposition; the engine never 'best-guesses' through a block.",
+    "provenance": "SIMULATED",
+    "disposition_version": "disposition-v1"
+  },
+  "real_decision_snapshot": {
+    "event_id": "EP-CB-00",
+    "decision_time": "2026-01-22T04:10:00+00:00",
+    "action": "ABSTAIN",
+    "expected_loss": {
+      "PRIME_RELEASE_CANDIDATE": 0.0,
+      "HOLD": 20000.0,
+      "SAMPLE_NOW": 28000,
+      "ABSTAIN": 8000
+    },
+    "reason_codes": [
+      "ABSTAIN_OOD"
+    ],
+    "voi": 0.0,
+    "expiry": "2026-01-22T04:40:00+00:00",
+    "approver_role": "Shift Quality Approver (QC)",
+    "fallback_action": "ABSTAIN",
+    "versions": {
+      "disposition": "disposition-v1",
+      "policy": "policy-v1",
+      "cost_model": "illustrative-cost-v0",
+      "model": "gbm-mfi-v1",
+      "calibration": "split-conformal-v1:marginal_symmetric",
+      "material_service": "material-service-v1"
+    },
+    "authorized_by": null,
+    "authorized_at": null,
+    "provenance": "SIMULATED"
+  },
+  "canonical_scenarios": [
+    {
+      "scenario": "1_evidence_insufficient_interval_crosses",
+      "rationale_fixture": "Calibrated interval crosses the lower spec limit; no sample path -> HOLD.",
+      "action": "HOLD",
+      "reason_codes": [
+        "HOLD_INTERVAL_CROSSES_SPEC"
+      ],
+      "note": "HOLD / FOLLOW CURRENT ROUTING \u2014 not yet a prime candidate.",
+      "decision": {
+        "event_id": "EP-CB-00",
+        "decision_time": "2026-01-22T04:10:00+00:00",
+        "action": "HOLD",
+        "fallback_action": "ABSTAIN",
+        "reason_codes": [
+          "HOLD_INTERVAL_CROSSES_SPEC"
+        ],
+        "gates": [
+          {
+            "gate_id": "valid_transition",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_INVALID_TRANSITION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "timestamp_alignment",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_TIMESTAMP_ALIGNMENT",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "prediction_available",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_NO_PREDICTION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "calibrated_interval",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_NO_CALIBRATION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "material_window_available",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_MATERIAL_MAPPING",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "material_support_sufficient",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_MATERIAL_MAPPING",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "route_known",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_MATERIAL_SUPPORTED",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "sensor_health",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_SENSOR_HEALTH",
+            "detail": "health=NORMAL",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "applicability",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_OOD",
+            "detail": "applicability=NORMAL",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "specification_available",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_NO_SPECIFICATION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "mapping_uncertainty",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_MAPPING_UNCERTAINTY",
+            "detail": "residence_uncertainty_min=10.0",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "model_version",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_MODEL_VERSION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "approval_path_configured",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_NO_APPROVAL_PATH",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "interval_within_spec",
+            "passed": false,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "HOLD_INTERVAL_CROSSES_SPEC",
+            "detail": "calibrated interval crosses a spec limit",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "dwell_satisfied",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_DWELL_PASS",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "health_normal_for_prime",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_HEALTH_PASS",
+            "detail": "health=NORMAL",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "applicability_for_prime",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_APPLICABILITY_PASS",
+            "detail": "applicability=NORMAL",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "material_well_supported",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_MATERIAL_SUPPORTED",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          }
+        ],
+        "expected_loss_table": {
+          "rows": [
+            {
+              "action": "PRIME_RELEASE_CANDIDATE",
+              "expected_loss": 12000.0,
+              "cost_model_version": "illustrative-cost-v0",
+              "scenario": "BASE",
+              "inputs_used": {
+                "scenario": "BASE",
+                "provisional_prob_bad_ILLUSTRATIVE": 0.2,
+                "prime_price": 95000,
+                "downgrade_price": 75000,
+                "false_prime_consequence": 60000,
+                "sample_cost": 20000,
+                "workflow_cost": 8000
+              },
+              "provenance": "SIMULATED"
+            },
+            {
+              "action": "HOLD",
+              "expected_loss": 16000.0,
+              "cost_model_version": "illustrative-cost-v0",
+              "scenario": "BASE",
+              "inputs_used": {
+                "scenario": "BASE",
+                "provisional_prob_bad_ILLUSTRATIVE": 0.2,
+                "prime_price": 95000,
+                "downgrade_price": 75000,
+                "false_prime_consequence": 60000,
+                "sample_cost": 20000,
+                "workflow_cost": 8000
+              },
+              "provenance": "SIMULATED"
+            },
+            {
+              "action": "SAMPLE_NOW",
+              "expected_loss": 28000,
+              "cost_model_version": "illustrative-cost-v0",
+              "scenario": "BASE",
+              "inputs_used": {
+                "scenario": "BASE",
+                "provisional_prob_bad_ILLUSTRATIVE": 0.2,
+                "prime_price": 95000,
+                "downgrade_price": 75000,
+                "false_prime_consequence": 60000,
+                "sample_cost": 20000,
+                "workflow_cost": 8000
+              },
+              "provenance": "SIMULATED"
+            },
+            {
+              "action": "ABSTAIN",
+              "expected_loss": 8000,
+              "cost_model_version": "illustrative-cost-v0",
+              "scenario": "BASE",
+              "inputs_used": {
+                "scenario": "BASE",
+                "provisional_prob_bad_ILLUSTRATIVE": 0.2,
+                "prime_price": 95000,
+                "downgrade_price": 75000,
+                "false_prime_consequence": 60000,
+                "sample_cost": 20000,
+                "workflow_cost": 8000
+              },
+              "provenance": "SIMULATED"
+            }
+          ],
+          "cost_model_version": "illustrative-cost-v0",
+          "provenance": "SIMULATED",
+          "note": "SIMULATED/ILLUSTRATIVE \u2014 not a validated economic result and NOT used to select the Phase-9 action."
+        },
+        "sample_eligibility": {
+          "sample_available": false,
+          "sample_cost_available": true,
+          "expected_result_latency_min": 45.0,
+          "decision_horizon_min": 240.0,
+          "current_decision_uncertainty": 1.1249999999999996,
+          "eligible": false,
+          "reason_codes": [
+            "SAMPLE_UNAVAILABLE"
+          ],
+          "provenance": "SIMULATED"
+        },
+        "prediction_summary": {
+          "point_mfi": 7.8500000000000005,
+          "nominal_coverage": 0.9,
+          "model_version": "m1",
+          "calibration_version": "c1",
+          "prob_bad_PROVISIONAL": 0.2,
+          "prob_bad_note": "ILLUSTRATIVE/PROVISIONAL \u2014 not used for prime candidacy"
+        },
+        "interval": [
+          7.4,
+          8.3
+        ],
+        "spec_band": [
+          7.6,
+          8.4
+        ],
+        "dwell_status": {
+          "required_min": 30.0,
+          "elapsed_min": 60.0,
+          "satisfied": true,
+          "in_spec_now": true,
+          "as_of": "2026-01-22T04:10:00+00:00",
+          "provenance": "SIMULATED"
+        },
+        "material_mapping_quality": "WELL_SUPPORTED",
+        "material_route_known": true,
+        "health_state": "NORMAL",
+        "applicability_state": "NORMAL",
+        "assurance_state": null,
+        "approver_role": "Shift Quality Approver (QC)",
+        "expiry": "2026-01-22T04:40:00+00:00",
+        "expired": false,
+        "versions": {
+          "disposition": "disposition-v1",
+          "policy": "policy-v1",
+          "cost_model": "illustrative-cost-v0",
+          "model": "m1",
+          "calibration": "c1",
+          "material_service": "material-service-v1"
+        },
+        "note": "HOLD / FOLLOW CURRENT ROUTING \u2014 not yet a prime candidate.",
+        "provenance": "SIMULATED",
+        "disposition_version": "disposition-v1"
+      }
+    },
+    {
+      "scenario": "2_sensor_health_failure",
+      "rationale_fixture": "A frozen/abnormal online sensor is a HARD gate -> ABSTAIN / FOLLOW SOP.",
+      "action": "ABSTAIN",
+      "reason_codes": [
+        "ABSTAIN_SENSOR_HEALTH"
+      ],
+      "note": "ABSTAIN / FOLLOW SOP \u2014 a hard gate blocked disposition; the engine never 'best-guesses' through a block.",
+      "decision": {
+        "event_id": "EP-CB-00",
+        "decision_time": "2026-01-22T04:10:00+00:00",
+        "action": "ABSTAIN",
+        "fallback_action": "ABSTAIN",
+        "reason_codes": [
+          "ABSTAIN_SENSOR_HEALTH"
+        ],
+        "gates": [
+          {
+            "gate_id": "valid_transition",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_INVALID_TRANSITION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "timestamp_alignment",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_TIMESTAMP_ALIGNMENT",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "prediction_available",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_NO_PREDICTION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "calibrated_interval",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_NO_CALIBRATION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "material_window_available",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_MATERIAL_MAPPING",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "material_support_sufficient",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_MATERIAL_MAPPING",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "route_known",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_MATERIAL_SUPPORTED",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "sensor_health",
+            "passed": false,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_SENSOR_HEALTH",
+            "detail": "health=ABNORMAL",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "applicability",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_OOD",
+            "detail": "applicability=NORMAL",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "specification_available",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_NO_SPECIFICATION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "mapping_uncertainty",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_MAPPING_UNCERTAINTY",
+            "detail": "residence_uncertainty_min=10.0",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "model_version",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_MODEL_VERSION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "approval_path_configured",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_NO_APPROVAL_PATH",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "interval_within_spec",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_INTERVAL_PASS",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "dwell_satisfied",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_DWELL_PASS",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "health_normal_for_prime",
+            "passed": false,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "HOLD_HEALTH_DEGRADED",
+            "detail": "health=ABNORMAL",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "applicability_for_prime",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_APPLICABILITY_PASS",
+            "detail": "applicability=NORMAL",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "material_well_supported",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_MATERIAL_SUPPORTED",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          }
+        ],
+        "expected_loss_table": {
+          "rows": [
+            {
+              "action": "PRIME_RELEASE_CANDIDATE",
+              "expected_loss": 12000.0,
+              "cost_model_version": "illustrative-cost-v0",
+              "scenario": "BASE",
+              "inputs_used": {
+                "scenario": "BASE",
+                "provisional_prob_bad_ILLUSTRATIVE": 0.2,
+                "prime_price": 95000,
+                "downgrade_price": 75000,
+                "false_prime_consequence": 60000,
+                "sample_cost": 20000,
+                "workflow_cost": 8000
+              },
+              "provenance": "SIMULATED"
+            },
+            {
+              "action": "HOLD",
+              "expected_loss": 16000.0,
+              "cost_model_version": "illustrative-cost-v0",
+              "scenario": "BASE",
+              "inputs_used": {
+                "scenario": "BASE",
+                "provisional_prob_bad_ILLUSTRATIVE": 0.2,
+                "prime_price": 95000,
+                "downgrade_price": 75000,
+                "false_prime_consequence": 60000,
+                "sample_cost": 20000,
+                "workflow_cost": 8000
+              },
+              "provenance": "SIMULATED"
+            },
+            {
+              "action": "SAMPLE_NOW",
+              "expected_loss": 28000,
+              "cost_model_version": "illustrative-cost-v0",
+              "scenario": "BASE",
+              "inputs_used": {
+                "scenario": "BASE",
+                "provisional_prob_bad_ILLUSTRATIVE": 0.2,
+                "prime_price": 95000,
+                "downgrade_price": 75000,
+                "false_prime_consequence": 60000,
+                "sample_cost": 20000,
+                "workflow_cost": 8000
+              },
+              "provenance": "SIMULATED"
+            },
+            {
+              "action": "ABSTAIN",
+              "expected_loss": 8000,
+              "cost_model_version": "illustrative-cost-v0",
+              "scenario": "BASE",
+              "inputs_used": {
+                "scenario": "BASE",
+                "provisional_prob_bad_ILLUSTRATIVE": 0.2,
+                "prime_price": 95000,
+                "downgrade_price": 75000,
+                "false_prime_consequence": 60000,
+                "sample_cost": 20000,
+                "workflow_cost": 8000
+              },
+              "provenance": "SIMULATED"
+            }
+          ],
+          "cost_model_version": "illustrative-cost-v0",
+          "provenance": "SIMULATED",
+          "note": "SIMULATED/ILLUSTRATIVE \u2014 not a validated economic result and NOT used to select the Phase-9 action."
+        },
+        "sample_eligibility": {
+          "sample_available": false,
+          "sample_cost_available": true,
+          "expected_result_latency_min": 45.0,
+          "decision_horizon_min": 240.0,
+          "current_decision_uncertainty": 0.75,
+          "eligible": false,
+          "reason_codes": [
+            "SAMPLE_UNAVAILABLE"
+          ],
+          "provenance": "SIMULATED"
+        },
+        "prediction_summary": {
+          "point_mfi": 8.0,
+          "nominal_coverage": 0.9,
+          "model_version": "m1",
+          "calibration_version": "c1",
+          "prob_bad_PROVISIONAL": 0.2,
+          "prob_bad_note": "ILLUSTRATIVE/PROVISIONAL \u2014 not used for prime candidacy"
+        },
+        "interval": [
+          7.7,
+          8.3
+        ],
+        "spec_band": [
+          7.6,
+          8.4
+        ],
+        "dwell_status": {
+          "required_min": 30.0,
+          "elapsed_min": 60.0,
+          "satisfied": true,
+          "in_spec_now": true,
+          "as_of": "2026-01-22T04:10:00+00:00",
+          "provenance": "SIMULATED"
+        },
+        "material_mapping_quality": "WELL_SUPPORTED",
+        "material_route_known": true,
+        "health_state": "ABNORMAL",
+        "applicability_state": "NORMAL",
+        "assurance_state": null,
+        "approver_role": "Shift Quality Approver (QC)",
+        "expiry": "2026-01-22T04:40:00+00:00",
+        "expired": false,
+        "versions": {
+          "disposition": "disposition-v1",
+          "policy": "policy-v1",
+          "cost_model": "illustrative-cost-v0",
+          "model": "m1",
+          "calibration": "c1",
+          "material_service": "material-service-v1"
+        },
+        "note": "ABSTAIN / FOLLOW SOP \u2014 a hard gate blocked disposition; the engine never 'best-guesses' through a block.",
+        "provenance": "SIMULATED",
+        "disposition_version": "disposition-v1"
+      }
+    },
+    {
+      "scenario": "3_out_of_domain",
+      "rationale_fixture": "Operating point outside the learned domain (OOD) -> ABSTAIN.",
+      "action": "ABSTAIN",
+      "reason_codes": [
+        "ABSTAIN_OOD"
+      ],
+      "note": "ABSTAIN / FOLLOW SOP \u2014 a hard gate blocked disposition; the engine never 'best-guesses' through a block.",
+      "decision": {
+        "event_id": "EP-CB-00",
+        "decision_time": "2026-01-22T04:10:00+00:00",
+        "action": "ABSTAIN",
+        "fallback_action": "ABSTAIN",
+        "reason_codes": [
+          "ABSTAIN_OOD"
+        ],
+        "gates": [
+          {
+            "gate_id": "valid_transition",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_INVALID_TRANSITION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "timestamp_alignment",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_TIMESTAMP_ALIGNMENT",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "prediction_available",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_NO_PREDICTION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "calibrated_interval",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_NO_CALIBRATION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "material_window_available",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_MATERIAL_MAPPING",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "material_support_sufficient",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_MATERIAL_MAPPING",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "route_known",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_MATERIAL_SUPPORTED",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "sensor_health",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_SENSOR_HEALTH",
+            "detail": "health=NORMAL",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "applicability",
+            "passed": false,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_OOD",
+            "detail": "applicability=OOD",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "specification_available",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_NO_SPECIFICATION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "mapping_uncertainty",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_MAPPING_UNCERTAINTY",
+            "detail": "residence_uncertainty_min=10.0",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "model_version",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_MODEL_VERSION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "approval_path_configured",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_NO_APPROVAL_PATH",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "interval_within_spec",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_INTERVAL_PASS",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "dwell_satisfied",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_DWELL_PASS",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "health_normal_for_prime",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_HEALTH_PASS",
+            "detail": "health=NORMAL",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "applicability_for_prime",
+            "passed": false,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "ABSTAIN_OOD",
+            "detail": "applicability=OOD",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "material_well_supported",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_MATERIAL_SUPPORTED",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          }
+        ],
+        "expected_loss_table": {
+          "rows": [
+            {
+              "action": "PRIME_RELEASE_CANDIDATE",
+              "expected_loss": 12000.0,
+              "cost_model_version": "illustrative-cost-v0",
+              "scenario": "BASE",
+              "inputs_used": {
+                "scenario": "BASE",
+                "provisional_prob_bad_ILLUSTRATIVE": 0.2,
+                "prime_price": 95000,
+                "downgrade_price": 75000,
+                "false_prime_consequence": 60000,
+                "sample_cost": 20000,
+                "workflow_cost": 8000
+              },
+              "provenance": "SIMULATED"
+            },
+            {
+              "action": "HOLD",
+              "expected_loss": 16000.0,
+              "cost_model_version": "illustrative-cost-v0",
+              "scenario": "BASE",
+              "inputs_used": {
+                "scenario": "BASE",
+                "provisional_prob_bad_ILLUSTRATIVE": 0.2,
+                "prime_price": 95000,
+                "downgrade_price": 75000,
+                "false_prime_consequence": 60000,
+                "sample_cost": 20000,
+                "workflow_cost": 8000
+              },
+              "provenance": "SIMULATED"
+            },
+            {
+              "action": "SAMPLE_NOW",
+              "expected_loss": 28000,
+              "cost_model_version": "illustrative-cost-v0",
+              "scenario": "BASE",
+              "inputs_used": {
+                "scenario": "BASE",
+                "provisional_prob_bad_ILLUSTRATIVE": 0.2,
+                "prime_price": 95000,
+                "downgrade_price": 75000,
+                "false_prime_consequence": 60000,
+                "sample_cost": 20000,
+                "workflow_cost": 8000
+              },
+              "provenance": "SIMULATED"
+            },
+            {
+              "action": "ABSTAIN",
+              "expected_loss": 8000,
+              "cost_model_version": "illustrative-cost-v0",
+              "scenario": "BASE",
+              "inputs_used": {
+                "scenario": "BASE",
+                "provisional_prob_bad_ILLUSTRATIVE": 0.2,
+                "prime_price": 95000,
+                "downgrade_price": 75000,
+                "false_prime_consequence": 60000,
+                "sample_cost": 20000,
+                "workflow_cost": 8000
+              },
+              "provenance": "SIMULATED"
+            }
+          ],
+          "cost_model_version": "illustrative-cost-v0",
+          "provenance": "SIMULATED",
+          "note": "SIMULATED/ILLUSTRATIVE \u2014 not a validated economic result and NOT used to select the Phase-9 action."
+        },
+        "sample_eligibility": {
+          "sample_available": false,
+          "sample_cost_available": true,
+          "expected_result_latency_min": 45.0,
+          "decision_horizon_min": 240.0,
+          "current_decision_uncertainty": 0.75,
+          "eligible": false,
+          "reason_codes": [
+            "SAMPLE_UNAVAILABLE"
+          ],
+          "provenance": "SIMULATED"
+        },
+        "prediction_summary": {
+          "point_mfi": 8.0,
+          "nominal_coverage": 0.9,
+          "model_version": "m1",
+          "calibration_version": "c1",
+          "prob_bad_PROVISIONAL": 0.2,
+          "prob_bad_note": "ILLUSTRATIVE/PROVISIONAL \u2014 not used for prime candidacy"
+        },
+        "interval": [
+          7.7,
+          8.3
+        ],
+        "spec_band": [
+          7.6,
+          8.4
+        ],
+        "dwell_status": {
+          "required_min": 30.0,
+          "elapsed_min": 60.0,
+          "satisfied": true,
+          "in_spec_now": true,
+          "as_of": "2026-01-22T04:10:00+00:00",
+          "provenance": "SIMULATED"
+        },
+        "material_mapping_quality": "WELL_SUPPORTED",
+        "material_route_known": true,
+        "health_state": "NORMAL",
+        "applicability_state": "OOD",
+        "assurance_state": null,
+        "approver_role": "Shift Quality Approver (QC)",
+        "expiry": "2026-01-22T04:40:00+00:00",
+        "expired": false,
+        "versions": {
+          "disposition": "disposition-v1",
+          "policy": "policy-v1",
+          "cost_model": "illustrative-cost-v0",
+          "model": "m1",
+          "calibration": "c1",
+          "material_service": "material-service-v1"
+        },
+        "note": "ABSTAIN / FOLLOW SOP \u2014 a hard gate blocked disposition; the engine never 'best-guesses' through a block.",
+        "provenance": "SIMULATED",
+        "disposition_version": "disposition-v1"
+      }
+    },
+    {
+      "scenario": "4_material_route_ambiguous",
+      "rationale_fixture": "Ambiguous downstream route; default policy never silently picks -> ABSTAIN (configurable to HOLD by explicit documented policy).",
+      "action": "ABSTAIN",
+      "reason_codes": [
+        "ABSTAIN_ROUTE_AMBIGUOUS"
+      ],
+      "note": "ABSTAIN / FOLLOW SOP \u2014 a hard gate blocked disposition; the engine never 'best-guesses' through a block.",
+      "decision": {
+        "event_id": "EP-CB-00",
+        "decision_time": "2026-01-22T04:10:00+00:00",
+        "action": "ABSTAIN",
+        "fallback_action": "ABSTAIN",
+        "reason_codes": [
+          "ABSTAIN_ROUTE_AMBIGUOUS"
+        ],
+        "gates": [
+          {
+            "gate_id": "valid_transition",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_INVALID_TRANSITION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "timestamp_alignment",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_TIMESTAMP_ALIGNMENT",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "prediction_available",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_NO_PREDICTION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "calibrated_interval",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_NO_CALIBRATION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "material_window_available",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_MATERIAL_MAPPING",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "material_support_sufficient",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_MATERIAL_MAPPING",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "route_known",
+            "passed": false,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_ROUTE_AMBIGUOUS",
+            "detail": "ambiguous route; policy=ABSTAIN (never silently pick)",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "sensor_health",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_SENSOR_HEALTH",
+            "detail": "health=NORMAL",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "applicability",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_OOD",
+            "detail": "applicability=NORMAL",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "specification_available",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_NO_SPECIFICATION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "mapping_uncertainty",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_MAPPING_UNCERTAINTY",
+            "detail": "residence_uncertainty_min=10.0",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "model_version",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_MODEL_VERSION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "approval_path_configured",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_NO_APPROVAL_PATH",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "interval_within_spec",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_INTERVAL_PASS",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "dwell_satisfied",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_DWELL_PASS",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "health_normal_for_prime",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_HEALTH_PASS",
+            "detail": "health=NORMAL",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "applicability_for_prime",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_APPLICABILITY_PASS",
+            "detail": "applicability=NORMAL",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "material_well_supported",
+            "passed": false,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "HOLD_MATERIAL_SUPPORT_INCOMPLETE",
+            "detail": "mapping_quality=AMBIGUOUS",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          }
+        ],
+        "expected_loss_table": {
+          "rows": [
+            {
+              "action": "PRIME_RELEASE_CANDIDATE",
+              "expected_loss": 12000.0,
+              "cost_model_version": "illustrative-cost-v0",
+              "scenario": "BASE",
+              "inputs_used": {
+                "scenario": "BASE",
+                "provisional_prob_bad_ILLUSTRATIVE": 0.2,
+                "prime_price": 95000,
+                "downgrade_price": 75000,
+                "false_prime_consequence": 60000,
+                "sample_cost": 20000,
+                "workflow_cost": 8000
+              },
+              "provenance": "SIMULATED"
+            },
+            {
+              "action": "HOLD",
+              "expected_loss": 16000.0,
+              "cost_model_version": "illustrative-cost-v0",
+              "scenario": "BASE",
+              "inputs_used": {
+                "scenario": "BASE",
+                "provisional_prob_bad_ILLUSTRATIVE": 0.2,
+                "prime_price": 95000,
+                "downgrade_price": 75000,
+                "false_prime_consequence": 60000,
+                "sample_cost": 20000,
+                "workflow_cost": 8000
+              },
+              "provenance": "SIMULATED"
+            },
+            {
+              "action": "SAMPLE_NOW",
+              "expected_loss": 28000,
+              "cost_model_version": "illustrative-cost-v0",
+              "scenario": "BASE",
+              "inputs_used": {
+                "scenario": "BASE",
+                "provisional_prob_bad_ILLUSTRATIVE": 0.2,
+                "prime_price": 95000,
+                "downgrade_price": 75000,
+                "false_prime_consequence": 60000,
+                "sample_cost": 20000,
+                "workflow_cost": 8000
+              },
+              "provenance": "SIMULATED"
+            },
+            {
+              "action": "ABSTAIN",
+              "expected_loss": 8000,
+              "cost_model_version": "illustrative-cost-v0",
+              "scenario": "BASE",
+              "inputs_used": {
+                "scenario": "BASE",
+                "provisional_prob_bad_ILLUSTRATIVE": 0.2,
+                "prime_price": 95000,
+                "downgrade_price": 75000,
+                "false_prime_consequence": 60000,
+                "sample_cost": 20000,
+                "workflow_cost": 8000
+              },
+              "provenance": "SIMULATED"
+            }
+          ],
+          "cost_model_version": "illustrative-cost-v0",
+          "provenance": "SIMULATED",
+          "note": "SIMULATED/ILLUSTRATIVE \u2014 not a validated economic result and NOT used to select the Phase-9 action."
+        },
+        "sample_eligibility": {
+          "sample_available": false,
+          "sample_cost_available": true,
+          "expected_result_latency_min": 45.0,
+          "decision_horizon_min": 240.0,
+          "current_decision_uncertainty": 0.75,
+          "eligible": false,
+          "reason_codes": [
+            "SAMPLE_UNAVAILABLE"
+          ],
+          "provenance": "SIMULATED"
+        },
+        "prediction_summary": {
+          "point_mfi": 8.0,
+          "nominal_coverage": 0.9,
+          "model_version": "m1",
+          "calibration_version": "c1",
+          "prob_bad_PROVISIONAL": 0.2,
+          "prob_bad_note": "ILLUSTRATIVE/PROVISIONAL \u2014 not used for prime candidacy"
+        },
+        "interval": [
+          7.7,
+          8.3
+        ],
+        "spec_band": [
+          7.6,
+          8.4
+        ],
+        "dwell_status": {
+          "required_min": 30.0,
+          "elapsed_min": 60.0,
+          "satisfied": true,
+          "in_spec_now": true,
+          "as_of": "2026-01-22T04:10:00+00:00",
+          "provenance": "SIMULATED"
+        },
+        "material_mapping_quality": "AMBIGUOUS",
+        "material_route_known": false,
+        "health_state": "NORMAL",
+        "applicability_state": "NORMAL",
+        "assurance_state": null,
+        "approver_role": "Shift Quality Approver (QC)",
+        "expiry": "2026-01-22T04:40:00+00:00",
+        "expired": false,
+        "versions": {
+          "disposition": "disposition-v1",
+          "policy": "policy-v1",
+          "cost_model": "illustrative-cost-v0",
+          "model": "m1",
+          "calibration": "c1",
+          "material_service": "material-service-v1"
+        },
+        "note": "ABSTAIN / FOLLOW SOP \u2014 a hard gate blocked disposition; the engine never 'best-guesses' through a block.",
+        "provenance": "SIMULATED",
+        "disposition_version": "disposition-v1"
+      }
+    },
+    {
+      "scenario": "5_prime_candidacy_all_pass",
+      "rationale_fixture": "FROZEN FIXTURE: interval fully in-spec, dwell satisfied, material WELL_SUPPORTED, health+applicability NORMAL, approval path configured -> PRIME-RELEASE CANDIDATE (still requires human/QC authorization).",
+      "action": "PRIME_RELEASE_CANDIDATE",
+      "reason_codes": [
+        "PRIME_INTERVAL_PASS",
+        "PRIME_DWELL_PASS",
+        "PRIME_HEALTH_PASS",
+        "PRIME_APPLICABILITY_PASS",
+        "PRIME_MATERIAL_SUPPORTED",
+        "PRIME_CANDIDATE_REQUIRES_AUTHORIZATION"
+      ],
+      "note": "PRIME-RELEASE CANDIDATE \u2014 advisory only. NOT released/certified/approved/safe. Requires authorization by: Shift Quality Approver (QC).",
+      "decision": {
+        "event_id": "EP-CB-00",
+        "decision_time": "2026-01-22T04:10:00+00:00",
+        "action": "PRIME_RELEASE_CANDIDATE",
+        "fallback_action": "ABSTAIN",
+        "reason_codes": [
+          "PRIME_INTERVAL_PASS",
+          "PRIME_DWELL_PASS",
+          "PRIME_HEALTH_PASS",
+          "PRIME_APPLICABILITY_PASS",
+          "PRIME_MATERIAL_SUPPORTED",
+          "PRIME_CANDIDATE_REQUIRES_AUTHORIZATION"
+        ],
+        "gates": [
+          {
+            "gate_id": "valid_transition",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_INVALID_TRANSITION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "timestamp_alignment",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_TIMESTAMP_ALIGNMENT",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "prediction_available",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_NO_PREDICTION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "calibrated_interval",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_NO_CALIBRATION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "material_window_available",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_MATERIAL_MAPPING",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "material_support_sufficient",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_MATERIAL_MAPPING",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "route_known",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_MATERIAL_SUPPORTED",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "sensor_health",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_SENSOR_HEALTH",
+            "detail": "health=NORMAL",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "applicability",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_OOD",
+            "detail": "applicability=NORMAL",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "specification_available",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_NO_SPECIFICATION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "mapping_uncertainty",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_MAPPING_UNCERTAINTY",
+            "detail": "residence_uncertainty_min=10.0",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "model_version",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_MODEL_VERSION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "approval_path_configured",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_NO_APPROVAL_PATH",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "interval_within_spec",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_INTERVAL_PASS",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "dwell_satisfied",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_DWELL_PASS",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "health_normal_for_prime",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_HEALTH_PASS",
+            "detail": "health=NORMAL",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "applicability_for_prime",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_APPLICABILITY_PASS",
+            "detail": "applicability=NORMAL",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "material_well_supported",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_MATERIAL_SUPPORTED",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          }
+        ],
+        "expected_loss_table": {
+          "rows": [
+            {
+              "action": "PRIME_RELEASE_CANDIDATE",
+              "expected_loss": 12000.0,
+              "cost_model_version": "illustrative-cost-v0",
+              "scenario": "BASE",
+              "inputs_used": {
+                "scenario": "BASE",
+                "provisional_prob_bad_ILLUSTRATIVE": 0.2,
+                "prime_price": 95000,
+                "downgrade_price": 75000,
+                "false_prime_consequence": 60000,
+                "sample_cost": 20000,
+                "workflow_cost": 8000
+              },
+              "provenance": "SIMULATED"
+            },
+            {
+              "action": "HOLD",
+              "expected_loss": 16000.0,
+              "cost_model_version": "illustrative-cost-v0",
+              "scenario": "BASE",
+              "inputs_used": {
+                "scenario": "BASE",
+                "provisional_prob_bad_ILLUSTRATIVE": 0.2,
+                "prime_price": 95000,
+                "downgrade_price": 75000,
+                "false_prime_consequence": 60000,
+                "sample_cost": 20000,
+                "workflow_cost": 8000
+              },
+              "provenance": "SIMULATED"
+            },
+            {
+              "action": "SAMPLE_NOW",
+              "expected_loss": 28000,
+              "cost_model_version": "illustrative-cost-v0",
+              "scenario": "BASE",
+              "inputs_used": {
+                "scenario": "BASE",
+                "provisional_prob_bad_ILLUSTRATIVE": 0.2,
+                "prime_price": 95000,
+                "downgrade_price": 75000,
+                "false_prime_consequence": 60000,
+                "sample_cost": 20000,
+                "workflow_cost": 8000
+              },
+              "provenance": "SIMULATED"
+            },
+            {
+              "action": "ABSTAIN",
+              "expected_loss": 8000,
+              "cost_model_version": "illustrative-cost-v0",
+              "scenario": "BASE",
+              "inputs_used": {
+                "scenario": "BASE",
+                "provisional_prob_bad_ILLUSTRATIVE": 0.2,
+                "prime_price": 95000,
+                "downgrade_price": 75000,
+                "false_prime_consequence": 60000,
+                "sample_cost": 20000,
+                "workflow_cost": 8000
+              },
+              "provenance": "SIMULATED"
+            }
+          ],
+          "cost_model_version": "illustrative-cost-v0",
+          "provenance": "SIMULATED",
+          "note": "SIMULATED/ILLUSTRATIVE \u2014 not a validated economic result and NOT used to select the Phase-9 action."
+        },
+        "sample_eligibility": {
+          "sample_available": false,
+          "sample_cost_available": true,
+          "expected_result_latency_min": 45.0,
+          "decision_horizon_min": 240.0,
+          "current_decision_uncertainty": 0.75,
+          "eligible": false,
+          "reason_codes": [
+            "SAMPLE_UNAVAILABLE"
+          ],
+          "provenance": "SIMULATED"
+        },
+        "prediction_summary": {
+          "point_mfi": 8.0,
+          "nominal_coverage": 0.9,
+          "model_version": "m1",
+          "calibration_version": "c1",
+          "prob_bad_PROVISIONAL": 0.2,
+          "prob_bad_note": "ILLUSTRATIVE/PROVISIONAL \u2014 not used for prime candidacy"
+        },
+        "interval": [
+          7.7,
+          8.3
+        ],
+        "spec_band": [
+          7.6,
+          8.4
+        ],
+        "dwell_status": {
+          "required_min": 30.0,
+          "elapsed_min": 60.0,
+          "satisfied": true,
+          "in_spec_now": true,
+          "as_of": "2026-01-22T04:10:00+00:00",
+          "provenance": "SIMULATED"
+        },
+        "material_mapping_quality": "WELL_SUPPORTED",
+        "material_route_known": true,
+        "health_state": "NORMAL",
+        "applicability_state": "NORMAL",
+        "assurance_state": null,
+        "approver_role": "Shift Quality Approver (QC)",
+        "expiry": "2026-01-22T04:40:00+00:00",
+        "expired": false,
+        "versions": {
+          "disposition": "disposition-v1",
+          "policy": "policy-v1",
+          "cost_model": "illustrative-cost-v0",
+          "model": "m1",
+          "calibration": "c1",
+          "material_service": "material-service-v1"
+        },
+        "note": "PRIME-RELEASE CANDIDATE \u2014 advisory only. NOT released/certified/approved/safe. Requires authorization by: Shift Quality Approver (QC).",
+        "provenance": "SIMULATED",
+        "disposition_version": "disposition-v1"
+      }
+    },
+    {
+      "scenario": "6_sample_resolves_uncertainty",
+      "rationale_fixture": "Interval crosses spec but a confirmatory lab sample is available within the decision horizon -> SAMPLE NOW (VOI value deferred to Phase 10).",
+      "action": "SAMPLE_NOW",
+      "reason_codes": [
+        "SAMPLE_ELIGIBLE",
+        "HOLD_INTERVAL_CROSSES_SPEC"
+      ],
+      "note": "SAMPLE NOW \u2014 a confirmatory lab sample can resolve the remaining uncertainty within the decision horizon (VOI deferred to Phase 10).",
+      "decision": {
+        "event_id": "EP-CB-00",
+        "decision_time": "2026-01-22T04:10:00+00:00",
+        "action": "SAMPLE_NOW",
+        "fallback_action": "ABSTAIN",
+        "reason_codes": [
+          "SAMPLE_ELIGIBLE",
+          "HOLD_INTERVAL_CROSSES_SPEC"
+        ],
+        "gates": [
+          {
+            "gate_id": "valid_transition",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_INVALID_TRANSITION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "timestamp_alignment",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_TIMESTAMP_ALIGNMENT",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "prediction_available",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_NO_PREDICTION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "calibrated_interval",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_NO_CALIBRATION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "material_window_available",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_MATERIAL_MAPPING",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "material_support_sufficient",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_MATERIAL_MAPPING",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "route_known",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_MATERIAL_SUPPORTED",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "sensor_health",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_SENSOR_HEALTH",
+            "detail": "health=NORMAL",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "applicability",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_OOD",
+            "detail": "applicability=NORMAL",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "specification_available",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_NO_SPECIFICATION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "mapping_uncertainty",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_MAPPING_UNCERTAINTY",
+            "detail": "residence_uncertainty_min=10.0",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "model_version",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_MODEL_VERSION",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "approval_path_configured",
+            "passed": true,
+            "severity": 3,
+            "severity_name": "BLOCK",
+            "reason_code": "ABSTAIN_NO_APPROVAL_PATH",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "interval_within_spec",
+            "passed": false,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "HOLD_INTERVAL_CROSSES_SPEC",
+            "detail": "calibrated interval crosses a spec limit",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "dwell_satisfied",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_DWELL_PASS",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "health_normal_for_prime",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_HEALTH_PASS",
+            "detail": "health=NORMAL",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "applicability_for_prime",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_APPLICABILITY_PASS",
+            "detail": "applicability=NORMAL",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          },
+          {
+            "gate_id": "material_well_supported",
+            "passed": true,
+            "severity": 1,
+            "severity_name": "CANDIDACY",
+            "reason_code": "PRIME_MATERIAL_SUPPORTED",
+            "detail": "",
+            "provenance": "SIMULATED",
+            "version": "disposition-v1"
+          }
+        ],
+        "expected_loss_table": {
+          "rows": [
+            {
+              "action": "PRIME_RELEASE_CANDIDATE",
+              "expected_loss": 12000.0,
+              "cost_model_version": "illustrative-cost-v0",
+              "scenario": "BASE",
+              "inputs_used": {
+                "scenario": "BASE",
+                "provisional_prob_bad_ILLUSTRATIVE": 0.2,
+                "prime_price": 95000,
+                "downgrade_price": 75000,
+                "false_prime_consequence": 60000,
+                "sample_cost": 20000,
+                "workflow_cost": 8000
+              },
+              "provenance": "SIMULATED"
+            },
+            {
+              "action": "HOLD",
+              "expected_loss": 16000.0,
+              "cost_model_version": "illustrative-cost-v0",
+              "scenario": "BASE",
+              "inputs_used": {
+                "scenario": "BASE",
+                "provisional_prob_bad_ILLUSTRATIVE": 0.2,
+                "prime_price": 95000,
+                "downgrade_price": 75000,
+                "false_prime_consequence": 60000,
+                "sample_cost": 20000,
+                "workflow_cost": 8000
+              },
+              "provenance": "SIMULATED"
+            },
+            {
+              "action": "SAMPLE_NOW",
+              "expected_loss": 28000,
+              "cost_model_version": "illustrative-cost-v0",
+              "scenario": "BASE",
+              "inputs_used": {
+                "scenario": "BASE",
+                "provisional_prob_bad_ILLUSTRATIVE": 0.2,
+                "prime_price": 95000,
+                "downgrade_price": 75000,
+                "false_prime_consequence": 60000,
+                "sample_cost": 20000,
+                "workflow_cost": 8000
+              },
+              "provenance": "SIMULATED"
+            },
+            {
+              "action": "ABSTAIN",
+              "expected_loss": 8000,
+              "cost_model_version": "illustrative-cost-v0",
+              "scenario": "BASE",
+              "inputs_used": {
+                "scenario": "BASE",
+                "provisional_prob_bad_ILLUSTRATIVE": 0.2,
+                "prime_price": 95000,
+                "downgrade_price": 75000,
+                "false_prime_consequence": 60000,
+                "sample_cost": 20000,
+                "workflow_cost": 8000
+              },
+              "provenance": "SIMULATED"
+            }
+          ],
+          "cost_model_version": "illustrative-cost-v0",
+          "provenance": "SIMULATED",
+          "note": "SIMULATED/ILLUSTRATIVE \u2014 not a validated economic result and NOT used to select the Phase-9 action."
+        },
+        "sample_eligibility": {
+          "sample_available": true,
+          "sample_cost_available": true,
+          "expected_result_latency_min": 45.0,
+          "decision_horizon_min": 240.0,
+          "current_decision_uncertainty": 1.1249999999999996,
+          "eligible": true,
+          "reason_codes": [
+            "SAMPLE_ELIGIBLE"
+          ],
+          "provenance": "SIMULATED"
+        },
+        "prediction_summary": {
+          "point_mfi": 7.8500000000000005,
+          "nominal_coverage": 0.9,
+          "model_version": "m1",
+          "calibration_version": "c1",
+          "prob_bad_PROVISIONAL": 0.2,
+          "prob_bad_note": "ILLUSTRATIVE/PROVISIONAL \u2014 not used for prime candidacy"
+        },
+        "interval": [
+          7.4,
+          8.3
+        ],
+        "spec_band": [
+          7.6,
+          8.4
+        ],
+        "dwell_status": {
+          "required_min": 30.0,
+          "elapsed_min": 60.0,
+          "satisfied": true,
+          "in_spec_now": true,
+          "as_of": "2026-01-22T04:10:00+00:00",
+          "provenance": "SIMULATED"
+        },
+        "material_mapping_quality": "WELL_SUPPORTED",
+        "material_route_known": true,
+        "health_state": "NORMAL",
+        "applicability_state": "NORMAL",
+        "assurance_state": null,
+        "approver_role": "Shift Quality Approver (QC)",
+        "expiry": "2026-01-22T04:40:00+00:00",
+        "expired": false,
+        "versions": {
+          "disposition": "disposition-v1",
+          "policy": "policy-v1",
+          "cost_model": "illustrative-cost-v0",
+          "model": "m1",
+          "calibration": "c1",
+          "material_service": "material-service-v1"
+        },
+        "note": "SAMPLE NOW \u2014 a confirmatory lab sample can resolve the remaining uncertainty within the decision horizon (VOI deferred to Phase 10).",
+        "provenance": "SIMULATED",
+        "disposition_version": "disposition-v1"
+      }
+    }
+  ],
+  "note": "ADVISORY ONLY. PRIME-RELEASE CANDIDATE is a candidate requiring human/QC authorization \u2014 never released/certified/approved/safe. p(bad) is PROVISIONAL/ILLUSTRATIVE and does not drive candidacy. Economics shown are SIMULATED/ILLUSTRATIVE (full model is Phase 10). SIMULATION/ASSUMPTION \u2014 not HMEL-validated."
+}
