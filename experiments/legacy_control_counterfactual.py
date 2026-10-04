@@ -1,6 +1,12 @@
 # NON-CORE EXPERIMENTAL MODULE (Historical scalar switch-time search, NOT RL)
+import sys
+from pathlib import Path
 import numpy as np
 from scipy.optimize import minimize_scalar
+
+_LEGACY_DIR = Path(__file__).resolve().parent.parent / "historical" / "legacy_prototype"
+if str(_LEGACY_DIR) not in sys.path:
+    sys.path.insert(0, str(_LEGACY_DIR))
 from reactor_simulator import PolyolefinReactor
 
 class TransitionOptimizer:

@@ -1,109 +1,309 @@
 """
-GradeShift AI — Page 5: Economics
-Business case and waterfall ROI breakdown.
+Page 5 — Economic Ledger (Expected Loss, Discrete VOI & Scenario Scale-Up)
+Replaces legacy static financial claims with PrimePath's Phase-10 Economic Ledger:
+explicit LOW / BASE / HIGH scenario parameters (`config.py`), formula-auditable
+cost components, realized vs counterfactual value separation, locked replay
+consequence comparison, and parameterized annual scenario scale-up (`scale_up_annual`).
 """
-import sys, os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+from __future__ import annotations
 
-import streamlit as st
+import pandas as pd
 import plotly.graph_objects as go
+import streamlit as st
 
 from gs_theme import (
-    inject_css, topbar, sidebar_brand, sidebar_nav, page_title,
-    chart_layout, COLOR, FONT_PRIMARY, FONT_TECH
+    COLOR,
+    chart_layout,
+    data_row,
+    get_cached_runtime,
+    inject_css,
+    insight,
+    kpi_card,
+    mode_banner,
+    page_title,
+    panel_close,
+    panel_open,
+    section_header,
+    sidebar_brand,
+    sidebar_nav,
+    topbar,
+)
+from gradeshift.ui import (
+    ExecutionMode,
+    MODE_META,
+    build_economic_view,
 )
 
-st.set_page_config(page_title="Economics · GradeShift AI", page_icon="⬡", layout="wide")
+st.set_page_config(
+    page_title="GradeShift PrimePath | Economic Ledger",
+    page_icon="💰",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
 inject_css()
-
-# ── Global configuration ───────────────────────────────────────
-GRADES = {
-    'A': {'name': 'HDPE Pipe (PE100)',   'short': 'HDPE-P'},
-    'B': {'name': 'HDPE Blow Moulding',  'short': 'HDPE-BM'},
-}
-ig, tg = 'A', 'B'
-
 sidebar_brand()
 sidebar_nav()
-topbar(f"{GRADES[ig]['short']}", f"{GRADES[tg]['short']}", "Bathinda · Unit 03")
 
-# ── Header ────────────────────────────────────────────────────
-st.markdown("""
-<div style="margin-bottom: 24px;">
-<div class="gs-eyebrow">GOVERNANCE</div>
-<div class="gs-page-title">Economic Impact</div>
-<div class="gs-page-subtitle">Estimated annual value and implementation business case for HMEL Bathinda.</div>
-</div>
-""", unsafe_allow_html=True)
+rt = get_cached_runtime()
 
-# ── Top Value ─────────────────────────────────────────────────
-st.markdown(f"""
-<div style="display: flex; align-items: baseline; gap: 16px; margin-bottom: 32px;">
-<div style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; color: {COLOR['text2']}; font-weight: 600;">Estimated Annual Value</div>
-<div style="font-family: {FONT_TECH}; font-size: 3rem; font-weight: 600; color: {COLOR['navy']};"><span style="font-family: {FONT_PRIMARY}; font-size: 2rem; color: {COLOR['text2']}; margin-right: 4px;">₹</span>60–102<span style="font-family: {FONT_PRIMARY}; font-size: 1.5rem; color: {COLOR['text2']}; font-weight: 400; margin-left: 8px;">Cr</span></div>
-</div>
-""", unsafe_allow_html=True)
+st.sidebar.markdown('<div class="gs-nav-section">Scenario Parameters</div>', unsafe_allow_html=True)
 
-col1, col2 = st.columns([1.5, 1], gap="large")
+selected_scenario = st.sidebar.selectbox(
+    "Economic Scenario (`ECON_SCENARIOS`)",
+    options=["BASE", "LOW", "HIGH"],
+    index=0,
+)
+mass_tonnes = st.sidebar.slider(
+    "Mapped Material Window Mass (tonnes)",
+    min_value=10.0,
+    max_value=100.0,
+    value=50.0,
+    step=5.0,
+)
+rec_mass = st.sidebar.slider(
+    "Recoverable Prime-Eligible Mass (tonnes)",
+    min_value=5.0,
+    max_value=float(mass_tonnes),
+    value=float(mass_tonnes),
+    step=5.0,
+)
 
-with col1:
-    st.markdown("""
-<div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: #062B52; font-weight: 600; margin-bottom: 16px;">Value Creation Waterfall</div>
-    """, unsafe_allow_html=True)
-    
-    fig = go.Figure(go.Waterfall(
-        orientation="v",
-        measure=["relative", "relative", "relative", "total"],
-        x=["Off-spec<br>Reduction", "Monomer Flare<br>Reduction", "Reprocessing<br>Energy Savings", "Total Annual<br>Benefit"],
-        y=[42.5, 28.3, 10.2, 81.0],
-        text=["₹42.5 Cr", "₹28.3 Cr", "₹10.2 Cr", "₹81.0 Cr"],
-        textposition="outside",
-        connector={"line": {"color": COLOR['border']}},
-        decreasing={"marker": {"color": COLOR['red']}},
-        increasing={"marker": {"color": COLOR['blue']}},
-        totals={"marker": {"color": COLOR['navy']}},
-        textfont=dict(family=FONT_TECH, size=12)
-    ))
-    
-    layout = chart_layout(height=450, show_legend=False)
-    layout['yaxis'] = dict(title=dict(text="Value (₹ Crores)", font=dict(family=FONT_PRIMARY)), gridcolor="#EDF0F4")
-    layout['xaxis'] = dict(tickfont=dict(family=FONT_PRIMARY, size=12))
-    
-    fig.update_layout(**layout)
-    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+st.sidebar.markdown('<div class="gs-nav-section">Annual Scale-Up Calculator</div>', unsafe_allow_html=True)
+n_transitions_yr = st.sidebar.slider(
+    "Eligible Transitions / Year (ASSUMPTION)",
+    min_value=10,
+    max_value=120,
+    value=50,
+    step=5,
+)
+avail_frac = st.sidebar.slider(
+    "System Availability Factor",
+    min_value=0.50,
+    max_value=1.00,
+    value=0.90,
+    step=0.05,
+)
+adopt_frac = st.sidebar.slider(
+    "Operator / QC Adoption Factor",
+    min_value=0.10,
+    max_value=1.00,
+    value=0.50,
+    step=0.05,
+)
 
-with col2:
-    st.markdown("""
-<div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: #062B52; font-weight: 600; margin-bottom: 16px;">Implementation Metrics</div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown(f"""
-<div style="background: {COLOR['white']}; border: 1px solid {COLOR['border']}; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
-<div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid {COLOR['border']}; padding-bottom: 12px; margin-bottom: 12px;">
-<span style="font-size: 0.85rem; color: {COLOR['text2']}; font-weight: 600;">Software & Licensing</span>
-<span style="font-family: {FONT_TECH}; font-weight: 600; color: {COLOR['text']};">₹ 2.5 Cr <span style="font-family: {FONT_PRIMARY}; font-size: 0.75rem; font-weight: 400; color: {COLOR['text2']};">/ yr</span></span>
-</div>
-        
-<div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid {COLOR['border']}; padding-bottom: 12px; margin-bottom: 12px;">
-<span style="font-size: 0.85rem; color: {COLOR['text2']}; font-weight: 600;">Infrastructure & Maintenance</span>
-<span style="font-family: {FONT_TECH}; font-weight: 600; color: {COLOR['text']};">₹ 0.8 Cr <span style="font-family: {FONT_PRIMARY}; font-size: 0.75rem; font-weight: 400; color: {COLOR['text2']};">/ yr</span></span>
-</div>
-        
-<div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid {COLOR['border']}; padding-bottom: 12px; margin-bottom: 12px;">
-<span style="font-size: 0.85rem; color: {COLOR['text2']}; font-weight: 600;">Net Annual Benefit (Avg)</span>
-<span style="font-family: {FONT_TECH}; font-weight: 600; color: {COLOR['green']};">₹ 77.7 Cr</span>
-</div>
-        
-<div style="display: flex; justify-content: space-between; align-items: baseline; padding-top: 4px;">
-<span style="font-size: 0.85rem; color: {COLOR['navy']}; font-weight: 600;">Estimated Payback Period</span>
-<span style="font-family: {FONT_TECH}; font-size: 1.2rem; font-weight: 600; color: {COLOR['navy']};">2.1 <span style="font-family: {FONT_PRIMARY}; font-size: 0.8rem; font-weight: 400; color: {COLOR['text2']};">months</span></span>
-</div>
-</div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown(f"""
-<div style="background: rgba(32,168,115,0.05); border-left: 3px solid {COLOR['green']}; padding: 16px 20px; font-size: 0.85rem; color: {COLOR['text']}; line-height: 1.5; border-radius: 0 4px 4px 0;">
-<strong style="color: {COLOR['navy']}; font-weight: 600;">Zero CAPEX Implementation</strong><br>
-        GradeShift AI deploys as an edge-compute layer over the existing DCS. It requires no new physical sensors, no reactor modifications, and no downtime to install.
-</div>
-    """, unsafe_allow_html=True)
+ev_view = build_economic_view(
+    rt,
+    scenario_name=selected_scenario,
+    mass_tonnes=mass_tonnes,
+    recoverable_mass_tonnes=rec_mass,
+    eligible_transitions_per_year=float(n_transitions_yr),
+    availability=float(avail_frac),
+    adoption=float(adopt_frac),
+)
+
+sc = ev_view["scenario"]
+ledger = ev_view["active_ledger"]
+annual = ev_view["annual_scale_up"]
+sanity = ev_view["sanity_checks"]
+
+topbar(
+    current_grade_from="A",
+    current_grade_to="B",
+    unit="SIM-UNIT-1 (ECONOMIC LEDGER)",
+    mode_label=f"{selected_scenario} SCENARIO (ASSUMPTION)",
+    partition_label="PHASE 10 · ECONOMIC LEDGER",
+)
+
+page_title(
+    "Economic Ledger — Expected Loss, Discrete VOI & Scenario Accounting",
+    "Auditable episode-level mass/value accounting with strict separation between realized routing value and counterfactual opportunity.",
+    eyebrow="PHASE 10 · SIMULATED / ASSUMPTION ECONOMIC ENGINE",
+)
+
+mode_banner(MODE_META[ExecutionMode.ILLUSTRATIVE_DEMO.value])
+
+# 4-Column KPI Strip
+vs = ledger.get("value_split", {})
+cf_opp = float(vs.get("counterfactual_opportunity_currency", 0.0))
+real_val = float(vs.get("realized_value_currency", 0.0))
+ann_val = float(annual.get("annual_value_currency", 0.0))
+
+k1, k2, k3, k4 = st.columns(4)
+with k1:
+    st.markdown(
+        panel_open()
+        + kpi_card(
+            f"Prime-vs-Downgrade Spread ({sc.name})",
+            f"₹{sc.downgrade_spread:,.0f}",
+            "/ tonne",
+            f"Prime: ₹{sc.prime_price:,.0f}/t · Downgrade: ₹{sc.downgrade_price:,.0f}/t",
+            "pos",
+        )
+        + panel_close(),
+        unsafe_allow_html=True,
+    )
+with k2:
+    st.markdown(
+        panel_open()
+        + kpi_card(
+            "Episode Opportunity Value",
+            f"₹{cf_opp / 1e5:.2f}",
+            "Lakh",
+            f"On {rec_mass:.1f}t recoverable good material (SIMULATED)",
+            "pos",
+        )
+        + panel_close(),
+        unsafe_allow_html=True,
+    )
+with k3:
+    st.markdown(
+        panel_open()
+        + kpi_card(
+            "False-Prime Consequence",
+            f"₹{sc.false_prime_consequence:,.0f}",
+            "/ tonne",
+            f"Sample: ₹{sc.sample_cost:,.0f} · Workflow: ₹{sc.workflow_cost:,.0f}",
+            "neu",
+        )
+        + panel_close(),
+        unsafe_allow_html=True,
+    )
+with k4:
+    st.markdown(
+        panel_open()
+        + kpi_card(
+            "Scenario Annual Scale-Up",
+            f"₹{ann_val / 1e7:.2f}",
+            "Cr / yr",
+            f"{n_transitions_yr} tx/yr × {int(avail_frac*100)}% avail × {int(adopt_frac*100)}% adopt",
+            "pos",
+        )
+        + panel_close(),
+        unsafe_allow_html=True,
+    )
+
+c1, c2 = st.columns([1.2, 1.0], gap="large")
+
+with c1:
+    section_header("1. LOW / BASE / HIGH Scenario Comparison (`config.ECON_SCENARIOS`)")
+    sc_df = pd.DataFrame(ev_view["scenario_comparison"])
+    st.dataframe(
+        sc_df.rename(
+            columns={
+                "scenario": "Scenario",
+                "prime_price_per_t": "Prime (₹/t)",
+                "downgrade_price_per_t": "Downgrade (₹/t)",
+                "spread_per_t": "Spread (₹/t)",
+                "false_prime_consequence_per_t": "False-Prime Penalty (₹/t)",
+                "sample_cost": "Sample Cost (₹)",
+                "workflow_cost": "Workflow Cost (₹)",
+                "counterfactual_opportunity_currency": "Episode Opportunity (₹)",
+            }
+        )[
+            [
+                "Scenario",
+                "Prime (₹/t)",
+                "Downgrade (₹/t)",
+                "Spread (₹/t)",
+                "False-Prime Penalty (₹/t)",
+                "Sample Cost (₹)",
+                "Episode Opportunity (₹)",
+            ]
+        ],
+        use_container_width=True,
+        hide_index=True,
+    )
+
+    section_header("2. Locked Validation Replay Economics Across 4 Policies (235 Decisions)")
+    lb = ev_view["locked_level_b"]
+    lc = ev_view["locked_level_c"]
+    lock_econ_rows = []
+    for pol in ["SOP_FIXTURE", "POINT_THRESHOLD", "PRIMEPATH", "ORACLE_DIAGNOSTIC_ONLY"]:
+        if pol in lc:
+            lock_econ_rows.append(
+                {
+                    "Policy": pol,
+                    "False-Prime Mass (t)": lb.get(pol, {}).get("false_prime_mass_tonnes", 0.0),
+                    "False-Hold Mass (t)": lb.get(pol, {}).get("false_hold_mass_tonnes", 0.0),
+                    "False-Prime Exposure (₹)": f"₹{float(lc[pol].get('false_prime_exposure_currency', 0.0)):,.0f}",
+                    "False-Hold Opportunity (₹)": f"₹{float(lc[pol].get('false_hold_opportunity_currency', 0.0)):,.0f}",
+                    "Avoidable Loss (₹)": f"₹{float(lc[pol].get('gross_avoidable_loss_currency', 0.0)):,.0f}",
+                }
+            )
+    st.dataframe(pd.DataFrame(lock_econ_rows), use_container_width=True, hide_index=True)
+
+    # Bar chart of False-Prime Exposure vs False-Hold Opportunity on Locked Test
+    fig = go.Figure()
+    pols = ["SOP_FIXTURE", "POINT_THRESHOLD", "PRIMEPATH"]
+    fp_vals = [float(lc.get(p, {}).get("false_prime_exposure_currency", 0.0)) / 1e7 for p in pols]
+    fh_vals = [float(lc.get(p, {}).get("false_hold_opportunity_currency", 0.0)) / 1e7 for p in pols]
+    fig.add_trace(
+        go.Bar(name="False-Prime Exposure (₹ Cr)", x=pols, y=fp_vals, marker_color=COLOR["red"])
+    )
+    fig.add_trace(
+        go.Bar(name="False-Hold Opportunity Cost (₹ Cr)", x=pols, y=fh_vals, marker_color=COLOR["amber"])
+    )
+    fig.update_layout(
+        barmode="group",
+        **chart_layout(
+            title="Locked Validation Consequence Trade-Off (₹ Crore across 5 Unseen Test Episodes)",
+            height=300,
+        ),
+    )
+    fig.update_yaxes(title_text="₹ Crore (SIMULATED / BASE)")
+    st.plotly_chart(fig, use_container_width=True)
+
+with c2:
+    section_header("3. Realized vs. Counterfactual Value Split & Sanity Proofs")
+    st.markdown(
+        panel_open("Episode Value Split (`ValueSplit` — Never Double-Counted)")
+        + data_row("Realized Route Value (Downgrade Silo)", f"₹{real_val:,.0f}")
+        + data_row(
+            "Counterfactual Prime Route Value",
+            f"₹{float(vs.get('counterfactual_prime_value_currency', 0.0)):,.0f}",
+        )
+        + data_row("Counterfactual Prime-vs-Downgrade Spread", f"₹{cf_opp:,.0f}")
+        + data_row("No Double Counting Check", "✅ PASS" if sanity.get("no_double_counting") else "❌ FAIL")
+        + data_row("Mass Non-Negative Check", "✅ PASS" if sanity.get("mass_non_negative") else "❌ FAIL")
+        + data_row(
+            "Realized Separate From Counterfactual",
+            "✅ PASS" if sanity.get("realized_separate_from_counterfactual") else "❌ FAIL",
+        )
+        + panel_close(),
+        unsafe_allow_html=True,
+    )
+
+    section_header("4. Parameterized Annual Scale-Up Formula (`scale_up_annual`)")
+    st.markdown(
+        panel_open("Explicit Scenario Scale-Up (ASSUMPTION — Not Measured Plant Savings)")
+        + data_row("Formula", str(annual.get("formula", "")))
+        + data_row("Episode Opportunity Value", f"₹{float(annual.get('validated_episode_value_currency', 0.0)):,.0f}")
+        + data_row("Eligible Transitions / Year", str(annual.get("eligible_transitions_per_year")))
+        + data_row("Availability × Adoption", f"{avail_frac:.2f} × {adopt_frac:.2f} = {avail_frac * adopt_frac:.2f}")
+        + data_row("Annual Scenario Value", f"₹{ann_val:,.0f} (₹{ann_val / 1e7:.2f} Cr/yr)")
+        + data_row("Provenance Tag", str(annual.get("provenance", "ASSUMPTION")))
+        + panel_close(),
+        unsafe_allow_html=True,
+    )
+
+    section_header("5. Expected-Loss Formula Components (`CostComponent`)")
+    el_rows = ledger.get("expected_loss_table", {}).get("rows", [])
+    comp_items = []
+    for r in el_rows:
+        for c_item in r.get("components", []):
+            comp_items.append(
+                {
+                    "Action": r["action"],
+                    "Component": c_item["name"],
+                    "Amount (₹)": f"₹{float(c_item['amount_currency']):,.0f}",
+                    "Formula": c_item["formula"],
+                }
+            )
+    st.dataframe(pd.DataFrame(comp_items), use_container_width=True, hide_index=True, height=240)
+
+insight(
+    "<strong>Economic Honesty Rule:</strong> Every currency figure in PrimePath carries an explicit "
+    "<code>ASSUMPTION</code> / <code>SIMULATED</code> provenance tag derived from <code>config.ECON_SCENARIOS</code>. "
+    "No HMEL financial ledger data or verified plant savings are claimed."
+)

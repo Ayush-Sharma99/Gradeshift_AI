@@ -1,208 +1,622 @@
 """
-GradeShift AI — Overview Dashboard (main entry point)
-"""
-import sys, os
-sys.path.insert(0, os.path.dirname(__file__))
+GradeShift PrimePath — Decision Cockpit (Main Entry Point)
+An uncertainty-aware, human-authorized commercial-disposition decision layer
+for polyolefin grade transitions.
 
-import streamlit as st
-import numpy as np
+Strictly read-only and advisory. Never writes setpoints, never actuates plant
+equipment, and never certifies or releases polymer without human QC sign-off.
+"""
+from __future__ import annotations
+
+import pandas as pd
 import plotly.graph_objects as go
+import streamlit as st
 
 from gs_theme import (
-    inject_css, topbar, sidebar_brand, sidebar_nav, page_title,
-    kpi_card, insight, chart_layout, COLOR, FONT_PRIMARY, FONT_TECH
+    COLOR,
+     action_hero_card,
+    badge,
+    chart_layout,
+    data_row,
+    get_cached_runtime,
+    inject_css,
+    insight,
+    kpi_card,
+    mode_banner,
+    page_title,
+    panel_close,
+    panel_open,
+    section_header,
+    sidebar_brand,
+    sidebar_nav,
+    topbar,
 )
-from transition_optimizer import TransitionOptimizer
+from gradeshift.ui import (
+    ApprovalStatus,
+    DEMO_STEP_KEYS,
+    ExecutionMode,
+    build_cockpit_view,
+    build_executive_view,
+    build_locked_validation_view,
+)
 
-# ── Page config ────────────────────────────────────────────────
 st.set_page_config(
-    page_title="GradeShift AI",
-    page_icon="⬡",
+    page_title="GradeShift PrimePath | Decision Cockpit",
+    page_icon="🛡️",
     layout="wide",
     initial_sidebar_state="expanded",
 )
+
 inject_css()
-
-# ── Global configuration ───────────────────────────────────────
-GRADES = {
-    'A': {'name': 'HDPE Pipe (PE100)',       'short': 'HDPE-P',  'MFI': 0.3,  'density': 0.949, 'H2_M': 0.05},
-    'B': {'name': 'HDPE Blow Moulding',      'short': 'HDPE-BM', 'MFI': 8.0,  'density': 0.954, 'H2_M': 0.35},
-    'C': {'name': 'LLDPE Film Grade',        'short': 'LLDPE-F', 'MFI': 1.0,  'density': 0.918, 'H2_M': 0.10},
-}
-ig, tg = 'A', 'B'
-prod_rate = 50.0  # t/hr
-
-# ── Sidebar ────────────────────────────────────────────────────
 sidebar_brand()
 sidebar_nav()
 
-# ── Simulations (cached) ───────────────────────────────────────
-@st.cache_data(show_spinner=False)
-def run_sims(ig, tg, pr):
-    opt = TransitionOptimizer(ig, tg, pr * 1000)
-    baseline = opt.simulate_linear_ramp(ramp_time_min=240, sim_time_min=600)
-    ai_traj  = opt.optimize_bang_bang()
-    return baseline, ai_traj, opt.target_MFI, opt.spec_band
+rt = get_cached_runtime()
 
-with st.spinner("Computing transition trajectories…"):
-    baseline, ai_traj, target_MFI, spec_band = run_sims(ig, tg, prod_rate)
+# ──────────────────────────────────────────────────────────────
+# SIDEBAR CONTROLS (Mode, Scenario, Step / Episode, Faults)
+# ──────────────────────────────────────────────────────────────
+st.sidebar.markdown('<div class="gs-nav-section">Cockpit Controls</div>', unsafe_allow_html=True)
 
-# ── Metrics ───────────────────────────────────────────────────
-def first_on_spec(sim, tgt, band):
-    lo, hi = tgt*(1-band), tgt*(1+band)
-    for i, v in enumerate(sim['MFI_bed']):
-        if lo <= v <= hi:
-            if all(lo <= sim['MFI_bed'][j] <= hi for j in range(i, min(i+20, len(sim['MFI_bed'])))):
-                return sim['time'][i]
-    return sim['time'][-1]
+mode_options = [
+    ExecutionMode.ILLUSTRATIVE_DEMO.value,
+    ExecutionMode.SYNTHETIC_REPLAY.value,
+    ExecutionMode.LOCKED_VALIDATION.value,
+]
+mode_labels = {
+    ExecutionMode.ILLUSTRATIVE_DEMO.value: "Illustrative Demo (DEMO-A2B)",
+    ExecutionMode.SYNTHETIC_REPLAY.value: "Synthetic Corpus Replay (18 Events)",
+    ExecutionMode.LOCKED_VALIDATION.value: "Locked Validation (5 Test Events)",
+}
+selected_mode = st.sidebar.selectbox(
+    "Operating / Evidence Mode",
+    options=mode_options,
+    format_func=lambda m: mode_labels[m],
+    index=0,
+)
 
-base_t  = first_on_spec(baseline, target_MFI, spec_band)
-ai_t    = first_on_spec(ai_traj,  target_MFI, spec_band)
-base_os = (base_t / 60.0) * prod_rate
-ai_os   = (ai_t   / 60.0) * prod_rate
-saved_t = base_t - ai_t          # minutes
-saved_p = base_os - ai_os        # tonnes
-val_per = saved_p * 20.0 * 1000  # ₹ (@ ₹20/kg margin)
+selected_scenario = st.sidebar.selectbox(
+    "Economic Scenario (ASSUMPTION)",
+    options=["BASE", "LOW", "HIGH"],
+    index=0,
+)
 
-# ── Top bar ───────────────────────────────────────────────────
+demo_step_labels = {
+    "T1_HOLD": "T1 (360m): Interval Crosses Spec → HOLD",
+    "T2_SAMPLE_NOW": "T2 (380m): Boundary + Sample Avail → SAMPLE NOW",
+    "T3_PRIME_CANDIDATE": "T3 (400m): Full Interval In-Spec → PRIME CANDIDATE",
+    "T4_TRUTH_RECONCILED": "T4 (445m): Lab Truth Revealed (7.95) → Reconciled",
+    "T5_ECONOMIC_LEDGER": "T5 (445m): Episode Economic Ledger",
+    "T6_FAULT_ABSTAIN": "T6 (Fault): Frozen MFI Analyzer → ABSTAIN",
+}
+
+if "demo_step" not in st.session_state:
+    st.session_state["demo_step"] = "T3_PRIME_CANDIDATE"
+if "approval_status" not in st.session_state:
+    st.session_state["approval_status"] = ApprovalStatus.PENDING_HUMAN_AUTHORIZATION.value
+
+selected_event_id = "EP-AB-00"
+selected_step_idx = 18
+sample_available = True
+fault_kind = "NONE"
+
+if selected_mode == ExecutionMode.ILLUSTRATIVE_DEMO.value:
+    chosen_demo_step = st.sidebar.selectbox(
+        "Demo Walkthrough Step",
+        options=DEMO_STEP_KEYS,
+        format_func=lambda k: demo_step_labels[k],
+        index=DEMO_STEP_KEYS.index(st.session_state["demo_step"]),
+    )
+    st.session_state["demo_step"] = chosen_demo_step
+else:
+    if selected_mode == ExecutionMode.LOCKED_VALIDATION.value:
+        avail_events = [
+            ev.event_id
+            for ev in rt.corpus
+            if rt.partitions[ev.event_id].value == "LOCKED_TEST"
+        ]
+    else:
+        avail_events = [ev.event_id for ev in rt.corpus]
+
+    selected_event_id = st.sidebar.selectbox(
+        "Transition Episode",
+        options=avail_events,
+        format_func=lambda eid: f"{eid} ({rt.events_by_id[eid].direction} · {rt.partitions[eid].value})",
+        index=0,
+    )
+    grid_len = len(rt.decision_grid(rt.events_by_id[selected_event_id]))
+    selected_step_idx = st.sidebar.slider(
+        "Decision Step Index (10-min grid)",
+        min_value=0,
+        max_value=max(0, grid_len - 1),
+        value=min(18, max(0, grid_len - 1)),
+    )
+    sample_available = st.sidebar.checkbox("Lab Grab Sample Available", value=True)
+    if selected_mode == ExecutionMode.SYNTHETIC_REPLAY.value:
+        fault_kind = st.sidebar.selectbox(
+            "Sensor Fault Injection (Guardian)",
+            options=[
+                "NONE",
+                "FROZEN_MFI",
+                "MISSING_MFI",
+                "STALE_MFI",
+                "SPIKE_MFI",
+                "GAP_H2",
+                "TIMESTAMP_DISORDER",
+            ],
+            index=0,
+        )
+
+# Build Cockpit View from Presenter Layer
+view = build_cockpit_view(
+    rt,
+    mode=selected_mode,
+    scenario_name=selected_scenario,
+    demo_step=st.session_state["demo_step"],
+    event_id=selected_event_id,
+    step_idx=selected_step_idx,
+    sample_available=sample_available,
+    fault_kind=fault_kind,
+    approval_status=st.session_state["approval_status"],
+)
+
+dir_parts = view["direction"].split("->")
+g_from = dir_parts[0] if len(dir_parts) == 2 else "A"
+g_to = dir_parts[1] if len(dir_parts) == 2 else "B"
+
 topbar(
-    current_grade_from = f"{GRADES[ig]['short']}",
-    current_grade_to   = f"{GRADES[tg]['short']}",
-    unit               = "Bathinda · Unit 03",
+    current_grade_from=g_from,
+    current_grade_to=g_to,
+    unit=view["unit"],
+    mode_label=view["mode_meta"]["label"],
+    partition_label=f"{view['event_id']} ({view['partition']})",
 )
 
-# ── Header ────────────────────────────────────────────────────
-st.markdown("""
-<div style="margin-bottom: 24px;">
-<div style="font-size: 2.1rem; font-weight: 700; color: #062B52; letter-spacing: -0.02em; margin-bottom: 8px;">Overview</div>
-<div style="font-size: 1.05rem; color: #5B687A;">Real-time transition intelligence for polyolefin grade changes.</div>
-</div>
-""", unsafe_allow_html=True)
-
-# ── Current transition banner ─────────────────────────────────
-st.markdown(f"""
-<div style="background: {COLOR['white']}; border: 1px solid {COLOR['border']}; border-radius: 8px; padding: 16px 24px; margin-bottom: 32px; display: flex; align-items: center; justify-content: space-between;">
-<div style="display: flex; align-items: center; gap: 24px;">
-<div>
-<div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: {COLOR['text2']}; font-weight: 600; margin-bottom: 4px;">Current</div>
-<div style="font-size: 0.95rem; font-weight: 600; color: {COLOR['text']};">{ig} — {GRADES[ig]['name']}</div>
-</div>
-<div style="color: {COLOR['text2']}; font-size: 1.2rem;">→</div>
-<div>
-<div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: {COLOR['text2']}; font-weight: 600; margin-bottom: 4px;">Target</div>
-<div style="font-size: 0.95rem; font-weight: 600; color: {COLOR['text']};">{tg} — {GRADES[tg]['name']}</div>
-</div>
-</div>
-<div>
-<div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: {COLOR['blue']}; font-weight: 600; background: rgba(23,105,224,0.1); padding: 6px 12px; border-radius: 4px;">AI OPTIMIZATION ACTIVE</div>
-</div>
-</div>
-""", unsafe_allow_html=True)
-
-# ── KPI strip ─────────────────────────────────────────────────
-k1, k2, k3, k4 = st.columns(4)
-with k1:
-    st.markdown(f"""
-<div style="padding: 0 16px; border-right: 1px solid {COLOR['border']};">
-<div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: {COLOR['text2']}; font-weight: 600; margin-bottom: 8px;">Transition Time</div>
-<div style="font-family: {FONT_TECH}; font-size: 2.2rem; font-weight: 600; color: {COLOR['navy']}; line-height: 1;">{ai_t/60:.1f}<span style="font-family: {FONT_PRIMARY}; font-size: 1.1rem; font-weight: 400; color: {COLOR['text2']}; margin-left: 4px;">h</span></div>
-<div style="font-size: 0.8rem; color: {COLOR['green']}; font-weight: 500; margin-top: 8px;">↓ {saved_t/60:.1f} h vs baseline</div>
-</div>
-    """, unsafe_allow_html=True)
-with k2:
-    st.markdown(f"""
-<div style="padding: 0 16px; border-right: 1px solid {COLOR['border']};">
-<div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: {COLOR['text2']}; font-weight: 600; margin-bottom: 8px;">Off-Spec</div>
-<div style="font-family: {FONT_TECH}; font-size: 2.2rem; font-weight: 600; color: {COLOR['navy']}; line-height: 1;">{ai_os:.0f}<span style="font-family: {FONT_PRIMARY}; font-size: 1.1rem; font-weight: 400; color: {COLOR['text2']}; margin-left: 4px;">t</span></div>
-<div style="font-size: 0.8rem; color: {COLOR['green']}; font-weight: 500; margin-top: 8px;">↓ {saved_p:.0f} t vs baseline</div>
-</div>
-    """, unsafe_allow_html=True)
-with k3:
-    st.markdown(f"""
-<div style="padding: 0 16px; border-right: 1px solid {COLOR['border']};">
-<div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: {COLOR['text2']}; font-weight: 600; margin-bottom: 8px;">Prime Recovered</div>
-<div style="font-family: {FONT_TECH}; font-size: 2.2rem; font-weight: 600; color: {COLOR['navy']}; line-height: 1;">{saved_p:.0f}<span style="font-family: {FONT_PRIMARY}; font-size: 1.1rem; font-weight: 400; color: {COLOR['text2']}; margin-left: 4px;">t</span></div>
-<div style="font-size: 0.8rem; color: {COLOR['green']}; font-weight: 500; margin-top: 8px;">Yield improvement</div>
-</div>
-    """, unsafe_allow_html=True)
-with k4:
-    val_L = val_per / 1_000_000
-    st.markdown(f"""
-<div style="padding: 0 16px;">
-<div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: {COLOR['text2']}; font-weight: 600; margin-bottom: 8px;">Value Recovered</div>
-<div style="font-family: {FONT_TECH}; font-size: 2.2rem; font-weight: 600; color: {COLOR['navy']}; line-height: 1;"><span style="font-family: {FONT_PRIMARY}; font-size: 1.6rem; color: {COLOR['text2']}; margin-right: 2px;">₹</span>{val_L:.1f}<span style="font-family: {FONT_PRIMARY}; font-size: 1.1rem; font-weight: 400; color: {COLOR['text2']}; margin-left: 4px;">L</span></div>
-<div style="font-size: 0.8rem; color: {COLOR['green']}; font-weight: 500; margin-top: 8px;">Added margin</div>
-</div>
-    """, unsafe_allow_html=True)
-
-st.markdown('<div style="margin-bottom: 48px;"></div>', unsafe_allow_html=True)
-
-# ── Main visual ───────────────────────────────────────────────
-fig = go.Figure()
-times = baseline['time']
-
-# Target band
-lo, hi = target_MFI*(1-spec_band), target_MFI*(1+spec_band)
-fig.add_trace(go.Scatter(
-    x=[0, times[-1], times[-1], 0],
-    y=[hi, hi, lo, lo],
-    fill='toself', fillcolor=COLOR['spec_fill'],
-    line=dict(color='rgba(255,255,255,0)'),
-    name="Target Spec", hoverinfo='skip'
-))
-
-# Baseline
-fig.add_trace(go.Scatter(
-    x=times, y=baseline['MFI_bed'],
-    name="Baseline Ramp",
-    line=dict(color=COLOR['baseline'], width=2, dash='dash')
-))
-
-# AI Trajectory
-fig.add_trace(go.Scatter(
-    x=times, y=ai_traj['MFI_bed'],
-    name="GradeShift AI",
-    line=dict(color=COLOR['blue'], width=3)
-))
-
-# Arrival points
-fig.add_trace(go.Scatter(
-    x=[base_t, ai_t], y=[target_MFI, target_MFI],
-    mode='markers', marker=dict(size=8, color=[COLOR['baseline'], COLOR['blue']]),
-    showlegend=False, hoverinfo='skip'
-))
-
-fig.add_annotation(
-    x=ai_t, y=target_MFI, text="AI Spec Achieved",
-    showarrow=True, arrowhead=1, arrowcolor=COLOR['blue'],
-    ax=-40, ay=-40, font=dict(color=COLOR['blue'], family=FONT_PRIMARY, size=11)
+page_title(
+    "PrimePath Decision Cockpit",
+    "Uncertainty-aware, human-authorized commercial-disposition decision layer for polyolefin grade transitions.",
+    eyebrow="GRADESHIFT PRIMEPATH · PHASE 14–17 PRODUCT INTERFACE",
 )
 
-fig.update_layout(**chart_layout(title="MFI Transition Trajectory: Current vs AI", height=420, show_legend=True))
-fig.update_yaxes(type="log", title_text="MFI (g/10min, log scale)")
-fig.update_xaxes(title_text="Time (min)")
-st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+mode_banner(view["mode_meta"])
 
-# ── Interpretation panels ─────────────────────────────────────
-st.markdown('<div style="margin-top: 16px;"></div>', unsafe_allow_html=True)
-c1, c2 = st.columns(2)
+tab_cockpit, tab_exec, tab_locked = st.tabs(
+    [
+        "🎛️ Operator Decision Cockpit",
+        "📊 Executive Value View (30s Summary)",
+        "🔒 Locked Validation & Claim Ledger",
+    ]
+)
 
-with c1:
-    st.markdown(f"""
-<div style="background: {COLOR['white']}; border: 1px solid {COLOR['border']}; border-radius: 8px; padding: 20px;">
-<div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: {COLOR['text2']}; font-weight: 600; margin-bottom: 8px;">Baseline</div>
-<div style="font-size: 1rem; font-weight: 600; color: {COLOR['navy']}; margin-bottom: 6px;">Conservative linear ramp</div>
-<div style="font-size: 0.85rem; color: {COLOR['text']}; line-height: 1.5;">Plant operators slowly ramp the H₂/monomer ratio over 4 hours to avoid sudden pressure spikes or reactor temperature oscillations, leading to a long transition time and excess off-spec product.</div>
-</div>
-    """, unsafe_allow_html=True)
+# ══════════════════════════════════════════════════════════════
+# TAB 1: OPERATOR DECISION COCKPIT
+# ══════════════════════════════════════════════════════════════
+with tab_cockpit:
+    if selected_mode == ExecutionMode.ILLUSTRATIVE_DEMO.value:
+        section_header("Canonical Walkthrough Stepper (DEMO-A2B)")
+        bcols = st.columns(6)
+        short_labels = [
+            ("T1_HOLD", "T1 · HOLD"),
+            ("T2_SAMPLE_NOW", "T2 · SAMPLE NOW"),
+            ("T3_PRIME_CANDIDATE", "T3 · PRIME CANDIDATE"),
+            ("T4_TRUTH_RECONCILED", "T4 · LAB TRUTH"),
+            ("T5_ECONOMIC_LEDGER", "T5 · ECON LEDGER"),
+            ("T6_FAULT_ABSTAIN", "T6 · FAULT ABSTAIN"),
+        ]
+        for idx, (s_key, s_lbl) in enumerate(short_labels):
+            if bcols[idx].button(
+                s_lbl,
+                key=f"btn_{s_key}",
+                use_container_width=True,
+                type="primary" if st.session_state["demo_step"] == s_key else "secondary",
+            ):
+                st.session_state["demo_step"] = s_key
+                st.rerun()
 
-with c2:
-    st.markdown(f"""
-<div style="background: {COLOR['white']}; border: 1px solid {COLOR['blue']}; border-radius: 8px; padding: 20px; box-shadow: 0 4px 12px rgba(23,105,224,0.08);">
-<div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: {COLOR['blue']}; font-weight: 600; margin-bottom: 8px;">GradeShift AI</div>
-<div style="font-size: 1rem; font-weight: 600; color: {COLOR['blue']}; margin-bottom: 6px;">Physics-informed optimized trajectory</div>
-<div style="font-size: 0.85rem; color: {COLOR['text']}; line-height: 1.5;">The reinforcement learning agent commands an initial aggressive overshoot of the H₂ setpoint, rapidly purging the bed inventory, before smoothly capturing the target spec without violating thermal constraints.</div>
-</div>
-    """, unsafe_allow_html=True)
+    # Primary Recommendation Hero Card
+    action_hero_card(
+        action=view["action"],
+        action_meta=view["action_meta"],
+        reason_codes=view["reason_codes"],
+        approval_status=view["approval_status"],
+        approver_role=view["approver_role"],
+        narrative=view["narrative"],
+    )
 
-insight("<strong>AI INSIGHT:</strong> GradeShift predicts that an initial 60-minute over-dosing of hydrogen accelerates the polymer melt index response by 2.4x without triggering bed stickiness limits.", kind="blue")
+    # 4-Column KPI Strip
+    pred = view["prediction"]
+    spec = view["spec_band"]
+    mw = view["material_window"]
+    econ = view["economics"]
+
+    k1, k2, k3, k4 = st.columns(4)
+    interval_inside = (
+        pred["lower_mfi"] >= spec["mfi_low"] and pred["upper_mfi"] <= spec["mfi_high"]
+    )
+    with k1:
+        st.markdown(
+            panel_open()
+            + kpi_card(
+                "90% Conformal Interval",
+                f"[{pred['lower_mfi']:.2f}, {pred['upper_mfi']:.2f}]",
+                "g/10m",
+                f"Point: {pred['point_mfi']:.2f} vs Spec [{spec['mfi_low']:.2f}, {spec['mfi_high']:.2f}]",
+                "pos" if interval_inside else "neg",
+            )
+            + panel_close(),
+            unsafe_allow_html=True,
+        )
+    with k2:
+        hg_ok = view["hard_gates_passed"] == view["hard_gates_total"]
+        st.markdown(
+            panel_open()
+            + kpi_card(
+                "Hard Policy Gates",
+                f"{view['hard_gates_passed']}/{view['hard_gates_total']}",
+                "PASS",
+                f"Candidacy Gates: {view['candidacy_gates_passed']}/{view['candidacy_gates_total']} PASS",
+                "pos" if hg_ok else "neg",
+            )
+            + panel_close(),
+            unsafe_allow_html=True,
+        )
+    with k3:
+        st.markdown(
+            panel_open()
+            + kpi_card(
+                "Mapped Material Window",
+                f"{mw['mapped_mass_tonnes']:.1f}",
+                "tonnes",
+                f"Mean Age: {mw['mean_age_min']:.1f}m · {mw['mapping_quality']}",
+                "pos" if mw["mapping_quality"] == "WELL_SUPPORTED" else "neu",
+            )
+            + panel_close(),
+            unsafe_allow_html=True,
+        )
+    with k4:
+        cf_opp = float(econ.get("counterfactual_opportunity_currency", 0.0))
+        el_chosen = float(econ.get("expected_loss_chosen_currency", 0.0))
+        st.markdown(
+            panel_open()
+            + kpi_card(
+                f"Counterfactual Spread ({selected_scenario})",
+                f"₹{cf_opp / 1e5:.2f}",
+                "Lakh",
+                f"Expected Loss (Chosen): ₹{el_chosen:,.0f} (SIMULATED)",
+                "pos" if cf_opp > 0 else "neu",
+            )
+            + panel_close(),
+            unsafe_allow_html=True,
+        )
+
+    # Main Split: Trajectory + Conformal Interval vs Governance & Material Lineage
+    col_chart, col_gov = st.columns([1.45, 1.0], gap="large")
+
+    with col_chart:
+        section_header("As-Of Quality Trajectory & Split-Conformal Interval vs Spec")
+        fig = go.Figure()
+
+        # Target Spec Band Shading
+        fig.add_hrect(
+            y0=spec["mfi_low"],
+            y1=spec["mfi_high"],
+            fillcolor=COLOR["spec_fill"],
+            line_width=1,
+            line_dash="dot",
+            line_color=COLOR["green"],
+            annotation_text=f"Grade {spec['grade_id']} Spec [{spec['mfi_low']:.2f}, {spec['mfi_high']:.2f}]",
+            annotation_position="top left",
+        )
+
+        # Online MFI series up to decision time t
+        t_cur = float(view["elapsed_min"])
+        series_upto = [pt for pt in view["mfi_series"] if pt["t_min"] <= t_cur]
+        if series_upto:
+            fig.add_trace(
+                go.Scatter(
+                    x=[p["t_min"] for p in series_upto],
+                    y=[p["value"] for p in series_upto],
+                    mode="lines",
+                    name="Online MFI Analyzer (<= t)",
+                    line=dict(color=COLOR["baseline"], width=2),
+                )
+            )
+
+        # Completed lab results known as-of t
+        labs_upto = [lp for lp in view["lab_points"] if lp["result_min"] <= t_cur]
+        if labs_upto:
+            fig.add_trace(
+                go.Scatter(
+                    x=[lp["result_min"] for lp in labs_upto],
+                    y=[lp["mfi"] for lp in labs_upto],
+                    mode="markers",
+                    name="Resulted Lab MFI (<= t)",
+                    marker=dict(color=COLOR["navy"], size=8, symbol="diamond"),
+                )
+            )
+
+        # Calibrated 90% Interval Error Bar at decision time t
+        fig.add_trace(
+            go.Scatter(
+                x=[t_cur],
+                y=[pred["point_mfi"]],
+                error_y=dict(
+                    type="data",
+                    symmetric=False,
+                    array=[pred["upper_mfi"] - pred["point_mfi"]],
+                    arrayminus=[pred["point_mfi"] - pred["lower_mfi"]],
+                    color= view["action_meta"]["color"],
+                    thickness=3,
+                    width=10,
+                ),
+                mode="markers",
+                name=f"90% Conformal Interval [{pred['lower_mfi']:.2f}, {pred['upper_mfi']:.2f}]",
+                marker=dict(color=view["action_meta"]["color"], size=12, symbol="circle"),
+            )
+        )
+
+        # If lab truth is revealed (e.g., Step T4/T5), plot reconciled truth marker
+        if view.get("revealed_mfi") is not None and (
+            selected_mode != ExecutionMode.ILLUSTRATIVE_DEMO.value
+            or st.session_state["demo_step"] in ("T4_TRUTH_RECONCILED", "T5_ECONOMIC_LEDGER")
+        ):
+            fig.add_trace(
+                go.Scatter(
+                    x=[t_cur + 45.0],
+                    y=[float(view["revealed_mfi"])],
+                    mode="markers",
+                    name=f"Later Revealed Lab Truth ({float(view['revealed_mfi']):.2f} g/10m)",
+                    marker=dict(color=COLOR["green"], size=13, symbol="star"),
+                )
+            )
+
+        fig.update_layout(
+            **chart_layout(
+                title=f"Event {view['event_id']} · Decision Time t = {t_cur:.0f} min (Causal As-Of Slice)",
+                height=390,
+            )
+        )
+        fig.update_xaxes(title_text="Elapsed Time Since Transition Start (minutes)")
+        fig.update_yaxes(title_text="Melt Flow Index (MFI, g/10min)")
+        st.plotly_chart(fig, use_container_width=True)
+
+        # Causal Firewall Evidence Card
+        st.markdown(
+            panel_open("Causal As-Of Firewall & Evidence Lineage")
+            + data_row("Decision Timestamp (UTC)", str(view["decision_time"]))
+            + data_row("What PrimePath KNEW at t", str(view["what_knew"]))
+            + data_row("What PrimePath Did NOT Know at t", str(view["what_did_not_know"]))
+            + data_row(
+                "Dwell Status (As-Of t)",
+                f"{view['dwell'].get('elapsed_min', 0.0):.1f}m / {view['dwell'].get('required_min', 30.0):.1f}m "
+                f"({'SATISFIED' if view['dwell'].get('satisfied') else 'INCOMPLETE'})",
+            )
+            + panel_close(),
+            unsafe_allow_html=True,
+        )
+
+    with col_gov:
+        section_header("Human / QC Authorization & Material Window")
+
+        # Human QC Approval Card
+        st.markdown(
+            panel_open("Human Quality Authority Sign-Off (Advisory Boundary)")
+            + data_row("Required Approver Role", str(view["approver_role"]))
+            + data_row("Disposition Action", str(view["action"]))
+            + data_row("Current Authorization Status", str(view["approval_status"]))
+            + data_row("DCS / Valve Actuation", "NONE (Strictly Read-Only Advisory)")
+            + panel_close(),
+            unsafe_allow_html=True,
+        )
+
+        if view["action"] == "PRIME_RELEASE_CANDIDATE":
+            ac1, ac2, ac3 = st.columns(3)
+            if ac1.button("✅ Authorize (Demo QC)", use_container_width=True):
+                st.session_state["approval_status"] = (
+                    ApprovalStatus.HUMAN_AUTHORIZED_IN_DEMO.value
+                )
+                st.rerun()
+            if ac2.button("⏸️ Keep Pending", use_container_width=True):
+                st.session_state["approval_status"] = (
+                    ApprovalStatus.PENDING_HUMAN_AUTHORIZATION.value
+                )
+                st.rerun()
+            if ac3.button("❌ Reject / Hold", use_container_width=True):
+                st.session_state["approval_status"] = (
+                    ApprovalStatus.REJECTED_OR_HELD.value
+                )
+                st.rerun()
+
+        # Mapped Material Identity Card
+        st.markdown(
+            panel_open("Downstream Material Window & Residence Mapping")
+            + data_row("Mapped Polymer Mass", f"{mw['mapped_mass_tonnes']:.2f} tonnes")
+            + data_row("Recoverable Mass", f"{mw['recoverable_mass_tonnes']:.2f} tonnes")
+            + data_row("Mean Residence Age", f"{mw['mean_age_min']:.1f} min")
+            + data_row("Residence Uncertainty", f"±{mw['residence_uncertainty_min']:.1f} min")
+            + data_row("Mapping Quality", str(mw["mapping_quality"]))
+            + data_row("Current Destination Route", str(mw["primary_destination"]))
+            + panel_close(),
+            unsafe_allow_html=True,
+        )
+
+        # Sensor Health & Applicability Summary Card
+        st.markdown(
+            panel_open("Sensor Health & OOD Applicability Guardian")
+            + data_row("Sensor Health State", str(view["health_state"]))
+            + data_row("OOD Applicability State", str(view["applicability_state"]))
+            + data_row(
+                "Permitted Actions (Post-Gate)",
+                ", ".join(view["permitted_actions"]),
+            )
+            + data_row(
+                "Model / Calibrator Version",
+                f"{view['versions']['model']} · {view['versions']['calibration']}",
+            )
+            + panel_close(),
+            unsafe_allow_html=True,
+        )
+
+    # Bottom Section: 13 Hard Gates + 5 Candidacy Gates & Expected Loss Table
+    section_header("Complete 18-Gate Policy Audit (13 Hard BLOCK Gates + 5 Candidacy Gates)")
+    g_col, e_col = st.columns([1.35, 1.0], gap="large")
+
+    with g_col:
+        gate_rows = []
+        for g in view["gates"]:
+            gate_rows.append(
+                {
+                    "Gate ID": g["gate_id"],
+                    "Class": "HARD (BLOCK)" if g["severity_name"] == "BLOCK" else "CANDIDACY",
+                    "Status": "PASS" if g["passed"] else "FAIL",
+                    "Reason Code": g["reason_code"],
+                    "Detail": g.get("detail", ""),
+                }
+            )
+        st.dataframe(pd.DataFrame(gate_rows), use_container_width=True, hide_index=True)
+
+    with e_col:
+        el_rows = econ.get("expected_loss_table", {}).get("rows", [])
+        el_df_rows = []
+        for r in el_rows:
+            el_df_rows.append(
+                {
+                    "Permitted Action": r["action"],
+                    "Expected Loss (₹)": f"₹{r['expected_loss_currency']:,.0f}",
+                    "False-Prime Exp (₹)": f"₹{r['false_prime_exposure_currency']:,.0f}",
+                    "False-Hold Exp (₹)": f"₹{r['false_hold_exposure_currency']:,.0f}",
+                }
+            )
+        st.markdown("**Expected Loss Over Permitted Actions Only (Phase 10)**")
+        st.dataframe(pd.DataFrame(el_df_rows), use_container_width=True, hide_index=True)
+
+        voi_info = econ.get("voi", {})
+        st.markdown(
+            panel_open("Discrete Value of Information (VOI) for Confirmatory Sampling")
+            + data_row("VOI (₹)", f"₹{float(voi_info.get('voi_currency', 0.0)):,.0f}")
+            + data_row("Sample Cost (₹)", f"₹{float(voi_info.get('sample_cost_currency', 0.0)):,.0f}")
+            + data_row("VOI Recommends Sample?", str(voi_info.get("recommend_sample", False)))
+            + data_row("VOI Rationale", str(voi_info.get("reason", "")))
+            + panel_close(),
+            unsafe_allow_html=True,
+        )
+
+
+# ══════════════════════════════════════════════════════════════
+# TAB 2: EXECUTIVE VALUE VIEW (30-SECOND JURY SUMMARY)
+# ══════════════════════════════════════════════════════════════
+with tab_exec:
+    ex = build_executive_view(rt, scenario_name=selected_scenario)
+    section_header("Executive Summary — Why PrimePath Exists")
+    e1, e2 = st.columns(2, gap="large")
+    with e1:
+        st.markdown(
+            panel_open("1. The Industrial Grade-Transition Dilemma")
+            + f"<p style='font-size:0.9rem; line-height:1.55; color:{COLOR['text']};'>{ex['problem_statement']}</p>"
+            + f"<p style='font-size:0.9rem; line-height:1.55; color:{COLOR['text']}; margin-top:10px;'><strong>Why Point Soft Sensors Fail:</strong> {ex['why_point_fails']}</p>"
+            + panel_close(),
+            unsafe_allow_html=True,
+        )
+    with e2:
+        steps_html = "".join(
+            f"<div style='padding:5px 0; border-bottom:1px solid {COLOR['border']}; font-size:0.85rem;'><strong>{line}</strong></div>"
+            for line in ex["how_primepath_works"]
+        )
+        st.markdown(
+            panel_open("2. Six-Layer PrimePath Decision Lineage")
+            + steps_html
+            + panel_close(),
+            unsafe_allow_html=True,
+        )
+
+    section_header("Illustrative Demo Walkthrough vs. Locked Validation Evidence (Strictly Separated)")
+    c_demo, c_lock = st.columns(2, gap="large")
+
+    with c_demo:
+        st.markdown(
+            f"**A. {ex['illustrative_demo_summary']['label']}**  \n"
+            "*Demonstrates full action vocabulary on controlled A→B evidence (NOT validation evidence):*"
+        )
+        st.dataframe(
+            pd.DataFrame(ex["illustrative_demo_summary"]["steps"]),
+            use_container_width=True,
+            hide_index=True,
+        )
+        insight(
+            f"<strong>Illustrative Episode Economics ({selected_scenario} Scenario):</strong> "
+            f"On a 50.0 t mapped window with ₹{int(ex['illustrative_demo_summary']['scenario_spread_per_tonne']):,}/t "
+            f"prime-vs-downgrade spread, identifying a verified prime candidate represents "
+            f"<strong>₹{int(ex['illustrative_demo_summary']['counterfactual_opportunity_currency']):,}</strong> "
+            f"in counterfactual opportunity value (SIMULATED/ASSUMPTION)."
+        )
+
+    with c_lock:
+        st.markdown(
+            f"**B. {ex['locked_validation_summary']['label']}**  \n"
+            "*Frozen chronological evaluation where B→C and C→B are unseen in TRAIN:*"
+        )
+        lb = ex["locked_validation_summary"]["level_b_decision"]
+        lc = ex["locked_validation_summary"]["level_c_economic"]
+        lock_rows = []
+        for pol in ["SOP_FIXTURE", "POINT_THRESHOLD", "PRIMEPATH", "ORACLE_DIAGNOSTIC_ONLY"]:
+            if pol in lb:
+                lock_rows.append(
+                    {
+                        "Policy": pol,
+                        "False-Prime Mass (t)": lb[pol].get("false_prime_mass_tonnes"),
+                        "False-Hold Mass (t)": lb[pol].get("false_hold_mass_tonnes"),
+                        "Abstention Rate": f"{100.0 * float(lb[pol].get('mean_abstention_rate', 0.0)):.1f}%",
+                        "False-Prime Exposure (₹)": f"₹{float(lc.get(pol, {}).get('false_prime_exposure_currency', 0.0)):,.0f}",
+                    }
+                )
+        st.dataframe(pd.DataFrame(lock_rows), use_container_width=True, hide_index=True)
+        insight(
+            "<strong>Verified Validation Finding:</strong> On the locked test split (B→C, C→B), "
+            "PrimePath's train-only OOD detector blocks all 235 rows (100% abstention), achieving "
+            "<strong>0.0 tonnes false-prime mass</strong> vs 1,356.0 t (SOP) and 588.0 t (Point Threshold)."
+        )
+
+
+# ══════════════════════════════════════════════════════════════
+# TAB 3: LOCKED VALIDATION & CLAIM LEDGER
+# ══════════════════════════════════════════════════════════════
+with tab_locked:
+    lv = build_locked_validation_view(rt)
+    section_header("Phase-13 Reproducibility Fingerprints & Pass/Fail Criteria")
+
+    f1, f2 = st.columns([1, 1.3], gap="large")
+    with f1:
+        fp = lv["fingerprints"]
+        st.markdown(
+            panel_open("SHA-256 Reproducibility Fingerprints")
+            + data_row("Manifest Fingerprint", str(fp.get("manifest", "")))
+            + data_row("Calibrator Fingerprint", str(fp.get("calibrator", "")))
+            + data_row("Policy Fingerprint", str(fp.get("policy", "")))
+            + data_row("Economics Fingerprint", str(fp.get("economics", "")))
+            + data_row("Deterministic Replay Match", str(lv["determinism_evidence"].get("identical", True)))
+            + panel_close(),
+            unsafe_allow_html=True,
+        )
+    with f2:
+        pf = lv["pass_fail_criteria"]
+        pf_rows = [
+            {"Criterion": k, "Passed": "✅ PASS" if v else "❌ FAIL"}
+            for k, v in pf.items()
+        ]
+        st.dataframe(pd.DataFrame(pf_rows), use_container_width=True, hide_index=True)
+
+    section_header("Claim & Evidence Ledger (Strict E2/E3 Ceiling)")
+    claims_df = pd.DataFrame(lv["claim_ledger"])
+    if not claims_df.empty:
+        cols_to_show = [
+            c
+            for c in [
+                "topic",
+                "evidence_level",
+                "claim",
+                "allowed_wording",
+                "prohibited_wording",
+            ]
+            if c in claims_df.columns
+        ]
+        st.dataframe(claims_df[cols_to_show], use_container_width=True, hide_index=True)
