@@ -1,0 +1,68 @@
+{
+  "frozen_manifest": {
+    "seed": 42,
+    "n_per_dir": 3,
+    "feature_version": "feat-v1",
+    "partitions": {
+      "TRAIN": [
+        "EP-AB-00",
+        "EP-AB-01",
+        "EP-AB-02",
+        "EP-AC-00",
+        "EP-AC-01",
+        "EP-AC-02",
+        "EP-BA-00",
+        "EP-BA-01",
+        "EP-BA-02",
+        "EP-CA-00"
+      ],
+      "CALIBRATION": [
+        "EP-BC-00",
+        "EP-CA-01",
+        "EP-CA-02"
+      ],
+      "LOCKED_TEST": [
+        "EP-BC-01",
+        "EP-BC-02",
+        "EP-CB-00",
+        "EP-CB-01",
+        "EP-CB-02"
+      ]
+    },
+    "versions": {
+      "replay": "replay-v1",
+      "model": "gbm-mfi-v1",
+      "calibration": "split-conformal-v1:marginal_symmetric",
+      "policy": "policy-v1",
+      "economics": "economics-v1",
+      "scenario": "BASE"
+    },
+    "scenario": "BASE",
+    "disposition_policy": {
+      "base_policy_version": "policy-v1",
+      "nominal_coverage": 0.9,
+      "decision_horizon_min": 240.0,
+      "sample_result_latency_min": 45.0,
+      "recommendation_expiry_min": 30.0,
+      "required_approver": "Shift Quality Approver (QC)",
+      "ambiguous_route_action": "ABSTAIN",
+      "require_well_supported_for_prime": true,
+      "max_residence_uncertainty_min": 180.0,
+      "expected_model_version": null,
+      "expected_calibration_version": null,
+      "disposition_version": "disposition-v1",
+      "provenance": "ASSUMPTION \u2014 POLICY values, not HMEL operating limits"
+    },
+    "runtime_versions": {
+      "python": "3.10.0",
+      "numpy": "1.26.4",
+      "sklearn": "1.6.1"
+    }
+  },
+  "reproducibility_fingerprints": {
+    "manifest": "manifest:5abc0eb1ad93f56c",
+    "calibrator": "calib:3cf275c76727911a",
+    "policy": "policy:a2555a4d9431c288",
+    "economics": "econ:6cbd173e21b7b79a"
+  }
+}

@@ -1,0 +1,595 @@
+{
+  "phase": 12,
+  "replay_version": "replay-v1",
+  "frozen_manifest": {
+    "versions": {
+      "replay": "replay-v1",
+      "model": "gbm-mfi-v1",
+      "calibration": "split-conformal-v1:marginal_symmetric",
+      "policy": "policy-v1",
+      "economics": "economics-v1",
+      "scenario": "BASE"
+    },
+    "seed": 42,
+    "n_per_dir": 3,
+    "scenario": "BASE",
+    "note": "Artifacts frozen before replay; never tuned after observing results."
+  },
+  "policies": {
+    "SOP": "SIMULATED CURRENT/SOP TIMING FIXTURE (time-based, deterministic)",
+    "POINT_THRESHOLD": "point estimate vs spec; ignores calibrated interval",
+    "PRIMEPATH": "real Phase-9 + Phase-10 stack (no re-implementation)",
+    "ORACLE": "ORACLE \u2014 DIAGNOSTIC ONLY; uses future truth as a bound; NEVER deployable or a competing product"
+  },
+  "future_truth_firewall": {
+    "mechanism": "as_of_event() structurally truncates all post-t data; deployable policies decide BEFORE any truth is revealed.",
+    "oracle_channel": "future truth reaches ONLY the Oracle, after deployable policies have decided."
+  },
+  "locked_evaluation": {
+    "n_locked_episodes": 5,
+    "comparison_table": [
+      {
+        "policy": "SOP_FIXTURE",
+        "mean_time_to_candidate_min": 160.0,
+        "total_samples": 0,
+        "false_prime_mass_tonnes": 1356.0,
+        "false_hold_mass_tonnes": 0,
+        "mean_abstention_rate": 0.0,
+        "counterfactual_value_currency": 19680000.0,
+        "gross_avoidable_loss_currency": 82920000.0
+      },
+      {
+        "policy": "POINT_THRESHOLD",
+        "mean_time_to_candidate_min": 416.0,
+        "total_samples": 0,
+        "false_prime_mass_tonnes": 588.0,
+        "false_hold_mass_tonnes": 0,
+        "mean_abstention_rate": 0.0,
+        "counterfactual_value_currency": 19680000.0,
+        "gross_avoidable_loss_currency": 36328000.0
+      },
+      {
+        "policy": "PRIMEPATH",
+        "mean_time_to_candidate_min": null,
+        "total_samples": 0,
+        "false_prime_mass_tonnes": 0,
+        "false_hold_mass_tonnes": 984.0,
+        "mean_abstention_rate": 1.0,
+        "counterfactual_value_currency": 19680000.0,
+        "gross_avoidable_loss_currency": 19680000.0
+      },
+      {
+        "policy": "ORACLE_DIAGNOSTIC_ONLY",
+        "mean_time_to_candidate_min": 612.0,
+        "total_samples": 0,
+        "false_prime_mass_tonnes": 0,
+        "false_hold_mass_tonnes": 0,
+        "mean_abstention_rate": 0.0,
+        "counterfactual_value_currency": 19680000.0,
+        "gross_avoidable_loss_currency": 656000.0
+      }
+    ],
+    "note": "Raw component metrics; NO overall score/ranking."
+  },
+  "event_level_trace": {
+    "event_id": "EP-BC-01",
+    "policy": "PRIMEPATH",
+    "step": 0,
+    "as_of_context": {
+      "event_id": "EP-BC-01",
+      "decision_time": "2026-01-19T01:50:00+00:00",
+      "grade_from": "B",
+      "grade_to": "C",
+      "unit": "SIM-UNIT-1",
+      "elapsed_min": 30.0,
+      "spec_band": [
+        0.9,
+        1.1
+      ],
+      "point_estimate": 7.935300346311829,
+      "interval": [
+        7.698433049382086,
+        8.172167643241572
+      ],
+      "material_window_summary": {
+        "mapped_mass_tonnes": 6.0,
+        "mean_age_min": 162.0,
+        "production_time_start": "2026-01-18T17:38:38.409538+00:00",
+        "material_time_start": "2026-01-19T01:20:00+00:00",
+        "primary_destination": "DOWNGRADE",
+        "mapping_quality": "PARTIALLY_SUPPORTED",
+        "route_known": true
+      },
+      "health_state": "NORMAL",
+      "applicability_state": "UNSUPPORTED",
+      "as_of_evidence_ids": {
+        "observations": [
+          "2026-01-19T01:20:00+00:00",
+          "2026-01-19T01:20:00+00:00",
+          "2026-01-19T01:20:00+00:00",
+          "2026-01-19T01:21:00+00:00",
+          "2026-01-19T01:21:00+00:00",
+          "2026-01-19T01:21:00+00:00",
+          "2026-01-19T01:22:00+00:00",
+          "2026-01-19T01:22:00+00:00",
+          "2026-01-19T01:22:00+00:00",
+          "2026-01-19T01:23:00+00:00",
+          "2026-01-19T01:23:00+00:00",
+          "2026-01-19T01:23:00+00:00",
+          "2026-01-19T01:24:00+00:00",
+          "2026-01-19T01:24:00+00:00",
+          "2026-01-19T01:24:00+00:00",
+          "2026-01-19T01:25:00+00:00",
+          "2026-01-19T01:25:00+00:00",
+          "2026-01-19T01:25:00+00:00",
+          "2026-01-19T01:26:00+00:00",
+          "2026-01-19T01:26:00+00:00",
+          "2026-01-19T01:26:00+00:00",
+          "2026-01-19T01:27:00+00:00",
+          "2026-01-19T01:27:00+00:00",
+          "2026-01-19T01:27:00+00:00",
+          "2026-01-19T01:28:00+00:00",
+          "2026-01-19T01:28:00+00:00",
+          "2026-01-19T01:28:00+00:00",
+          "2026-01-19T01:29:00+00:00",
+          "2026-01-19T01:29:00+00:00",
+          "2026-01-19T01:29:00+00:00",
+          "2026-01-19T01:30:00+00:00",
+          "2026-01-19T01:30:00+00:00",
+          "2026-01-19T01:30:00+00:00",
+          "2026-01-19T01:31:00+00:00",
+          "2026-01-19T01:31:00+00:00",
+          "2026-01-19T01:31:00+00:00",
+          "2026-01-19T01:32:00+00:00",
+          "2026-01-19T01:32:00+00:00",
+          "2026-01-19T01:32:00+00:00",
+          "2026-01-19T01:33:00+00:00",
+          "2026-01-19T01:33:00+00:00",
+          "2026-01-19T01:33:00+00:00",
+          "2026-01-19T01:34:00+00:00",
+          "2026-01-19T01:34:00+00:00",
+          "2026-01-19T01:34:00+00:00",
+          "2026-01-19T01:35:00+00:00",
+          "2026-01-19T01:35:00+00:00",
+          "2026-01-19T01:35:00+00:00",
+          "2026-01-19T01:36:00+00:00",
+          "2026-01-19T01:36:00+00:00",
+          "2026-01-19T01:36:00+00:00",
+          "2026-01-19T01:37:00+00:00",
+          "2026-01-19T01:37:00+00:00",
+          "2026-01-19T01:37:00+00:00",
+          "2026-01-19T01:38:00+00:00",
+          "2026-01-19T01:38:00+00:00",
+          "2026-01-19T01:38:00+00:00",
+          "2026-01-19T01:39:00+00:00",
+          "2026-01-19T01:39:00+00:00",
+          "2026-01-19T01:39:00+00:00",
+          "2026-01-19T01:40:00+00:00",
+          "2026-01-19T01:40:00+00:00",
+          "2026-01-19T01:40:00+00:00",
+          "2026-01-19T01:41:00+00:00",
+          "2026-01-19T01:41:00+00:00",
+          "2026-01-19T01:41:00+00:00",
+          "2026-01-19T01:42:00+00:00",
+          "2026-01-19T01:42:00+00:00",
+          "2026-01-19T01:42:00+00:00",
+          "2026-01-19T01:43:00+00:00",
+          "2026-01-19T01:43:00+00:00",
+          "2026-01-19T01:43:00+00:00",
+          "2026-01-19T01:44:00+00:00",
+          "2026-01-19T01:44:00+00:00",
+          "2026-01-19T01:44:00+00:00",
+          "2026-01-19T01:45:00+00:00",
+          "2026-01-19T01:45:00+00:00",
+          "2026-01-19T01:45:00+00:00",
+          "2026-01-19T01:46:00+00:00",
+          "2026-01-19T01:46:00+00:00",
+          "2026-01-19T01:46:00+00:00",
+          "2026-01-19T01:47:00+00:00",
+          "2026-01-19T01:47:00+00:00",
+          "2026-01-19T01:47:00+00:00",
+          "2026-01-19T01:48:00+00:00",
+          "2026-01-19T01:48:00+00:00",
+          "2026-01-19T01:48:00+00:00",
+          "2026-01-19T01:49:00+00:00",
+          "2026-01-19T01:49:00+00:00",
+          "2026-01-19T01:49:00+00:00",
+          "2026-01-19T01:50:00+00:00",
+          "2026-01-19T01:50:00+00:00",
+          "2026-01-19T01:50:00+00:00"
+        ],
+        "lab_results": [],
+        "routing_visible": [
+          "DOWNGRADE"
+        ]
+      },
+      "versions": {
+        "replay": "replay-v1",
+        "model": "gbm-mfi-v1",
+        "calibration": "split-conformal-v1:marginal_symmetric",
+        "policy": "policy-v1",
+        "economics": "economics-v1",
+        "scenario": "BASE"
+      }
+    },
+    "decision": {
+      "policy": "PRIMEPATH",
+      "decision_time": "2026-01-19T01:50:00+00:00",
+      "action": "ABSTAIN",
+      "reason_codes": [
+        "ABSTAIN_OOD"
+      ],
+      "permitted_actions": [
+        "ABSTAIN"
+      ],
+      "expected_loss": null,
+      "requested_sample": false,
+      "note": "PrimePath hard-gates-first; economics downstream",
+      "provenance": "SIMULATED"
+    },
+    "later_truth": {
+      "revealed_mfi": 8.081612379146378,
+      "was_in_spec": false,
+      "actual_route": "DOWNGRADE"
+    },
+    "outcome": {
+      "policy": "PRIMEPATH",
+      "decision_time": "2026-01-19T01:50:00+00:00",
+      "action": "ABSTAIN",
+      "was_in_spec": false,
+      "affected_mass_tonnes": 6.0,
+      "false_prime": false,
+      "false_hold": false,
+      "is_sample": false,
+      "is_abstain": true,
+      "false_prime_exposure_currency": 0.0,
+      "false_hold_opportunity_currency": 0.0,
+      "sample_cost_currency": 0.0,
+      "workflow_cost_currency": 0.0,
+      "realized_value_currency": 450000.0,
+      "counterfactual_value_currency": 0.0,
+      "loss_currency": 0.0
+    },
+    "note": "Full evidence chain: knew -> predicted -> did NOT know -> recommended -> material window -> happened later -> value."
+  },
+  "determinism_evidence": {
+    "fingerprint_a": "13acf6841c4621b6",
+    "fingerprint_b": "13acf6841c4621b6",
+    "identical": true
+  },
+  "canonical_demo_fixture": {
+    "label": "ILLUSTRATIVE DEMO FIXTURE \u2014 not validation evidence",
+    "event_id": "DEMO-A2B",
+    "frozen_seed": 4242,
+    "steps": [
+      {
+        "t": "T1",
+        "narrative": "point in-spec, interval crosses limit",
+        "action": "HOLD",
+        "reason_codes": [
+          "HOLD_INTERVAL_CROSSES_SPEC"
+        ],
+        "expected": "HOLD"
+      },
+      {
+        "t": "T2",
+        "narrative": "sample would resolve material uncertainty",
+        "action": "SAMPLE_NOW",
+        "reason_codes": [
+          "SAMPLE_ELIGIBLE",
+          "HOLD_INTERVAL_CROSSES_SPEC"
+        ],
+        "expected": "SAMPLE_NOW"
+      },
+      {
+        "t": "T3",
+        "narrative": "interval in-spec, dwell ok, supported, normal",
+        "action": "PRIME_RELEASE_CANDIDATE",
+        "reason_codes": [
+          "PRIME_INTERVAL_PASS",
+          "PRIME_DWELL_PASS",
+          "PRIME_HEALTH_PASS",
+          "PRIME_APPLICABILITY_PASS",
+          "PRIME_MATERIAL_SUPPORTED",
+          "PRIME_CANDIDATE_REQUIRES_AUTHORIZATION"
+        ],
+        "expected": "PRIME_RELEASE_CANDIDATE"
+      },
+      {
+        "t": "T4",
+        "narrative": "future lab truth revealed -> reconcile",
+        "revealed_mfi": 7.95,
+        "was_in_spec": true
+      },
+      {
+        "t": "T5",
+        "narrative": "economic ledger compares consequences",
+        "ledger": {
+          "event_id": "DEMO-A2B",
+          "decision_id": "DEMO@T3",
+          "scenario": "BASE",
+          "phase9_action": "PRIME_RELEASE_CANDIDATE",
+          "permitted_actions": [
+            "PRIME_RELEASE_CANDIDATE",
+            "HOLD",
+            "ABSTAIN"
+          ],
+          "economic_preferred_action_ADVISORY": "PRIME_RELEASE_CANDIDATE",
+          "mass_tonnes": 50.0,
+          "recoverable_mass_tonnes": 50.0,
+          "prime_value_per_tonne": 95000.0,
+          "actual_route_value_per_tonne": 75000.0,
+          "spread_per_tonne": 20000.0,
+          "sample_cost_currency": 20000.0,
+          "workflow_cost_currency": 8000.0,
+          "false_prime_exposure_currency": 3000000.0,
+          "false_hold_exposure_currency": 0.0,
+          "expected_loss_chosen_currency": 8000.0,
+          "expected_loss_table": {
+            "permitted_actions": [
+              "PRIME_RELEASE_CANDIDATE",
+              "HOLD",
+              "ABSTAIN"
+            ],
+            "min_loss_action": "PRIME_RELEASE_CANDIDATE",
+            "rows": [
+              {
+                "action": "PRIME_RELEASE_CANDIDATE",
+                "expected_loss_currency": 8000.0,
+                "false_prime_exposure_currency": 3000000.0,
+                "false_hold_exposure_currency": 0.0,
+                "permitted": true,
+                "components": [
+                  {
+                    "name": "false_prime",
+                    "amount_currency": 0.0,
+                    "provenance": "ASSUMPTION",
+                    "formula": "P(bad) * mass_tonnes * false_prime_consequence_per_tonne",
+                    "inputs": {
+                      "p_bad_PROXY": 0.0,
+                      "mass_tonnes": 50.0,
+                      "false_prime_consequence_per_tonne": 60000.0
+                    }
+                  },
+                  {
+                    "name": "false_hold_opportunity",
+                    "amount_currency": 0.0,
+                    "provenance": "ASSUMPTION",
+                    "formula": "P(good) * recoverable_mass_tonnes * spread_per_tonne * hold_fraction",
+                    "inputs": {
+                      "p_good_PROXY": 1.0,
+                      "recoverable_mass_tonnes": 50.0,
+                      "spread_per_tonne": 20000.0,
+                      "hold_fraction": 0.0
+                    }
+                  },
+                  {
+                    "name": "sample_cost",
+                    "amount_currency": 0.0,
+                    "provenance": "ASSUMPTION",
+                    "formula": "0 (no sample)",
+                    "inputs": {
+                      "sample_cost": 20000.0
+                    }
+                  },
+                  {
+                    "name": "workflow_cost",
+                    "amount_currency": 8000.0,
+                    "provenance": "ASSUMPTION",
+                    "formula": "scenario.workflow_cost",
+                    "inputs": {
+                      "workflow_cost": 8000.0
+                    }
+                  }
+                ],
+                "risk": {
+                  "p_bad_PROXY": 0.0,
+                  "p_good_PROXY": 1.0,
+                  "kind": "interval_derived",
+                  "validated": false,
+                  "provenance": "SIMULATED",
+                  "detail": "fraction of interval [7.700,8.300] outside spec [7.600,8.400]",
+                  "note": "ILLUSTRATIVE risk proxy \u2014 NOT a validated probability of bad material; not a decision trigger."
+                }
+              },
+              {
+                "action": "HOLD",
+                "expected_loss_currency": 1000000.0,
+                "false_prime_exposure_currency": 0.0,
+                "false_hold_exposure_currency": 1000000.0,
+                "permitted": true,
+                "components": [
+                  {
+                    "name": "false_prime",
+                    "amount_currency": 0.0,
+                    "provenance": "ASSUMPTION",
+                    "formula": "0 (action does not prime)",
+                    "inputs": {
+                      "p_bad_PROXY": 0.0,
+                      "mass_tonnes": 50.0,
+                      "false_prime_consequence_per_tonne": 60000.0
+                    }
+                  },
+                  {
+                    "name": "false_hold_opportunity",
+                    "amount_currency": 1000000.0,
+                    "provenance": "ASSUMPTION",
+                    "formula": "P(good) * recoverable_mass_tonnes * spread_per_tonne * hold_fraction",
+                    "inputs": {
+                      "p_good_PROXY": 1.0,
+                      "recoverable_mass_tonnes": 50.0,
+                      "spread_per_tonne": 20000.0,
+                      "hold_fraction": 1.0
+                    }
+                  },
+                  {
+                    "name": "sample_cost",
+                    "amount_currency": 0.0,
+                    "provenance": "ASSUMPTION",
+                    "formula": "0 (no sample)",
+                    "inputs": {
+                      "sample_cost": 20000.0
+                    }
+                  },
+                  {
+                    "name": "workflow_cost",
+                    "amount_currency": 0.0,
+                    "provenance": "ASSUMPTION",
+                    "formula": "0 (no workflow triggered)",
+                    "inputs": {
+                      "workflow_cost": 8000.0
+                    }
+                  }
+                ],
+                "risk": {
+                  "p_bad_PROXY": 0.0,
+                  "p_good_PROXY": 1.0,
+                  "kind": "interval_derived",
+                  "validated": false,
+                  "provenance": "SIMULATED",
+                  "detail": "fraction of interval [7.700,8.300] outside spec [7.600,8.400]",
+                  "note": "ILLUSTRATIVE risk proxy \u2014 NOT a validated probability of bad material; not a decision trigger."
+                }
+              },
+              {
+                "action": "ABSTAIN",
+                "expected_loss_currency": 1000000.0,
+                "false_prime_exposure_currency": 0.0,
+                "false_hold_exposure_currency": 1000000.0,
+                "permitted": true,
+                "components": [
+                  {
+                    "name": "false_prime",
+                    "amount_currency": 0.0,
+                    "provenance": "ASSUMPTION",
+                    "formula": "0 (action does not prime)",
+                    "inputs": {
+                      "p_bad_PROXY": 0.0,
+                      "mass_tonnes": 50.0,
+                      "false_prime_consequence_per_tonne": 60000.0
+                    }
+                  },
+                  {
+                    "name": "false_hold_opportunity",
+                    "amount_currency": 1000000.0,
+                    "provenance": "ASSUMPTION",
+                    "formula": "P(good) * recoverable_mass_tonnes * spread_per_tonne * hold_fraction",
+                    "inputs": {
+                      "p_good_PROXY": 1.0,
+                      "recoverable_mass_tonnes": 50.0,
+                      "spread_per_tonne": 20000.0,
+                      "hold_fraction": 1.0
+                    }
+                  },
+                  {
+                    "name": "sample_cost",
+                    "amount_currency": 0.0,
+                    "provenance": "ASSUMPTION",
+                    "formula": "0 (no sample)",
+                    "inputs": {
+                      "sample_cost": 20000.0
+                    }
+                  },
+                  {
+                    "name": "workflow_cost",
+                    "amount_currency": 0.0,
+                    "provenance": "ASSUMPTION",
+                    "formula": "0 (no workflow triggered)",
+                    "inputs": {
+                      "workflow_cost": 8000.0
+                    }
+                  }
+                ],
+                "risk": {
+                  "p_bad_PROXY": 0.0,
+                  "p_good_PROXY": 1.0,
+                  "kind": "interval_derived",
+                  "validated": false,
+                  "provenance": "SIMULATED",
+                  "detail": "fraction of interval [7.700,8.300] outside spec [7.600,8.400]",
+                  "note": "ILLUSTRATIVE risk proxy \u2014 NOT a validated probability of bad material; not a decision trigger."
+                }
+              }
+            ],
+            "note": "Expected loss is computed over PERMITTED actions ONLY. min_loss_action may be highlighted but can NEVER override the Phase-9 hard gates or resurrect a blocked action."
+          },
+          "voi": {
+            "voi_currency": 0.0,
+            "el_min_now_currency": 8000.0,
+            "expected_el_post_sample_currency": 68000.0,
+            "sample_cost_currency": 28000.0,
+            "applicable": false,
+            "recommend_sample": false,
+            "min_voi_threshold_currency": 0.0,
+            "bins": [
+              {
+                "name": "GOOD",
+                "probability": 1.0,
+                "posterior_p_bad_PROXY": 0.02,
+                "actions_available": [
+                  "PRIME_RELEASE_CANDIDATE",
+                  "HOLD",
+                  "ABSTAIN"
+                ],
+                "min_loss_action": "PRIME_RELEASE_CANDIDATE",
+                "min_loss_currency": 68000.0
+              },
+              {
+                "name": "BAD",
+                "probability": 0.0,
+                "posterior_p_bad_PROXY": 0.98,
+                "actions_available": [
+                  "HOLD",
+                  "ABSTAIN"
+                ],
+                "min_loss_action": "HOLD",
+                "min_loss_currency": 20000.00000000002
+              }
+            ],
+            "reason": "sampling cannot change the permissible action set",
+            "provenance": "SIMULATED",
+            "voi_model_version": "voi-discrete-v1",
+            "note": "Deterministic discrete-outcome VOI approximation (SIMULATED). Not a validated information value."
+          },
+          "realized_value_currency": 3750000.0,
+          "counterfactual_opportunity_currency": 1000000.0,
+          "value_split": {
+            "realized_value_currency": 3750000.0,
+            "counterfactual_prime_value_currency": 4750000.0,
+            "counterfactual_opportunity_currency": 1000000.0,
+            "avoided_loss_currency": 1000000.0,
+            "realized_good": true,
+            "note": "Realized is observed; counterfactual is hypothetical. avoided_loss is populated ONLY where the synthetic ground truth supports it \u2014 never as a measured HMEL saving."
+          },
+          "versions": {
+            "economics": "economics-v1",
+            "cost_model": "cost-model-v1",
+            "voi_model": "voi-discrete-v1",
+            "policy": "policy-v1",
+            "disposition": "disposition-v1",
+            "scenario": "BASE"
+          },
+          "provenance": "SIMULATED",
+          "note": "SIMULATED/ILLUSTRATIVE economics. Phase-9 hard gates are authoritative; economics rank only PERMITTED actions and never resurrect a blocked action."
+        }
+      }
+    ],
+    "evidence_chain": [
+      "knew",
+      "predicted",
+      "did_not_know",
+      "recommended",
+      "material_window",
+      "happened_later",
+      "value_difference"
+    ],
+    "note": "Controlled evidence into the REAL Phase-9 engine; NOT produced by the model and NEVER mixed with the locked validation set."
+  },
+  "interface_for_phase13": {
+    "entrypoint": "ReplayEngine(gbm, calib, detector, map_params, scenario).replay_episode(event, timestamps, spec, partition) -> ReplayEpisode",
+    "policy_interface": "ReplayPolicy.decide(AsOfContext) -> ReplayDecision",
+    "metrics": "compute_policy_metrics / build_comparison_table / event_trace",
+    "replay_version": "replay-v1"
+  },
+  "note": "Oracle is DIAGNOSTIC ONLY. Economics are SIMULATED/ILLUSTRATIVE and strictly downstream of decisions. The demo fixture is ILLUSTRATIVE and never mixed with locked validation. SIMULATION/ASSUMPTION \u2014 not HMEL-validated."
+}

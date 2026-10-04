@@ -1,0 +1,509 @@
+{
+  "phase": 6,
+  "nominal_coverage": 0.9,
+  "calibration_version": "split-conformal-v1",
+  "feature_version": "feat-v1",
+  "random_seed": 42,
+  "runtime_versions": {
+    "python": "3.10.0",
+    "numpy": "1.26.4",
+    "sklearn": "1.6.1"
+  },
+  "n_events": 18,
+  "partitions": {
+    "TRAIN": [
+      "EP-AB-00",
+      "EP-AB-01",
+      "EP-AB-02",
+      "EP-AC-00",
+      "EP-AC-01",
+      "EP-AC-02",
+      "EP-BA-00",
+      "EP-BA-01",
+      "EP-BA-02",
+      "EP-CA-00"
+    ],
+    "CALIBRATION": [
+      "EP-BC-00",
+      "EP-CA-01",
+      "EP-CA-02"
+    ],
+    "LOCKED_TEST": [
+      "EP-BC-01",
+      "EP-BC-02",
+      "EP-CB-00",
+      "EP-CB-01",
+      "EP-CB-02"
+    ]
+  },
+  "calibration_rows": 141,
+  "calibration_events": 3,
+  "locked_rows": 235,
+  "locked_events": 5,
+  "min_subgroup_rows": 40,
+  "min_subgroup_events": 2,
+  "estimators": {
+    "linear_process": {
+      "model_version": "linreg-mfi-v1",
+      "calibration_rows": 141,
+      "calibration_events": 3,
+      "chosen_method": "marginal_symmetric",
+      "conditioning_gated": true,
+      "methods_eligible_for_selection": [
+        "marginal_symmetric"
+      ],
+      "calibration_coverage_by_method": {
+        "marginal_symmetric": {
+          "n_rows": 141,
+          "coverage": 0.9078014184397163,
+          "under_coverage": 0.09219858156028371,
+          "mean_width": 0.745804483811625,
+          "min_width": 0.7458044838116242,
+          "median_width": 0.7458044838116247,
+          "max_width": 0.7458044838116251
+        },
+        "marginal_asymmetric": {
+          "n_rows": 141,
+          "coverage": 0.9078014184397163,
+          "under_coverage": 0.09219858156028371,
+          "mean_width": 0.743709582277592,
+          "min_width": 0.7437095822775923,
+          "median_width": 0.7437095822775924,
+          "max_width": 0.7437095822775925
+        },
+        "phase_symmetric": {
+          "n_rows": 141,
+          "coverage": 0.9078014184397163,
+          "under_coverage": 0.09219858156028371,
+          "mean_width": 0.7392035802446298,
+          "min_width": 0.7144028842358279,
+          "median_width": 0.7144028842358279,
+          "max_width": 0.7677656026194741
+        },
+        "phase_asymmetric": {
+          "n_rows": 141,
+          "coverage": 0.9148936170212766,
+          "under_coverage": 0.08510638297872342,
+          "mean_width": 0.6779273529721567,
+          "min_width": 0.6162937823370853,
+          "median_width": 0.6162937823370854,
+          "max_width": 0.7441298897548587
+        }
+      },
+      "phase_bucket_support": {},
+      "locked_overall": {
+        "n_rows": 235,
+        "coverage": 0.8127659574468085,
+        "under_coverage": 0.18723404255319154,
+        "mean_width": 0.7458044838116289,
+        "min_width": 0.7458044838116242,
+        "median_width": 0.7458044838116249,
+        "max_width": 0.7458044838116251,
+        "n_events": 5
+      },
+      "locked_by_phase": {
+        "ACTIVE_TRANSITION": {
+          "n_rows": 171,
+          "coverage": 0.8011695906432749,
+          "under_coverage": 0.19883040935672514,
+          "mean_width": 0.745804483811625,
+          "min_width": 0.7458044838116242,
+          "median_width": 0.7458044838116251,
+          "max_width": 0.7458044838116251,
+          "n_events": 5
+        },
+        "POST_STABILIZATION": {
+          "n_rows": 54,
+          "coverage": 0.8333333333333334,
+          "under_coverage": 0.16666666666666663,
+          "mean_width": 0.745804483811625,
+          "min_width": 0.7458044838116242,
+          "median_width": 0.7458044838116247,
+          "max_width": 0.7458044838116251,
+          "n_events": 5
+        },
+        "PRE_BASELINE": {
+          "n_rows": 10,
+          "coverage": 0.9,
+          "under_coverage": 0.09999999999999998,
+          "mean_width": 0.7458044838116248,
+          "min_width": 0.7458044838116242,
+          "median_width": 0.7458044838116247,
+          "max_width": 0.7458044838116251,
+          "n_events": 5
+        }
+      },
+      "locked_by_direction": {
+        "B->C": {
+          "n_rows": 94,
+          "coverage": 0.8404255319148937,
+          "under_coverage": 0.15957446808510634,
+          "mean_width": 0.745804483811625,
+          "min_width": 0.7458044838116242,
+          "median_width": 0.7458044838116247,
+          "max_width": 0.7458044838116251,
+          "n_events": 2
+        },
+        "C->B": {
+          "n_rows": 141,
+          "coverage": 0.7943262411347518,
+          "under_coverage": 0.2056737588652482,
+          "mean_width": 0.745804483811625,
+          "min_width": 0.7458044838116242,
+          "median_width": 0.7458044838116251,
+          "max_width": 0.7458044838116251,
+          "n_events": 3
+        }
+      },
+      "spec_crossing_examples": [
+        {
+          "event_id": "EP-CB-00",
+          "decision_time": "2026-01-22T07:30:00+00:00",
+          "direction": "C->B",
+          "point_mfi": 7.719200608888786,
+          "interval": [
+            7.346298366982974,
+            8.092102850794598
+          ],
+          "spec_band": [
+            7.6,
+            8.4
+          ],
+          "point_state": "IN_SPEC",
+          "uncertainty_state": "CROSSES_LIMIT",
+          "prime_candidacy_eligible_by_interval": false,
+          "note": "point looks in spec but interval crosses a limit -> evidence insufficient"
+        },
+        {
+          "event_id": "EP-CB-00",
+          "decision_time": "2026-01-22T07:50:00+00:00",
+          "direction": "C->B",
+          "point_mfi": 7.684412387458445,
+          "interval": [
+            7.311510145552632,
+            8.057314629364257
+          ],
+          "spec_band": [
+            7.6,
+            8.4
+          ],
+          "point_state": "IN_SPEC",
+          "uncertainty_state": "CROSSES_LIMIT",
+          "prime_candidacy_eligible_by_interval": false,
+          "note": "point looks in spec but interval crosses a limit -> evidence insufficient"
+        },
+        {
+          "event_id": "EP-CB-00",
+          "decision_time": "2026-01-22T08:10:00+00:00",
+          "direction": "C->B",
+          "point_mfi": 7.918888060750922,
+          "interval": [
+            7.54598581884511,
+            8.291790302656734
+          ],
+          "spec_band": [
+            7.6,
+            8.4
+          ],
+          "point_state": "IN_SPEC",
+          "uncertainty_state": "CROSSES_LIMIT",
+          "prime_candidacy_eligible_by_interval": false,
+          "note": "point looks in spec but interval crosses a limit -> evidence insufficient"
+        },
+        {
+          "event_id": "EP-CB-00",
+          "decision_time": "2026-01-22T08:30:00+00:00",
+          "direction": "C->B",
+          "point_mfi": 7.842550041332308,
+          "interval": [
+            7.469647799426496,
+            8.21545228323812
+          ],
+          "spec_band": [
+            7.6,
+            8.4
+          ],
+          "point_state": "IN_SPEC",
+          "uncertainty_state": "CROSSES_LIMIT",
+          "prime_candidacy_eligible_by_interval": false,
+          "note": "point looks in spec but interval crosses a limit -> evidence insufficient"
+        },
+        {
+          "event_id": "EP-CB-00",
+          "decision_time": "2026-01-22T08:50:00+00:00",
+          "direction": "C->B",
+          "point_mfi": 7.830829005321452,
+          "interval": [
+            7.45792676341564,
+            8.203731247227264
+          ],
+          "spec_band": [
+            7.6,
+            8.4
+          ],
+          "point_state": "IN_SPEC",
+          "uncertainty_state": "CROSSES_LIMIT",
+          "prime_candidacy_eligible_by_interval": false,
+          "note": "point looks in spec but interval crosses a limit -> evidence insufficient"
+        }
+      ],
+      "calibrator_manifest": {
+        "calibration_version": "split-conformal-v1",
+        "method": "marginal_symmetric",
+        "nominal_coverage": 0.9,
+        "estimator_version": "linreg-mfi-v1",
+        "feature_version": "feat-v1",
+        "event_ids": [
+          "EP-BC-00",
+          "EP-CA-01",
+          "EP-CA-02"
+        ],
+        "n_rows": 141,
+        "n_events": 3,
+        "min_subgroup_rows": 40,
+        "min_subgroup_events": 2,
+        "marginal": {
+          "lo": 0.37290224190581234,
+          "hi": 0.37290224190581234,
+          "n_rows": 141,
+          "n_events": 3,
+          "exact_guarantee": true,
+          "fallback": false,
+          "source_bucket": "marginal"
+        },
+        "phase": {}
+      }
+    },
+    "gbm": {
+      "model_version": "gbm-mfi-v1",
+      "calibration_rows": 141,
+      "calibration_events": 3,
+      "chosen_method": "marginal_symmetric",
+      "conditioning_gated": true,
+      "methods_eligible_for_selection": [
+        "marginal_symmetric"
+      ],
+      "calibration_coverage_by_method": {
+        "marginal_symmetric": {
+          "n_rows": 141,
+          "coverage": 0.9078014184397163,
+          "under_coverage": 0.09219858156028371,
+          "mean_width": 0.4737345938594883,
+          "min_width": 0.47373459385948635,
+          "median_width": 0.47373459385948724,
+          "max_width": 0.47373459385948735
+        },
+        "marginal_asymmetric": {
+          "n_rows": 141,
+          "coverage": 0.9078014184397163,
+          "under_coverage": 0.09219858156028371,
+          "mean_width": 0.6997785767116522,
+          "min_width": 0.6997785767116542,
+          "median_width": 0.6997785767116544,
+          "max_width": 0.6997785767116547
+        },
+        "phase_symmetric": {
+          "n_rows": 141,
+          "coverage": 0.9219858156028369,
+          "under_coverage": 0.07801418439716312,
+          "mean_width": 0.7075868611963135,
+          "min_width": 0.0976367922842557,
+          "median_width": 0.09763679228425592,
+          "max_width": 1.4483847423995613
+        },
+        "phase_asymmetric": {
+          "n_rows": 141,
+          "coverage": 0.9290780141843972,
+          "under_coverage": 0.07092198581560283,
+          "mean_width": 0.5795913698761922,
+          "min_width": 0.07831528433762625,
+          "median_width": 0.07831528433762647,
+          "max_width": 1.1581725150907494
+        }
+      },
+      "phase_bucket_support": {},
+      "locked_overall": {
+        "n_rows": 235,
+        "coverage": 0.6595744680851063,
+        "under_coverage": 0.34042553191489366,
+        "mean_width": 0.47373459385948885,
+        "min_width": 0.47373459385948635,
+        "median_width": 0.47373459385948724,
+        "max_width": 0.47373459385948813,
+        "n_events": 5
+      },
+      "locked_by_phase": {
+        "ACTIVE_TRANSITION": {
+          "n_rows": 171,
+          "coverage": 0.5321637426900585,
+          "under_coverage": 0.4678362573099415,
+          "mean_width": 0.4737345938594885,
+          "min_width": 0.47373459385948635,
+          "median_width": 0.47373459385948724,
+          "max_width": 0.47373459385948813,
+          "n_events": 5
+        },
+        "POST_STABILIZATION": {
+          "n_rows": 54,
+          "coverage": 1.0,
+          "under_coverage": 0.0,
+          "mean_width": 0.4737345938594873,
+          "min_width": 0.47373459385948635,
+          "median_width": 0.47373459385948724,
+          "max_width": 0.47373459385948813,
+          "n_events": 5
+        },
+        "PRE_BASELINE": {
+          "n_rows": 10,
+          "coverage": 1.0,
+          "under_coverage": 0.0,
+          "mean_width": 0.4737345938594869,
+          "min_width": 0.47373459385948635,
+          "median_width": 0.4737345938594872,
+          "max_width": 0.47373459385948724,
+          "n_events": 5
+        }
+      },
+      "locked_by_direction": {
+        "B->C": {
+          "n_rows": 94,
+          "coverage": 0.6382978723404256,
+          "under_coverage": 0.36170212765957444,
+          "mean_width": 0.47373459385948746,
+          "min_width": 0.47373459385948635,
+          "median_width": 0.47373459385948724,
+          "max_width": 0.47373459385948735,
+          "n_events": 2
+        },
+        "C->B": {
+          "n_rows": 141,
+          "coverage": 0.6737588652482269,
+          "under_coverage": 0.3262411347517731,
+          "mean_width": 0.4737345938594882,
+          "min_width": 0.47373459385948635,
+          "median_width": 0.47373459385948724,
+          "max_width": 0.47373459385948813,
+          "n_events": 3
+        }
+      },
+      "spec_crossing_examples": [
+        {
+          "event_id": "EP-BC-01",
+          "decision_time": "2026-01-19T06:10:00+00:00",
+          "direction": "B->C",
+          "point_mfi": 1.0946821593338691,
+          "interval": [
+            0.8578148624041255,
+            1.3315494562636128
+          ],
+          "spec_band": [
+            0.9,
+            1.1
+          ],
+          "point_state": "IN_SPEC",
+          "uncertainty_state": "CROSSES_LIMIT",
+          "prime_candidacy_eligible_by_interval": false,
+          "note": "point looks in spec but interval crosses a limit -> evidence insufficient"
+        },
+        {
+          "event_id": "EP-BC-01",
+          "decision_time": "2026-01-19T06:30:00+00:00",
+          "direction": "B->C",
+          "point_mfi": 1.0956549393085728,
+          "interval": [
+            0.8587876423788292,
+            1.3325222362383164
+          ],
+          "spec_band": [
+            0.9,
+            1.1
+          ],
+          "point_state": "IN_SPEC",
+          "uncertainty_state": "CROSSES_LIMIT",
+          "prime_candidacy_eligible_by_interval": false,
+          "note": "point looks in spec but interval crosses a limit -> evidence insufficient"
+        },
+        {
+          "event_id": "EP-BC-01",
+          "decision_time": "2026-01-19T06:50:00+00:00",
+          "direction": "B->C",
+          "point_mfi": 1.0455205129475647,
+          "interval": [
+            0.808653216017821,
+            1.2823878098773083
+          ],
+          "spec_band": [
+            0.9,
+            1.1
+          ],
+          "point_state": "IN_SPEC",
+          "uncertainty_state": "CROSSES_LIMIT",
+          "prime_candidacy_eligible_by_interval": false,
+          "note": "point looks in spec but interval crosses a limit -> evidence insufficient"
+        },
+        {
+          "event_id": "EP-BC-01",
+          "decision_time": "2026-01-19T07:10:00+00:00",
+          "direction": "B->C",
+          "point_mfi": 0.9608731801898108,
+          "interval": [
+            0.7240058832600672,
+            1.1977404771195546
+          ],
+          "spec_band": [
+            0.9,
+            1.1
+          ],
+          "point_state": "IN_SPEC",
+          "uncertainty_state": "CROSSES_LIMIT",
+          "prime_candidacy_eligible_by_interval": false,
+          "note": "point looks in spec but interval crosses a limit -> evidence insufficient"
+        },
+        {
+          "event_id": "EP-BC-01",
+          "decision_time": "2026-01-19T07:30:00+00:00",
+          "direction": "B->C",
+          "point_mfi": 0.9657017584232654,
+          "interval": [
+            0.7288344614935218,
+            1.202569055353009
+          ],
+          "spec_band": [
+            0.9,
+            1.1
+          ],
+          "point_state": "IN_SPEC",
+          "uncertainty_state": "CROSSES_LIMIT",
+          "prime_candidacy_eligible_by_interval": false,
+          "note": "point looks in spec but interval crosses a limit -> evidence insufficient"
+        }
+      ],
+      "calibrator_manifest": {
+        "calibration_version": "split-conformal-v1",
+        "method": "marginal_symmetric",
+        "nominal_coverage": 0.9,
+        "estimator_version": "gbm-mfi-v1",
+        "feature_version": "feat-v1",
+        "event_ids": [
+          "EP-BC-00",
+          "EP-CA-01",
+          "EP-CA-02"
+        ],
+        "n_rows": 141,
+        "n_events": 3,
+        "min_subgroup_rows": 40,
+        "min_subgroup_events": 2,
+        "marginal": {
+          "lo": 0.23686729692974362,
+          "hi": 0.23686729692974362,
+          "n_rows": 141,
+          "n_events": 3,
+          "exact_guarantee": true,
+          "fallback": false,
+          "source_bucket": "marginal"
+        },
+        "phase": {}
+      }
+    }
+  }
+}

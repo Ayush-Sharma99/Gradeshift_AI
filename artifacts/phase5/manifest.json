@@ -1,0 +1,446 @@
+{
+  "dataset_version": "ds-v1",
+  "feature_version": "feat-v1",
+  "model_version": "gbm-mfi-v1",
+  "random_seed": 42,
+  "horizon_min": 240.0,
+  "runtime_versions": {
+    "python": "3.10.0",
+    "numpy": "1.26.4",
+    "sklearn": "1.6.1"
+  },
+  "partitions": {
+    "TRAIN": [
+      "EP-AB-00",
+      "EP-AB-01",
+      "EP-AB-02",
+      "EP-AC-00",
+      "EP-AC-01",
+      "EP-AC-02",
+      "EP-BA-00",
+      "EP-BA-01",
+      "EP-BA-02",
+      "EP-CA-00"
+    ],
+    "CALIBRATION": [
+      "EP-BC-00",
+      "EP-CA-01",
+      "EP-CA-02"
+    ],
+    "LOCKED_TEST": [
+      "EP-BC-01",
+      "EP-BC-02",
+      "EP-CB-00",
+      "EP-CB-01",
+      "EP-CB-02"
+    ]
+  },
+  "row_counts": {
+    "TRAIN": 470,
+    "CALIBRATION": 141,
+    "LOCKED_TEST": 235
+  },
+  "labeled_row_counts": {
+    "TRAIN": 470,
+    "CALIBRATION": 141,
+    "LOCKED_TEST": 235
+  },
+  "feature_schema": [
+    {
+      "name": "MFI_online_last",
+      "source": "series[MFI_online]",
+      "timestamp_semantics": "latest obs ts<=t",
+      "transformation": "last value",
+      "lookback_min": 0.0,
+      "units": "g/10min",
+      "version": "feat-v1"
+    },
+    {
+      "name": "MFI_online_lag_30",
+      "source": "series[MFI_online]",
+      "timestamp_semantics": "obs ts<=t-30m",
+      "transformation": "value ~lag ago",
+      "lookback_min": 30.0,
+      "units": "g/10min",
+      "version": "feat-v1"
+    },
+    {
+      "name": "MFI_online_mean_30",
+      "source": "series[MFI_online]",
+      "timestamp_semantics": "obs in [t-30m, t]",
+      "transformation": "rolling mean",
+      "lookback_min": 30.0,
+      "units": "g/10min",
+      "version": "feat-v1"
+    },
+    {
+      "name": "MFI_online_std_30",
+      "source": "series[MFI_online]",
+      "timestamp_semantics": "obs in [t-30m, t]",
+      "transformation": "rolling std",
+      "lookback_min": 30.0,
+      "units": "g/10min",
+      "version": "feat-v1"
+    },
+    {
+      "name": "MFI_online_mean_60",
+      "source": "series[MFI_online]",
+      "timestamp_semantics": "obs in [t-60m, t]",
+      "transformation": "rolling mean",
+      "lookback_min": 60.0,
+      "units": "g/10min",
+      "version": "feat-v1"
+    },
+    {
+      "name": "MFI_online_std_60",
+      "source": "series[MFI_online]",
+      "timestamp_semantics": "obs in [t-60m, t]",
+      "transformation": "rolling std",
+      "lookback_min": 60.0,
+      "units": "g/10min",
+      "version": "feat-v1"
+    },
+    {
+      "name": "MFI_online_slope_60",
+      "source": "series[MFI_online]",
+      "timestamp_semantics": "obs in [t-60m, t]",
+      "transformation": "OLS slope per min",
+      "lookback_min": 60.0,
+      "units": "g/10min/min",
+      "version": "feat-v1"
+    },
+    {
+      "name": "H2_ratio_last",
+      "source": "series[H2_ratio]",
+      "timestamp_semantics": "latest obs ts<=t",
+      "transformation": "last value",
+      "lookback_min": 0.0,
+      "units": "-",
+      "version": "feat-v1"
+    },
+    {
+      "name": "H2_ratio_lag_30",
+      "source": "series[H2_ratio]",
+      "timestamp_semantics": "obs ts<=t-30m",
+      "transformation": "value ~lag ago",
+      "lookback_min": 30.0,
+      "units": "-",
+      "version": "feat-v1"
+    },
+    {
+      "name": "H2_ratio_mean_30",
+      "source": "series[H2_ratio]",
+      "timestamp_semantics": "obs in [t-30m, t]",
+      "transformation": "rolling mean",
+      "lookback_min": 30.0,
+      "units": "-",
+      "version": "feat-v1"
+    },
+    {
+      "name": "H2_ratio_std_30",
+      "source": "series[H2_ratio]",
+      "timestamp_semantics": "obs in [t-30m, t]",
+      "transformation": "rolling std",
+      "lookback_min": 30.0,
+      "units": "-",
+      "version": "feat-v1"
+    },
+    {
+      "name": "H2_ratio_mean_60",
+      "source": "series[H2_ratio]",
+      "timestamp_semantics": "obs in [t-60m, t]",
+      "transformation": "rolling mean",
+      "lookback_min": 60.0,
+      "units": "-",
+      "version": "feat-v1"
+    },
+    {
+      "name": "H2_ratio_std_60",
+      "source": "series[H2_ratio]",
+      "timestamp_semantics": "obs in [t-60m, t]",
+      "transformation": "rolling std",
+      "lookback_min": 60.0,
+      "units": "-",
+      "version": "feat-v1"
+    },
+    {
+      "name": "H2_ratio_slope_60",
+      "source": "series[H2_ratio]",
+      "timestamp_semantics": "obs in [t-60m, t]",
+      "transformation": "OLS slope per min",
+      "lookback_min": 60.0,
+      "units": "-/min",
+      "version": "feat-v1"
+    },
+    {
+      "name": "bed_temp_last",
+      "source": "series[bed_temp]",
+      "timestamp_semantics": "latest obs ts<=t",
+      "transformation": "last value",
+      "lookback_min": 0.0,
+      "units": "degC",
+      "version": "feat-v1"
+    },
+    {
+      "name": "bed_temp_lag_30",
+      "source": "series[bed_temp]",
+      "timestamp_semantics": "obs ts<=t-30m",
+      "transformation": "value ~lag ago",
+      "lookback_min": 30.0,
+      "units": "degC",
+      "version": "feat-v1"
+    },
+    {
+      "name": "bed_temp_mean_30",
+      "source": "series[bed_temp]",
+      "timestamp_semantics": "obs in [t-30m, t]",
+      "transformation": "rolling mean",
+      "lookback_min": 30.0,
+      "units": "degC",
+      "version": "feat-v1"
+    },
+    {
+      "name": "bed_temp_std_30",
+      "source": "series[bed_temp]",
+      "timestamp_semantics": "obs in [t-30m, t]",
+      "transformation": "rolling std",
+      "lookback_min": 30.0,
+      "units": "degC",
+      "version": "feat-v1"
+    },
+    {
+      "name": "bed_temp_mean_60",
+      "source": "series[bed_temp]",
+      "timestamp_semantics": "obs in [t-60m, t]",
+      "transformation": "rolling mean",
+      "lookback_min": 60.0,
+      "units": "degC",
+      "version": "feat-v1"
+    },
+    {
+      "name": "bed_temp_std_60",
+      "source": "series[bed_temp]",
+      "timestamp_semantics": "obs in [t-60m, t]",
+      "transformation": "rolling std",
+      "lookback_min": 60.0,
+      "units": "degC",
+      "version": "feat-v1"
+    },
+    {
+      "name": "bed_temp_slope_60",
+      "source": "series[bed_temp]",
+      "timestamp_semantics": "obs in [t-60m, t]",
+      "transformation": "OLS slope per min",
+      "lookback_min": 60.0,
+      "units": "degC/min",
+      "version": "feat-v1"
+    },
+    {
+      "name": "lab_last_mfi",
+      "source": "lab_results",
+      "timestamp_semantics": "result_at<=t",
+      "transformation": "last resulted lab MFI",
+      "lookback_min": 0.0,
+      "units": "g/10min",
+      "version": "feat-v1"
+    },
+    {
+      "name": "lab_time_since_result_min",
+      "source": "lab_results",
+      "timestamp_semantics": "result_at<=t",
+      "transformation": "t - last result_at",
+      "lookback_min": 0.0,
+      "units": "min",
+      "version": "feat-v1"
+    },
+    {
+      "name": "lab_resulted_count",
+      "source": "lab_results",
+      "timestamp_semantics": "result_at<=t",
+      "transformation": "count",
+      "lookback_min": 0.0,
+      "units": "count",
+      "version": "feat-v1"
+    },
+    {
+      "name": "lab_pending_count",
+      "source": "pending_labs",
+      "timestamp_semantics": "collected<=t<result_at",
+      "transformation": "count",
+      "lookback_min": 0.0,
+      "units": "count",
+      "version": "feat-v1"
+    },
+    {
+      "name": "time_since_start_min",
+      "source": "event.started_at",
+      "timestamp_semantics": "t - started_at",
+      "transformation": "elapsed",
+      "lookback_min": 0.0,
+      "units": "min",
+      "version": "feat-v1"
+    },
+    {
+      "name": "time_since_transition_min",
+      "source": "series[H2_ratio]",
+      "timestamp_semantics": "t - first H2 change<=t",
+      "transformation": "elapsed since visible setpoint move",
+      "lookback_min": 0.0,
+      "units": "min",
+      "version": "feat-v1"
+    },
+    {
+      "name": "target_mfi_from",
+      "source": "config.GRADES",
+      "timestamp_semantics": "static recipe",
+      "transformation": "grade_from target",
+      "lookback_min": 0.0,
+      "units": "g/10min",
+      "version": "feat-v1"
+    },
+    {
+      "name": "target_mfi_to",
+      "source": "config.GRADES",
+      "timestamp_semantics": "static recipe",
+      "transformation": "grade_to target",
+      "lookback_min": 0.0,
+      "units": "g/10min",
+      "version": "feat-v1"
+    },
+    {
+      "name": "spec_low_to",
+      "source": "config.GRADES",
+      "timestamp_semantics": "static recipe",
+      "transformation": "grade_to lower spec",
+      "lookback_min": 0.0,
+      "units": "g/10min",
+      "version": "feat-v1"
+    },
+    {
+      "name": "spec_high_to",
+      "source": "config.GRADES",
+      "timestamp_semantics": "static recipe",
+      "transformation": "grade_to upper spec",
+      "lookback_min": 0.0,
+      "units": "g/10min",
+      "version": "feat-v1"
+    },
+    {
+      "name": "direction_sign",
+      "source": "config.GRADES",
+      "timestamp_semantics": "static recipe",
+      "transformation": "sign(target_to - target_from)",
+      "lookback_min": 0.0,
+      "units": "-",
+      "version": "feat-v1"
+    },
+    {
+      "name": "setpoint_h2_to",
+      "source": "config/simulate",
+      "timestamp_semantics": "static recipe",
+      "transformation": "hydrogen setpoint for grade_to",
+      "lookback_min": 0.0,
+      "units": "-",
+      "version": "feat-v1"
+    },
+    {
+      "name": "mw_mean_age_min",
+      "source": "material_identity",
+      "timestamp_semantics": "as-of map at t",
+      "transformation": "material-window mean age",
+      "lookback_min": 0.0,
+      "units": "min",
+      "version": "feat-v1"
+    },
+    {
+      "name": "mw_age_spread_min",
+      "source": "material_identity",
+      "timestamp_semantics": "as-of map at t",
+      "transformation": "residence-time dispersion",
+      "lookback_min": 0.0,
+      "units": "min",
+      "version": "feat-v1"
+    },
+    {
+      "name": "mw_mapped_mass_tonnes",
+      "source": "material_identity",
+      "timestamp_semantics": "as-of map at t",
+      "transformation": "mass of material window",
+      "lookback_min": 0.0,
+      "units": "t",
+      "version": "feat-v1"
+    },
+    {
+      "name": "mw_coverage",
+      "source": "material_identity",
+      "timestamp_semantics": "as-of map at t",
+      "transformation": "production-support coverage",
+      "lookback_min": 0.0,
+      "units": "-",
+      "version": "feat-v1"
+    },
+    {
+      "name": "route_rate_tph",
+      "source": "routing_visible",
+      "timestamp_semantics": "start<=t",
+      "transformation": "current visible rate",
+      "lookback_min": 0.0,
+      "units": "t/h",
+      "version": "feat-v1"
+    },
+    {
+      "name": "route_is_prime",
+      "source": "routing_visible",
+      "timestamp_semantics": "start<=t",
+      "transformation": "1 if current visible route is PRIME",
+      "lookback_min": 0.0,
+      "units": "-",
+      "version": "feat-v1"
+    },
+    {
+      "name": "route_ongoing",
+      "source": "routing_visible",
+      "timestamp_semantics": "start<=t",
+      "transformation": "1 if current interval not yet ended by t",
+      "lookback_min": 0.0,
+      "units": "-",
+      "version": "feat-v1"
+    },
+    {
+      "name": "sensor_flag_count",
+      "source": "interventions",
+      "timestamp_semantics": "ts<=t",
+      "transformation": "visible SENSOR_FLAG count",
+      "lookback_min": 0.0,
+      "units": "count",
+      "version": "feat-v1"
+    }
+  ],
+  "directions": [
+    [
+      "A",
+      "B"
+    ],
+    [
+      "B",
+      "A"
+    ],
+    [
+      "A",
+      "C"
+    ],
+    [
+      "C",
+      "A"
+    ],
+    [
+      "B",
+      "C"
+    ],
+    [
+      "C",
+      "B"
+    ]
+  ],
+  "n_per_dir": 3
+}

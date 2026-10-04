@@ -1,0 +1,1508 @@
+{
+  "phase": 10,
+  "economics_version": "economics-v1",
+  "cost_model_version": "cost-model-v1",
+  "voi_model_version": "voi-discrete-v1",
+  "scenario": "BASE",
+  "scenario_assumptions": {
+    "LOW": {
+      "name": "LOW",
+      "prime_price": 90000,
+      "downgrade_price": 78000,
+      "false_prime_consequence": 40000,
+      "sample_cost": 15000,
+      "workflow_cost": 5000,
+      "provenance": "ASSUMPTION"
+    },
+    "BASE": {
+      "name": "BASE",
+      "prime_price": 95000,
+      "downgrade_price": 75000,
+      "false_prime_consequence": 60000,
+      "sample_cost": 20000,
+      "workflow_cost": 8000,
+      "provenance": "ASSUMPTION"
+    },
+    "HIGH": {
+      "name": "HIGH",
+      "prime_price": 98000,
+      "downgrade_price": 73000,
+      "false_prime_consequence": 90000,
+      "sample_cost": 25000,
+      "workflow_cost": 10000,
+      "provenance": "ASSUMPTION"
+    }
+  },
+  "jury_facing_flow": {
+    "statement": "PrimePath does not maximize predicted quality. It minimizes expected decision loss subject to evidence and operational constraints \u2014 and never overrides a hard gate.",
+    "evidence_action": "ABSTAIN",
+    "permitted_actions": [
+      "ABSTAIN"
+    ],
+    "expected_loss_table": {
+      "ABSTAIN": 0.0
+    },
+    "economic_preferred_action_ADVISORY": "ABSTAIN",
+    "chosen_action": "ABSTAIN",
+    "note": "The chosen action is Phase-9's; economics only rank permitted actions. No annual headline is implied here."
+  },
+  "real_end_to_end_economics": {
+    "event_id": "EP-CB-00",
+    "decision_id": "EP-CB-00@2026-01-22T04:10:00+00:00",
+    "scenario": "BASE",
+    "phase9_action": "ABSTAIN",
+    "permitted_actions": [
+      "ABSTAIN"
+    ],
+    "economic_preferred_action_ADVISORY": "ABSTAIN",
+    "mass_tonnes": 12.0,
+    "recoverable_mass_tonnes": 12.0,
+    "prime_value_per_tonne": 95000.0,
+    "actual_route_value_per_tonne": 75000.0,
+    "spread_per_tonne": 20000.0,
+    "sample_cost_currency": 20000.0,
+    "workflow_cost_currency": 8000.0,
+    "false_prime_exposure_currency": 0.0,
+    "false_hold_exposure_currency": 240000.0,
+    "expected_loss_chosen_currency": 0.0,
+    "expected_loss_table": {
+      "permitted_actions": [
+        "ABSTAIN"
+      ],
+      "min_loss_action": "ABSTAIN",
+      "rows": [
+        {
+          "action": "ABSTAIN",
+          "expected_loss_currency": 0.0,
+          "false_prime_exposure_currency": 0.0,
+          "false_hold_exposure_currency": 240000.0,
+          "permitted": true,
+          "components": [
+            {
+              "name": "false_prime",
+              "amount_currency": 0.0,
+              "provenance": "ASSUMPTION",
+              "formula": "0 (action does not prime)",
+              "inputs": {
+                "p_bad_PROXY": 1.0,
+                "mass_tonnes": 12.0,
+                "false_prime_consequence_per_tonne": 60000.0
+              }
+            },
+            {
+              "name": "false_hold_opportunity",
+              "amount_currency": 0.0,
+              "provenance": "ASSUMPTION",
+              "formula": "P(good) * recoverable_mass_tonnes * spread_per_tonne * hold_fraction",
+              "inputs": {
+                "p_good_PROXY": 0.0,
+                "recoverable_mass_tonnes": 12.0,
+                "spread_per_tonne": 20000.0,
+                "hold_fraction": 1.0
+              }
+            },
+            {
+              "name": "sample_cost",
+              "amount_currency": 0.0,
+              "provenance": "ASSUMPTION",
+              "formula": "0 (no sample)",
+              "inputs": {
+                "sample_cost": 20000.0
+              }
+            },
+            {
+              "name": "workflow_cost",
+              "amount_currency": 0.0,
+              "provenance": "ASSUMPTION",
+              "formula": "0 (no workflow triggered)",
+              "inputs": {
+                "workflow_cost": 8000.0
+              }
+            }
+          ],
+          "risk": {
+            "p_bad_PROXY": 1.0,
+            "p_good_PROXY": 0.0,
+            "kind": "interval_derived",
+            "validated": false,
+            "provenance": "SIMULATED",
+            "detail": "fraction of interval [6.877,7.351] outside spec [7.600,8.400]",
+            "note": "ILLUSTRATIVE risk proxy \u2014 NOT a validated probability of bad material; not a decision trigger."
+          }
+        }
+      ],
+      "note": "Expected loss is computed over PERMITTED actions ONLY. min_loss_action may be highlighted but can NEVER override the Phase-9 hard gates or resurrect a blocked action."
+    },
+    "voi": {
+      "voi_currency": 0.0,
+      "el_min_now_currency": 0.0,
+      "expected_el_post_sample_currency": 4800.000000000005,
+      "sample_cost_currency": 28000.0,
+      "applicable": false,
+      "recommend_sample": false,
+      "min_voi_threshold_currency": 0.0,
+      "bins": [
+        {
+          "name": "GOOD",
+          "probability": 0.0,
+          "posterior_p_bad_PROXY": 0.02,
+          "actions_available": [
+            "ABSTAIN"
+          ],
+          "min_loss_action": "ABSTAIN",
+          "min_loss_currency": 235200.0
+        },
+        {
+          "name": "BAD",
+          "probability": 1.0,
+          "posterior_p_bad_PROXY": 0.98,
+          "actions_available": [
+            "HOLD",
+            "ABSTAIN"
+          ],
+          "min_loss_action": "HOLD",
+          "min_loss_currency": 4800.000000000005
+        }
+      ],
+      "reason": "hard gate forces ABSTAIN \u2014 sampling cannot unblock it",
+      "provenance": "SIMULATED",
+      "voi_model_version": "voi-discrete-v1",
+      "note": "Deterministic discrete-outcome VOI approximation (SIMULATED). Not a validated information value."
+    },
+    "realized_value_currency": 900000.0,
+    "counterfactual_opportunity_currency": 240000.0,
+    "value_split": {
+      "realized_value_currency": 900000.0,
+      "counterfactual_prime_value_currency": 1140000.0,
+      "counterfactual_opportunity_currency": 240000.0,
+      "avoided_loss_currency": null,
+      "realized_good": null,
+      "note": "Realized is observed; counterfactual is hypothetical. avoided_loss is populated ONLY where the synthetic ground truth supports it \u2014 never as a measured HMEL saving."
+    },
+    "versions": {
+      "economics": "economics-v1",
+      "cost_model": "cost-model-v1",
+      "voi_model": "voi-discrete-v1",
+      "policy": "policy-v1",
+      "disposition": "disposition-v1",
+      "scenario": "BASE"
+    },
+    "provenance": "SIMULATED",
+    "note": "SIMULATED/ILLUSTRATIVE economics. Phase-9 hard gates are authoritative; economics rank only PERMITTED actions and never resurrect a blocked action."
+  },
+  "canonical_economic_scenarios": [
+    {
+      "scenario": "A_false_hold_opportunity",
+      "rationale_fixture": "Interval in-spec -> PRIME permitted; HOLD would forgo the prime/downgrade spread. Shows false-hold opportunity loss on good material.",
+      "phase9_action": "PRIME_RELEASE_CANDIDATE",
+      "permitted_actions": [
+        "PRIME_RELEASE_CANDIDATE",
+        "HOLD",
+        "ABSTAIN"
+      ],
+      "expected_loss": {
+        "PRIME_RELEASE_CANDIDATE": 8000.0,
+        "HOLD": 1000000.0,
+        "ABSTAIN": 1000000.0
+      },
+      "economic_preferred_action_ADVISORY": "PRIME_RELEASE_CANDIDATE",
+      "voi_currency": 0.0,
+      "recommend_sample": false,
+      "ledger": {
+        "event_id": "EP-CB-00",
+        "decision_id": "SC",
+        "scenario": "BASE",
+        "phase9_action": "PRIME_RELEASE_CANDIDATE",
+        "permitted_actions": [
+          "PRIME_RELEASE_CANDIDATE",
+          "HOLD",
+          "ABSTAIN"
+        ],
+        "economic_preferred_action_ADVISORY": "PRIME_RELEASE_CANDIDATE",
+        "mass_tonnes": 50.0,
+        "recoverable_mass_tonnes": 50.0,
+        "prime_value_per_tonne": 95000.0,
+        "actual_route_value_per_tonne": 75000.0,
+        "spread_per_tonne": 20000.0,
+        "sample_cost_currency": 20000.0,
+        "workflow_cost_currency": 8000.0,
+        "false_prime_exposure_currency": 3000000.0,
+        "false_hold_exposure_currency": 0.0,
+        "expected_loss_chosen_currency": 8000.0,
+        "expected_loss_table": {
+          "permitted_actions": [
+            "PRIME_RELEASE_CANDIDATE",
+            "HOLD",
+            "ABSTAIN"
+          ],
+          "min_loss_action": "PRIME_RELEASE_CANDIDATE",
+          "rows": [
+            {
+              "action": "PRIME_RELEASE_CANDIDATE",
+              "expected_loss_currency": 8000.0,
+              "false_prime_exposure_currency": 3000000.0,
+              "false_hold_exposure_currency": 0.0,
+              "permitted": true,
+              "components": [
+                {
+                  "name": "false_prime",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "P(bad) * mass_tonnes * false_prime_consequence_per_tonne",
+                  "inputs": {
+                    "p_bad_PROXY": 0.0,
+                    "mass_tonnes": 50.0,
+                    "false_prime_consequence_per_tonne": 60000.0
+                  }
+                },
+                {
+                  "name": "false_hold_opportunity",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "P(good) * recoverable_mass_tonnes * spread_per_tonne * hold_fraction",
+                  "inputs": {
+                    "p_good_PROXY": 1.0,
+                    "recoverable_mass_tonnes": 50.0,
+                    "spread_per_tonne": 20000.0,
+                    "hold_fraction": 0.0
+                  }
+                },
+                {
+                  "name": "sample_cost",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (no sample)",
+                  "inputs": {
+                    "sample_cost": 20000.0
+                  }
+                },
+                {
+                  "name": "workflow_cost",
+                  "amount_currency": 8000.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "scenario.workflow_cost",
+                  "inputs": {
+                    "workflow_cost": 8000.0
+                  }
+                }
+              ],
+              "risk": {
+                "p_bad_PROXY": 0.0,
+                "p_good_PROXY": 1.0,
+                "kind": "interval_derived",
+                "validated": false,
+                "provenance": "SIMULATED",
+                "detail": "fraction of interval [7.700,8.300] outside spec [7.600,8.400]",
+                "note": "ILLUSTRATIVE risk proxy \u2014 NOT a validated probability of bad material; not a decision trigger."
+              }
+            },
+            {
+              "action": "HOLD",
+              "expected_loss_currency": 1000000.0,
+              "false_prime_exposure_currency": 0.0,
+              "false_hold_exposure_currency": 1000000.0,
+              "permitted": true,
+              "components": [
+                {
+                  "name": "false_prime",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (action does not prime)",
+                  "inputs": {
+                    "p_bad_PROXY": 0.0,
+                    "mass_tonnes": 50.0,
+                    "false_prime_consequence_per_tonne": 60000.0
+                  }
+                },
+                {
+                  "name": "false_hold_opportunity",
+                  "amount_currency": 1000000.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "P(good) * recoverable_mass_tonnes * spread_per_tonne * hold_fraction",
+                  "inputs": {
+                    "p_good_PROXY": 1.0,
+                    "recoverable_mass_tonnes": 50.0,
+                    "spread_per_tonne": 20000.0,
+                    "hold_fraction": 1.0
+                  }
+                },
+                {
+                  "name": "sample_cost",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (no sample)",
+                  "inputs": {
+                    "sample_cost": 20000.0
+                  }
+                },
+                {
+                  "name": "workflow_cost",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (no workflow triggered)",
+                  "inputs": {
+                    "workflow_cost": 8000.0
+                  }
+                }
+              ],
+              "risk": {
+                "p_bad_PROXY": 0.0,
+                "p_good_PROXY": 1.0,
+                "kind": "interval_derived",
+                "validated": false,
+                "provenance": "SIMULATED",
+                "detail": "fraction of interval [7.700,8.300] outside spec [7.600,8.400]",
+                "note": "ILLUSTRATIVE risk proxy \u2014 NOT a validated probability of bad material; not a decision trigger."
+              }
+            },
+            {
+              "action": "ABSTAIN",
+              "expected_loss_currency": 1000000.0,
+              "false_prime_exposure_currency": 0.0,
+              "false_hold_exposure_currency": 1000000.0,
+              "permitted": true,
+              "components": [
+                {
+                  "name": "false_prime",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (action does not prime)",
+                  "inputs": {
+                    "p_bad_PROXY": 0.0,
+                    "mass_tonnes": 50.0,
+                    "false_prime_consequence_per_tonne": 60000.0
+                  }
+                },
+                {
+                  "name": "false_hold_opportunity",
+                  "amount_currency": 1000000.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "P(good) * recoverable_mass_tonnes * spread_per_tonne * hold_fraction",
+                  "inputs": {
+                    "p_good_PROXY": 1.0,
+                    "recoverable_mass_tonnes": 50.0,
+                    "spread_per_tonne": 20000.0,
+                    "hold_fraction": 1.0
+                  }
+                },
+                {
+                  "name": "sample_cost",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (no sample)",
+                  "inputs": {
+                    "sample_cost": 20000.0
+                  }
+                },
+                {
+                  "name": "workflow_cost",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (no workflow triggered)",
+                  "inputs": {
+                    "workflow_cost": 8000.0
+                  }
+                }
+              ],
+              "risk": {
+                "p_bad_PROXY": 0.0,
+                "p_good_PROXY": 1.0,
+                "kind": "interval_derived",
+                "validated": false,
+                "provenance": "SIMULATED",
+                "detail": "fraction of interval [7.700,8.300] outside spec [7.600,8.400]",
+                "note": "ILLUSTRATIVE risk proxy \u2014 NOT a validated probability of bad material; not a decision trigger."
+              }
+            }
+          ],
+          "note": "Expected loss is computed over PERMITTED actions ONLY. min_loss_action may be highlighted but can NEVER override the Phase-9 hard gates or resurrect a blocked action."
+        },
+        "voi": {
+          "voi_currency": 0.0,
+          "el_min_now_currency": 8000.0,
+          "expected_el_post_sample_currency": 68000.0,
+          "sample_cost_currency": 28000.0,
+          "applicable": false,
+          "recommend_sample": false,
+          "min_voi_threshold_currency": 0.0,
+          "bins": [
+            {
+              "name": "GOOD",
+              "probability": 1.0,
+              "posterior_p_bad_PROXY": 0.02,
+              "actions_available": [
+                "PRIME_RELEASE_CANDIDATE",
+                "HOLD",
+                "ABSTAIN"
+              ],
+              "min_loss_action": "PRIME_RELEASE_CANDIDATE",
+              "min_loss_currency": 68000.0
+            },
+            {
+              "name": "BAD",
+              "probability": 0.0,
+              "posterior_p_bad_PROXY": 0.98,
+              "actions_available": [
+                "HOLD",
+                "ABSTAIN"
+              ],
+              "min_loss_action": "HOLD",
+              "min_loss_currency": 20000.00000000002
+            }
+          ],
+          "reason": "sampling cannot change the permissible action set",
+          "provenance": "SIMULATED",
+          "voi_model_version": "voi-discrete-v1",
+          "note": "Deterministic discrete-outcome VOI approximation (SIMULATED). Not a validated information value."
+        },
+        "realized_value_currency": 3750000.0,
+        "counterfactual_opportunity_currency": 1000000.0,
+        "value_split": {
+          "realized_value_currency": 3750000.0,
+          "counterfactual_prime_value_currency": 4750000.0,
+          "counterfactual_opportunity_currency": 1000000.0,
+          "avoided_loss_currency": null,
+          "realized_good": null,
+          "note": "Realized is observed; counterfactual is hypothetical. avoided_loss is populated ONLY where the synthetic ground truth supports it \u2014 never as a measured HMEL saving."
+        },
+        "versions": {
+          "economics": "economics-v1",
+          "cost_model": "cost-model-v1",
+          "voi_model": "voi-discrete-v1",
+          "policy": "policy-v1",
+          "disposition": "disposition-v1",
+          "scenario": "BASE"
+        },
+        "provenance": "SIMULATED",
+        "note": "SIMULATED/ILLUSTRATIVE economics. Phase-9 hard gates are authoritative; economics rank only PERMITTED actions and never resurrect a blocked action."
+      }
+    },
+    {
+      "scenario": "B_false_prime_exposure",
+      "rationale_fixture": "In-spec interval keeps PRIME permitted, but a high PROVISIONAL risk proxy makes PRIME's expected false-prime loss dominate -> economics PREFER HOLD while the gate still permits PRIME (commercial consequence, NOT safety; economics never change permission).",
+      "phase9_action": "PRIME_RELEASE_CANDIDATE",
+      "permitted_actions": [
+        "PRIME_RELEASE_CANDIDATE",
+        "HOLD",
+        "ABSTAIN"
+      ],
+      "expected_loss": {
+        "PRIME_RELEASE_CANDIDATE": 2708000.0,
+        "HOLD": 99999.99999999997,
+        "ABSTAIN": 99999.99999999997
+      },
+      "economic_preferred_action_ADVISORY": "HOLD",
+      "voi_currency": 0.0,
+      "recommend_sample": false,
+      "ledger": {
+        "event_id": "EP-CB-00",
+        "decision_id": "SC",
+        "scenario": "BASE",
+        "phase9_action": "PRIME_RELEASE_CANDIDATE",
+        "permitted_actions": [
+          "PRIME_RELEASE_CANDIDATE",
+          "HOLD",
+          "ABSTAIN"
+        ],
+        "economic_preferred_action_ADVISORY": "HOLD",
+        "mass_tonnes": 50.0,
+        "recoverable_mass_tonnes": 50.0,
+        "prime_value_per_tonne": 95000.0,
+        "actual_route_value_per_tonne": 75000.0,
+        "spread_per_tonne": 20000.0,
+        "sample_cost_currency": 20000.0,
+        "workflow_cost_currency": 8000.0,
+        "false_prime_exposure_currency": 3000000.0,
+        "false_hold_exposure_currency": 0.0,
+        "expected_loss_chosen_currency": 2708000.0,
+        "expected_loss_table": {
+          "permitted_actions": [
+            "PRIME_RELEASE_CANDIDATE",
+            "HOLD",
+            "ABSTAIN"
+          ],
+          "min_loss_action": "HOLD",
+          "rows": [
+            {
+              "action": "PRIME_RELEASE_CANDIDATE",
+              "expected_loss_currency": 2708000.0,
+              "false_prime_exposure_currency": 3000000.0,
+              "false_hold_exposure_currency": 0.0,
+              "permitted": true,
+              "components": [
+                {
+                  "name": "false_prime",
+                  "amount_currency": 2700000.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "P(bad) * mass_tonnes * false_prime_consequence_per_tonne",
+                  "inputs": {
+                    "p_bad_PROXY": 0.9,
+                    "mass_tonnes": 50.0,
+                    "false_prime_consequence_per_tonne": 60000.0
+                  }
+                },
+                {
+                  "name": "false_hold_opportunity",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "P(good) * recoverable_mass_tonnes * spread_per_tonne * hold_fraction",
+                  "inputs": {
+                    "p_good_PROXY": 0.09999999999999998,
+                    "recoverable_mass_tonnes": 50.0,
+                    "spread_per_tonne": 20000.0,
+                    "hold_fraction": 0.0
+                  }
+                },
+                {
+                  "name": "sample_cost",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (no sample)",
+                  "inputs": {
+                    "sample_cost": 20000.0
+                  }
+                },
+                {
+                  "name": "workflow_cost",
+                  "amount_currency": 8000.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "scenario.workflow_cost",
+                  "inputs": {
+                    "workflow_cost": 8000.0
+                  }
+                }
+              ],
+              "risk": {
+                "p_bad_PROXY": 0.9,
+                "p_good_PROXY": 0.09999999999999998,
+                "kind": "provisional_prob_bad",
+                "validated": false,
+                "provenance": "ILLUSTRATIVE",
+                "detail": "Phase-6 provisional prob_bad used as proxy",
+                "note": "ILLUSTRATIVE risk proxy \u2014 NOT a validated probability of bad material; not a decision trigger."
+              }
+            },
+            {
+              "action": "HOLD",
+              "expected_loss_currency": 99999.99999999997,
+              "false_prime_exposure_currency": 0.0,
+              "false_hold_exposure_currency": 1000000.0,
+              "permitted": true,
+              "components": [
+                {
+                  "name": "false_prime",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (action does not prime)",
+                  "inputs": {
+                    "p_bad_PROXY": 0.9,
+                    "mass_tonnes": 50.0,
+                    "false_prime_consequence_per_tonne": 60000.0
+                  }
+                },
+                {
+                  "name": "false_hold_opportunity",
+                  "amount_currency": 99999.99999999997,
+                  "provenance": "ASSUMPTION",
+                  "formula": "P(good) * recoverable_mass_tonnes * spread_per_tonne * hold_fraction",
+                  "inputs": {
+                    "p_good_PROXY": 0.09999999999999998,
+                    "recoverable_mass_tonnes": 50.0,
+                    "spread_per_tonne": 20000.0,
+                    "hold_fraction": 1.0
+                  }
+                },
+                {
+                  "name": "sample_cost",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (no sample)",
+                  "inputs": {
+                    "sample_cost": 20000.0
+                  }
+                },
+                {
+                  "name": "workflow_cost",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (no workflow triggered)",
+                  "inputs": {
+                    "workflow_cost": 8000.0
+                  }
+                }
+              ],
+              "risk": {
+                "p_bad_PROXY": 0.9,
+                "p_good_PROXY": 0.09999999999999998,
+                "kind": "provisional_prob_bad",
+                "validated": false,
+                "provenance": "ILLUSTRATIVE",
+                "detail": "Phase-6 provisional prob_bad used as proxy",
+                "note": "ILLUSTRATIVE risk proxy \u2014 NOT a validated probability of bad material; not a decision trigger."
+              }
+            },
+            {
+              "action": "ABSTAIN",
+              "expected_loss_currency": 99999.99999999997,
+              "false_prime_exposure_currency": 0.0,
+              "false_hold_exposure_currency": 1000000.0,
+              "permitted": true,
+              "components": [
+                {
+                  "name": "false_prime",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (action does not prime)",
+                  "inputs": {
+                    "p_bad_PROXY": 0.9,
+                    "mass_tonnes": 50.0,
+                    "false_prime_consequence_per_tonne": 60000.0
+                  }
+                },
+                {
+                  "name": "false_hold_opportunity",
+                  "amount_currency": 99999.99999999997,
+                  "provenance": "ASSUMPTION",
+                  "formula": "P(good) * recoverable_mass_tonnes * spread_per_tonne * hold_fraction",
+                  "inputs": {
+                    "p_good_PROXY": 0.09999999999999998,
+                    "recoverable_mass_tonnes": 50.0,
+                    "spread_per_tonne": 20000.0,
+                    "hold_fraction": 1.0
+                  }
+                },
+                {
+                  "name": "sample_cost",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (no sample)",
+                  "inputs": {
+                    "sample_cost": 20000.0
+                  }
+                },
+                {
+                  "name": "workflow_cost",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (no workflow triggered)",
+                  "inputs": {
+                    "workflow_cost": 8000.0
+                  }
+                }
+              ],
+              "risk": {
+                "p_bad_PROXY": 0.9,
+                "p_good_PROXY": 0.09999999999999998,
+                "kind": "provisional_prob_bad",
+                "validated": false,
+                "provenance": "ILLUSTRATIVE",
+                "detail": "Phase-6 provisional prob_bad used as proxy",
+                "note": "ILLUSTRATIVE risk proxy \u2014 NOT a validated probability of bad material; not a decision trigger."
+              }
+            }
+          ],
+          "note": "Expected loss is computed over PERMITTED actions ONLY. min_loss_action may be highlighted but can NEVER override the Phase-9 hard gates or resurrect a blocked action."
+        },
+        "voi": {
+          "voi_currency": 0.0,
+          "el_min_now_currency": 99999.99999999997,
+          "expected_el_post_sample_currency": 24800.000000000015,
+          "sample_cost_currency": 28000.0,
+          "applicable": false,
+          "recommend_sample": false,
+          "min_voi_threshold_currency": 0.0,
+          "bins": [
+            {
+              "name": "GOOD",
+              "probability": 0.09999999999999998,
+              "posterior_p_bad_PROXY": 0.02,
+              "actions_available": [
+                "PRIME_RELEASE_CANDIDATE",
+                "HOLD",
+                "ABSTAIN"
+              ],
+              "min_loss_action": "PRIME_RELEASE_CANDIDATE",
+              "min_loss_currency": 68000.0
+            },
+            {
+              "name": "BAD",
+              "probability": 0.9,
+              "posterior_p_bad_PROXY": 0.98,
+              "actions_available": [
+                "HOLD",
+                "ABSTAIN"
+              ],
+              "min_loss_action": "HOLD",
+              "min_loss_currency": 20000.00000000002
+            }
+          ],
+          "reason": "sampling cannot change the permissible action set",
+          "provenance": "SIMULATED",
+          "voi_model_version": "voi-discrete-v1",
+          "note": "Deterministic discrete-outcome VOI approximation (SIMULATED). Not a validated information value."
+        },
+        "realized_value_currency": 3750000.0,
+        "counterfactual_opportunity_currency": 1000000.0,
+        "value_split": {
+          "realized_value_currency": 3750000.0,
+          "counterfactual_prime_value_currency": 4750000.0,
+          "counterfactual_opportunity_currency": 1000000.0,
+          "avoided_loss_currency": null,
+          "realized_good": null,
+          "note": "Realized is observed; counterfactual is hypothetical. avoided_loss is populated ONLY where the synthetic ground truth supports it \u2014 never as a measured HMEL saving."
+        },
+        "versions": {
+          "economics": "economics-v1",
+          "cost_model": "cost-model-v1",
+          "voi_model": "voi-discrete-v1",
+          "policy": "policy-v1",
+          "disposition": "disposition-v1",
+          "scenario": "BASE"
+        },
+        "provenance": "SIMULATED",
+        "note": "SIMULATED/ILLUSTRATIVE economics. Phase-9 hard gates are authoritative; economics rank only PERMITTED actions and never resurrect a blocked action."
+      }
+    },
+    {
+      "scenario": "C_sample_positive_voi",
+      "rationale_fixture": "Borderline interval + sample within horizon -> positive VOI, SAMPLE NOW is economically worth it.",
+      "phase9_action": "SAMPLE_NOW",
+      "permitted_actions": [
+        "SAMPLE_NOW",
+        "HOLD",
+        "ABSTAIN"
+      ],
+      "expected_loss": {
+        "SAMPLE_NOW": 465500.0000000003,
+        "HOLD": 875000.0000000006,
+        "ABSTAIN": 875000.0000000006
+      },
+      "economic_preferred_action_ADVISORY": "SAMPLE_NOW",
+      "voi_currency": 785000.0000000006,
+      "recommend_sample": true,
+      "ledger": {
+        "event_id": "EP-CB-00",
+        "decision_id": "SC",
+        "scenario": "BASE",
+        "phase9_action": "SAMPLE_NOW",
+        "permitted_actions": [
+          "SAMPLE_NOW",
+          "HOLD",
+          "ABSTAIN"
+        ],
+        "economic_preferred_action_ADVISORY": "SAMPLE_NOW",
+        "mass_tonnes": 50.0,
+        "recoverable_mass_tonnes": 50.0,
+        "prime_value_per_tonne": 95000.0,
+        "actual_route_value_per_tonne": 75000.0,
+        "spread_per_tonne": 20000.0,
+        "sample_cost_currency": 20000.0,
+        "workflow_cost_currency": 8000.0,
+        "false_prime_exposure_currency": 0.0,
+        "false_hold_exposure_currency": 500000.0,
+        "expected_loss_chosen_currency": 465500.0000000003,
+        "expected_loss_table": {
+          "permitted_actions": [
+            "SAMPLE_NOW",
+            "HOLD",
+            "ABSTAIN"
+          ],
+          "min_loss_action": "SAMPLE_NOW",
+          "rows": [
+            {
+              "action": "SAMPLE_NOW",
+              "expected_loss_currency": 465500.0000000003,
+              "false_prime_exposure_currency": 0.0,
+              "false_hold_exposure_currency": 500000.0,
+              "permitted": true,
+              "components": [
+                {
+                  "name": "false_prime",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (action does not prime)",
+                  "inputs": {
+                    "p_bad_PROXY": 0.12499999999999944,
+                    "mass_tonnes": 50.0,
+                    "false_prime_consequence_per_tonne": 60000.0
+                  }
+                },
+                {
+                  "name": "false_hold_opportunity",
+                  "amount_currency": 437500.0000000003,
+                  "provenance": "ASSUMPTION",
+                  "formula": "P(good) * recoverable_mass_tonnes * spread_per_tonne * hold_fraction",
+                  "inputs": {
+                    "p_good_PROXY": 0.8750000000000006,
+                    "recoverable_mass_tonnes": 50.0,
+                    "spread_per_tonne": 20000.0,
+                    "hold_fraction": 0.5
+                  }
+                },
+                {
+                  "name": "sample_cost",
+                  "amount_currency": 20000.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "scenario.sample_cost",
+                  "inputs": {
+                    "sample_cost": 20000.0
+                  }
+                },
+                {
+                  "name": "workflow_cost",
+                  "amount_currency": 8000.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "scenario.workflow_cost",
+                  "inputs": {
+                    "workflow_cost": 8000.0
+                  }
+                }
+              ],
+              "risk": {
+                "p_bad_PROXY": 0.12499999999999944,
+                "p_good_PROXY": 0.8750000000000006,
+                "kind": "interval_derived",
+                "validated": false,
+                "provenance": "SIMULATED",
+                "detail": "fraction of interval [7.500,8.300] outside spec [7.600,8.400]",
+                "note": "ILLUSTRATIVE risk proxy \u2014 NOT a validated probability of bad material; not a decision trigger."
+              }
+            },
+            {
+              "action": "HOLD",
+              "expected_loss_currency": 875000.0000000006,
+              "false_prime_exposure_currency": 0.0,
+              "false_hold_exposure_currency": 1000000.0,
+              "permitted": true,
+              "components": [
+                {
+                  "name": "false_prime",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (action does not prime)",
+                  "inputs": {
+                    "p_bad_PROXY": 0.12499999999999944,
+                    "mass_tonnes": 50.0,
+                    "false_prime_consequence_per_tonne": 60000.0
+                  }
+                },
+                {
+                  "name": "false_hold_opportunity",
+                  "amount_currency": 875000.0000000006,
+                  "provenance": "ASSUMPTION",
+                  "formula": "P(good) * recoverable_mass_tonnes * spread_per_tonne * hold_fraction",
+                  "inputs": {
+                    "p_good_PROXY": 0.8750000000000006,
+                    "recoverable_mass_tonnes": 50.0,
+                    "spread_per_tonne": 20000.0,
+                    "hold_fraction": 1.0
+                  }
+                },
+                {
+                  "name": "sample_cost",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (no sample)",
+                  "inputs": {
+                    "sample_cost": 20000.0
+                  }
+                },
+                {
+                  "name": "workflow_cost",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (no workflow triggered)",
+                  "inputs": {
+                    "workflow_cost": 8000.0
+                  }
+                }
+              ],
+              "risk": {
+                "p_bad_PROXY": 0.12499999999999944,
+                "p_good_PROXY": 0.8750000000000006,
+                "kind": "interval_derived",
+                "validated": false,
+                "provenance": "SIMULATED",
+                "detail": "fraction of interval [7.500,8.300] outside spec [7.600,8.400]",
+                "note": "ILLUSTRATIVE risk proxy \u2014 NOT a validated probability of bad material; not a decision trigger."
+              }
+            },
+            {
+              "action": "ABSTAIN",
+              "expected_loss_currency": 875000.0000000006,
+              "false_prime_exposure_currency": 0.0,
+              "false_hold_exposure_currency": 1000000.0,
+              "permitted": true,
+              "components": [
+                {
+                  "name": "false_prime",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (action does not prime)",
+                  "inputs": {
+                    "p_bad_PROXY": 0.12499999999999944,
+                    "mass_tonnes": 50.0,
+                    "false_prime_consequence_per_tonne": 60000.0
+                  }
+                },
+                {
+                  "name": "false_hold_opportunity",
+                  "amount_currency": 875000.0000000006,
+                  "provenance": "ASSUMPTION",
+                  "formula": "P(good) * recoverable_mass_tonnes * spread_per_tonne * hold_fraction",
+                  "inputs": {
+                    "p_good_PROXY": 0.8750000000000006,
+                    "recoverable_mass_tonnes": 50.0,
+                    "spread_per_tonne": 20000.0,
+                    "hold_fraction": 1.0
+                  }
+                },
+                {
+                  "name": "sample_cost",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (no sample)",
+                  "inputs": {
+                    "sample_cost": 20000.0
+                  }
+                },
+                {
+                  "name": "workflow_cost",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (no workflow triggered)",
+                  "inputs": {
+                    "workflow_cost": 8000.0
+                  }
+                }
+              ],
+              "risk": {
+                "p_bad_PROXY": 0.12499999999999944,
+                "p_good_PROXY": 0.8750000000000006,
+                "kind": "interval_derived",
+                "validated": false,
+                "provenance": "SIMULATED",
+                "detail": "fraction of interval [7.500,8.300] outside spec [7.600,8.400]",
+                "note": "ILLUSTRATIVE risk proxy \u2014 NOT a validated probability of bad material; not a decision trigger."
+              }
+            }
+          ],
+          "note": "Expected loss is computed over PERMITTED actions ONLY. min_loss_action may be highlighted but can NEVER override the Phase-9 hard gates or resurrect a blocked action."
+        },
+        "voi": {
+          "voi_currency": 785000.0000000006,
+          "el_min_now_currency": 875000.0000000006,
+          "expected_el_post_sample_currency": 62000.00000000003,
+          "sample_cost_currency": 28000.0,
+          "applicable": true,
+          "recommend_sample": true,
+          "min_voi_threshold_currency": 0.0,
+          "bins": [
+            {
+              "name": "GOOD",
+              "probability": 0.8750000000000006,
+              "posterior_p_bad_PROXY": 0.02,
+              "actions_available": [
+                "PRIME_RELEASE_CANDIDATE",
+                "HOLD",
+                "ABSTAIN"
+              ],
+              "min_loss_action": "PRIME_RELEASE_CANDIDATE",
+              "min_loss_currency": 68000.0
+            },
+            {
+              "name": "BAD",
+              "probability": 0.12499999999999944,
+              "posterior_p_bad_PROXY": 0.98,
+              "actions_available": [
+                "HOLD",
+                "ABSTAIN"
+              ],
+              "min_loss_action": "HOLD",
+              "min_loss_currency": 20000.00000000002
+            }
+          ],
+          "reason": "sample can resolve quality uncertainty and unlock PRIME",
+          "provenance": "SIMULATED",
+          "voi_model_version": "voi-discrete-v1",
+          "note": "Deterministic discrete-outcome VOI approximation (SIMULATED). Not a validated information value."
+        },
+        "realized_value_currency": 3750000.0,
+        "counterfactual_opportunity_currency": 1000000.0,
+        "value_split": {
+          "realized_value_currency": 3750000.0,
+          "counterfactual_prime_value_currency": 4750000.0,
+          "counterfactual_opportunity_currency": 1000000.0,
+          "avoided_loss_currency": null,
+          "realized_good": null,
+          "note": "Realized is observed; counterfactual is hypothetical. avoided_loss is populated ONLY where the synthetic ground truth supports it \u2014 never as a measured HMEL saving."
+        },
+        "versions": {
+          "economics": "economics-v1",
+          "cost_model": "cost-model-v1",
+          "voi_model": "voi-discrete-v1",
+          "policy": "policy-v1",
+          "disposition": "disposition-v1",
+          "scenario": "BASE"
+        },
+        "provenance": "SIMULATED",
+        "note": "SIMULATED/ILLUSTRATIVE economics. Phase-9 hard gates are authoritative; economics rank only PERMITTED actions and never resurrect a blocked action."
+      }
+    },
+    {
+      "scenario": "D_sample_negative_voi",
+      "rationale_fixture": "Same borderline case but the result arrives AFTER the horizon -> VOI not applicable, SAMPLE is NOT recommended.",
+      "phase9_action": "SAMPLE_NOW",
+      "permitted_actions": [
+        "SAMPLE_NOW",
+        "HOLD",
+        "ABSTAIN"
+      ],
+      "expected_loss": {
+        "SAMPLE_NOW": 903000.0000000006,
+        "HOLD": 875000.0000000006,
+        "ABSTAIN": 875000.0000000006
+      },
+      "economic_preferred_action_ADVISORY": "HOLD",
+      "voi_currency": 0.0,
+      "recommend_sample": false,
+      "ledger": {
+        "event_id": "EP-CB-00",
+        "decision_id": "SC",
+        "scenario": "BASE",
+        "phase9_action": "SAMPLE_NOW",
+        "permitted_actions": [
+          "SAMPLE_NOW",
+          "HOLD",
+          "ABSTAIN"
+        ],
+        "economic_preferred_action_ADVISORY": "HOLD",
+        "mass_tonnes": 50.0,
+        "recoverable_mass_tonnes": 50.0,
+        "prime_value_per_tonne": 95000.0,
+        "actual_route_value_per_tonne": 75000.0,
+        "spread_per_tonne": 20000.0,
+        "sample_cost_currency": 20000.0,
+        "workflow_cost_currency": 8000.0,
+        "false_prime_exposure_currency": 0.0,
+        "false_hold_exposure_currency": 1000000.0,
+        "expected_loss_chosen_currency": 903000.0000000006,
+        "expected_loss_table": {
+          "permitted_actions": [
+            "SAMPLE_NOW",
+            "HOLD",
+            "ABSTAIN"
+          ],
+          "min_loss_action": "HOLD",
+          "rows": [
+            {
+              "action": "SAMPLE_NOW",
+              "expected_loss_currency": 903000.0000000006,
+              "false_prime_exposure_currency": 0.0,
+              "false_hold_exposure_currency": 1000000.0,
+              "permitted": true,
+              "components": [
+                {
+                  "name": "false_prime",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (action does not prime)",
+                  "inputs": {
+                    "p_bad_PROXY": 0.12499999999999944,
+                    "mass_tonnes": 50.0,
+                    "false_prime_consequence_per_tonne": 60000.0
+                  }
+                },
+                {
+                  "name": "false_hold_opportunity",
+                  "amount_currency": 875000.0000000006,
+                  "provenance": "ASSUMPTION",
+                  "formula": "P(good) * recoverable_mass_tonnes * spread_per_tonne * hold_fraction",
+                  "inputs": {
+                    "p_good_PROXY": 0.8750000000000006,
+                    "recoverable_mass_tonnes": 50.0,
+                    "spread_per_tonne": 20000.0,
+                    "hold_fraction": 1.0
+                  }
+                },
+                {
+                  "name": "sample_cost",
+                  "amount_currency": 20000.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "scenario.sample_cost",
+                  "inputs": {
+                    "sample_cost": 20000.0
+                  }
+                },
+                {
+                  "name": "workflow_cost",
+                  "amount_currency": 8000.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "scenario.workflow_cost",
+                  "inputs": {
+                    "workflow_cost": 8000.0
+                  }
+                }
+              ],
+              "risk": {
+                "p_bad_PROXY": 0.12499999999999944,
+                "p_good_PROXY": 0.8750000000000006,
+                "kind": "interval_derived",
+                "validated": false,
+                "provenance": "SIMULATED",
+                "detail": "fraction of interval [7.500,8.300] outside spec [7.600,8.400]",
+                "note": "ILLUSTRATIVE risk proxy \u2014 NOT a validated probability of bad material; not a decision trigger."
+              }
+            },
+            {
+              "action": "HOLD",
+              "expected_loss_currency": 875000.0000000006,
+              "false_prime_exposure_currency": 0.0,
+              "false_hold_exposure_currency": 1000000.0,
+              "permitted": true,
+              "components": [
+                {
+                  "name": "false_prime",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (action does not prime)",
+                  "inputs": {
+                    "p_bad_PROXY": 0.12499999999999944,
+                    "mass_tonnes": 50.0,
+                    "false_prime_consequence_per_tonne": 60000.0
+                  }
+                },
+                {
+                  "name": "false_hold_opportunity",
+                  "amount_currency": 875000.0000000006,
+                  "provenance": "ASSUMPTION",
+                  "formula": "P(good) * recoverable_mass_tonnes * spread_per_tonne * hold_fraction",
+                  "inputs": {
+                    "p_good_PROXY": 0.8750000000000006,
+                    "recoverable_mass_tonnes": 50.0,
+                    "spread_per_tonne": 20000.0,
+                    "hold_fraction": 1.0
+                  }
+                },
+                {
+                  "name": "sample_cost",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (no sample)",
+                  "inputs": {
+                    "sample_cost": 20000.0
+                  }
+                },
+                {
+                  "name": "workflow_cost",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (no workflow triggered)",
+                  "inputs": {
+                    "workflow_cost": 8000.0
+                  }
+                }
+              ],
+              "risk": {
+                "p_bad_PROXY": 0.12499999999999944,
+                "p_good_PROXY": 0.8750000000000006,
+                "kind": "interval_derived",
+                "validated": false,
+                "provenance": "SIMULATED",
+                "detail": "fraction of interval [7.500,8.300] outside spec [7.600,8.400]",
+                "note": "ILLUSTRATIVE risk proxy \u2014 NOT a validated probability of bad material; not a decision trigger."
+              }
+            },
+            {
+              "action": "ABSTAIN",
+              "expected_loss_currency": 875000.0000000006,
+              "false_prime_exposure_currency": 0.0,
+              "false_hold_exposure_currency": 1000000.0,
+              "permitted": true,
+              "components": [
+                {
+                  "name": "false_prime",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (action does not prime)",
+                  "inputs": {
+                    "p_bad_PROXY": 0.12499999999999944,
+                    "mass_tonnes": 50.0,
+                    "false_prime_consequence_per_tonne": 60000.0
+                  }
+                },
+                {
+                  "name": "false_hold_opportunity",
+                  "amount_currency": 875000.0000000006,
+                  "provenance": "ASSUMPTION",
+                  "formula": "P(good) * recoverable_mass_tonnes * spread_per_tonne * hold_fraction",
+                  "inputs": {
+                    "p_good_PROXY": 0.8750000000000006,
+                    "recoverable_mass_tonnes": 50.0,
+                    "spread_per_tonne": 20000.0,
+                    "hold_fraction": 1.0
+                  }
+                },
+                {
+                  "name": "sample_cost",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (no sample)",
+                  "inputs": {
+                    "sample_cost": 20000.0
+                  }
+                },
+                {
+                  "name": "workflow_cost",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (no workflow triggered)",
+                  "inputs": {
+                    "workflow_cost": 8000.0
+                  }
+                }
+              ],
+              "risk": {
+                "p_bad_PROXY": 0.12499999999999944,
+                "p_good_PROXY": 0.8750000000000006,
+                "kind": "interval_derived",
+                "validated": false,
+                "provenance": "SIMULATED",
+                "detail": "fraction of interval [7.500,8.300] outside spec [7.600,8.400]",
+                "note": "ILLUSTRATIVE risk proxy \u2014 NOT a validated probability of bad material; not a decision trigger."
+              }
+            }
+          ],
+          "note": "Expected loss is computed over PERMITTED actions ONLY. min_loss_action may be highlighted but can NEVER override the Phase-9 hard gates or resurrect a blocked action."
+        },
+        "voi": {
+          "voi_currency": 0.0,
+          "el_min_now_currency": 875000.0000000006,
+          "expected_el_post_sample_currency": 62000.00000000003,
+          "sample_cost_currency": 28000.0,
+          "applicable": false,
+          "recommend_sample": false,
+          "min_voi_threshold_currency": 0.0,
+          "bins": [
+            {
+              "name": "GOOD",
+              "probability": 0.8750000000000006,
+              "posterior_p_bad_PROXY": 0.02,
+              "actions_available": [
+                "PRIME_RELEASE_CANDIDATE",
+                "HOLD",
+                "ABSTAIN"
+              ],
+              "min_loss_action": "PRIME_RELEASE_CANDIDATE",
+              "min_loss_currency": 68000.0
+            },
+            {
+              "name": "BAD",
+              "probability": 0.12499999999999944,
+              "posterior_p_bad_PROXY": 0.98,
+              "actions_available": [
+                "HOLD",
+                "ABSTAIN"
+              ],
+              "min_loss_action": "HOLD",
+              "min_loss_currency": 20000.00000000002
+            }
+          ],
+          "reason": "sample result arrives after the decision horizon",
+          "provenance": "SIMULATED",
+          "voi_model_version": "voi-discrete-v1",
+          "note": "Deterministic discrete-outcome VOI approximation (SIMULATED). Not a validated information value."
+        },
+        "realized_value_currency": 3750000.0,
+        "counterfactual_opportunity_currency": 1000000.0,
+        "value_split": {
+          "realized_value_currency": 3750000.0,
+          "counterfactual_prime_value_currency": 4750000.0,
+          "counterfactual_opportunity_currency": 1000000.0,
+          "avoided_loss_currency": null,
+          "realized_good": null,
+          "note": "Realized is observed; counterfactual is hypothetical. avoided_loss is populated ONLY where the synthetic ground truth supports it \u2014 never as a measured HMEL saving."
+        },
+        "versions": {
+          "economics": "economics-v1",
+          "cost_model": "cost-model-v1",
+          "voi_model": "voi-discrete-v1",
+          "policy": "policy-v1",
+          "disposition": "disposition-v1",
+          "scenario": "BASE"
+        },
+        "provenance": "SIMULATED",
+        "note": "SIMULATED/ILLUSTRATIVE economics. Phase-9 hard gates are authoritative; economics rank only PERMITTED actions and never resurrect a blocked action."
+      }
+    },
+    {
+      "scenario": "E_hard_gate_abstain",
+      "rationale_fixture": "OOD forces ABSTAIN; economics offer ONLY ABSTAIN and can never resurrect PRIME regardless of its (hypothetical) lower loss.",
+      "phase9_action": "ABSTAIN",
+      "permitted_actions": [
+        "ABSTAIN"
+      ],
+      "expected_loss": {
+        "ABSTAIN": 1000000.0
+      },
+      "economic_preferred_action_ADVISORY": "ABSTAIN",
+      "voi_currency": 0.0,
+      "recommend_sample": false,
+      "ledger": {
+        "event_id": "EP-CB-00",
+        "decision_id": "SC",
+        "scenario": "BASE",
+        "phase9_action": "ABSTAIN",
+        "permitted_actions": [
+          "ABSTAIN"
+        ],
+        "economic_preferred_action_ADVISORY": "ABSTAIN",
+        "mass_tonnes": 50.0,
+        "recoverable_mass_tonnes": 50.0,
+        "prime_value_per_tonne": 95000.0,
+        "actual_route_value_per_tonne": 75000.0,
+        "spread_per_tonne": 20000.0,
+        "sample_cost_currency": 20000.0,
+        "workflow_cost_currency": 8000.0,
+        "false_prime_exposure_currency": 0.0,
+        "false_hold_exposure_currency": 1000000.0,
+        "expected_loss_chosen_currency": 1000000.0,
+        "expected_loss_table": {
+          "permitted_actions": [
+            "ABSTAIN"
+          ],
+          "min_loss_action": "ABSTAIN",
+          "rows": [
+            {
+              "action": "ABSTAIN",
+              "expected_loss_currency": 1000000.0,
+              "false_prime_exposure_currency": 0.0,
+              "false_hold_exposure_currency": 1000000.0,
+              "permitted": true,
+              "components": [
+                {
+                  "name": "false_prime",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (action does not prime)",
+                  "inputs": {
+                    "p_bad_PROXY": 0.0,
+                    "mass_tonnes": 50.0,
+                    "false_prime_consequence_per_tonne": 60000.0
+                  }
+                },
+                {
+                  "name": "false_hold_opportunity",
+                  "amount_currency": 1000000.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "P(good) * recoverable_mass_tonnes * spread_per_tonne * hold_fraction",
+                  "inputs": {
+                    "p_good_PROXY": 1.0,
+                    "recoverable_mass_tonnes": 50.0,
+                    "spread_per_tonne": 20000.0,
+                    "hold_fraction": 1.0
+                  }
+                },
+                {
+                  "name": "sample_cost",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (no sample)",
+                  "inputs": {
+                    "sample_cost": 20000.0
+                  }
+                },
+                {
+                  "name": "workflow_cost",
+                  "amount_currency": 0.0,
+                  "provenance": "ASSUMPTION",
+                  "formula": "0 (no workflow triggered)",
+                  "inputs": {
+                    "workflow_cost": 8000.0
+                  }
+                }
+              ],
+              "risk": {
+                "p_bad_PROXY": 0.0,
+                "p_good_PROXY": 1.0,
+                "kind": "interval_derived",
+                "validated": false,
+                "provenance": "SIMULATED",
+                "detail": "fraction of interval [7.700,8.300] outside spec [7.600,8.400]",
+                "note": "ILLUSTRATIVE risk proxy \u2014 NOT a validated probability of bad material; not a decision trigger."
+              }
+            }
+          ],
+          "note": "Expected loss is computed over PERMITTED actions ONLY. min_loss_action may be highlighted but can NEVER override the Phase-9 hard gates or resurrect a blocked action."
+        },
+        "voi": {
+          "voi_currency": 0.0,
+          "el_min_now_currency": 1000000.0,
+          "expected_el_post_sample_currency": 980000.0,
+          "sample_cost_currency": 28000.0,
+          "applicable": false,
+          "recommend_sample": false,
+          "min_voi_threshold_currency": 0.0,
+          "bins": [
+            {
+              "name": "GOOD",
+              "probability": 1.0,
+              "posterior_p_bad_PROXY": 0.02,
+              "actions_available": [
+                "ABSTAIN"
+              ],
+              "min_loss_action": "ABSTAIN",
+              "min_loss_currency": 980000.0
+            },
+            {
+              "name": "BAD",
+              "probability": 0.0,
+              "posterior_p_bad_PROXY": 0.98,
+              "actions_available": [
+                "HOLD",
+                "ABSTAIN"
+              ],
+              "min_loss_action": "HOLD",
+              "min_loss_currency": 20000.00000000002
+            }
+          ],
+          "reason": "hard gate forces ABSTAIN \u2014 sampling cannot unblock it",
+          "provenance": "SIMULATED",
+          "voi_model_version": "voi-discrete-v1",
+          "note": "Deterministic discrete-outcome VOI approximation (SIMULATED). Not a validated information value."
+        },
+        "realized_value_currency": 3750000.0,
+        "counterfactual_opportunity_currency": 1000000.0,
+        "value_split": {
+          "realized_value_currency": 3750000.0,
+          "counterfactual_prime_value_currency": 4750000.0,
+          "counterfactual_opportunity_currency": 1000000.0,
+          "avoided_loss_currency": null,
+          "realized_good": null,
+          "note": "Realized is observed; counterfactual is hypothetical. avoided_loss is populated ONLY where the synthetic ground truth supports it \u2014 never as a measured HMEL saving."
+        },
+        "versions": {
+          "economics": "economics-v1",
+          "cost_model": "cost-model-v1",
+          "voi_model": "voi-discrete-v1",
+          "policy": "policy-v1",
+          "disposition": "disposition-v1",
+          "scenario": "BASE"
+        },
+        "provenance": "SIMULATED",
+        "note": "SIMULATED/ILLUSTRATIVE economics. Phase-9 hard gates are authoritative; economics rank only PERMITTED actions and never resurrect a blocked action."
+      }
+    }
+  ],
+  "annual_scale_up_EXAMPLE": {
+    "eligible_transitions_per_year": 50,
+    "validated_episode_value_currency": 240000.0,
+    "availability": 0.9,
+    "adoption": 0.5,
+    "annual_value_currency": 5400000.0,
+    "scenario": "BASE",
+    "provenance": "SIMULATED",
+    "note": "SCENARIO calculation only. No fixed annual savings is claimed; every factor is an explicit, variable input."
+  },
+  "note": "Economics sit BEHIND the Phase-9 hard gates and NEVER resurrect a blocked action. prob_bad stays a PROVISIONAL/ILLUSTRATIVE proxy \u2014 not a validated probability or a decision trigger. All currency is SIMULATED/ILLUSTRATIVE; no fixed annual saving is claimed. SIMULATION/ASSUMPTION \u2014 not HMEL-validated."
+}

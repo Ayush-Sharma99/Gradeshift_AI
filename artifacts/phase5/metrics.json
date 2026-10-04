@@ -1,0 +1,538 @@
+{
+  "dataset_version": "ds-v1",
+  "feature_version": "feat-v1",
+  "model_version": "gbm-mfi-v1",
+  "random_seed": 42,
+  "horizon_min": 240.0,
+  "runtime_versions": {
+    "python": "3.10.0",
+    "numpy": "1.26.4",
+    "sklearn": "1.6.1"
+  },
+  "n_events": 18,
+  "partitions": {
+    "TRAIN": [
+      "EP-AB-00",
+      "EP-AB-01",
+      "EP-AB-02",
+      "EP-AC-00",
+      "EP-AC-01",
+      "EP-AC-02",
+      "EP-BA-00",
+      "EP-BA-01",
+      "EP-BA-02",
+      "EP-CA-00"
+    ],
+    "CALIBRATION": [
+      "EP-BC-00",
+      "EP-CA-01",
+      "EP-CA-02"
+    ],
+    "LOCKED_TEST": [
+      "EP-BC-01",
+      "EP-BC-02",
+      "EP-CB-00",
+      "EP-CB-01",
+      "EP-CB-02"
+    ]
+  },
+  "row_counts": {
+    "TRAIN": 470,
+    "CALIBRATION": 141,
+    "LOCKED_TEST": 235
+  },
+  "labeled_row_counts": {
+    "TRAIN": 470,
+    "CALIBRATION": 141,
+    "LOCKED_TEST": 235
+  },
+  "metrics": {
+    "CALIBRATION": {
+      "last_lab": {
+        "overall": {
+          "n": 132,
+          "coverage": 0.9361702127659575,
+          "mae": 0.4113515505465864,
+          "rmse": 1.1770377910027776,
+          "bias": 0.41093745190512593
+        },
+        "by_phase": {
+          "ACTIVE_TRANSITION": {
+            "n": 59,
+            "coverage": 0.9516129032258065,
+            "mae": 0.898371987284958,
+            "rmse": 1.7603555675570648,
+            "bias": 0.898371987284958
+          },
+          "POST_STABILIZATION": {
+            "n": 73,
+            "coverage": 1.0,
+            "mae": 0.017732293456669615,
+            "rmse": 0.024247350288211445,
+            "bias": 0.016983512351563045
+          },
+          "PRE_BASELINE": {
+            "n": 0,
+            "coverage": 0.0,
+            "mae": NaN,
+            "rmse": NaN,
+            "bias": NaN
+          }
+        },
+        "by_direction": {
+          "B->C": {
+            "n": 44,
+            "coverage": 0.9361702127659575,
+            "mae": 1.0264378134739973,
+            "rmse": 2.0214915001715594,
+            "bias": 1.026256132277802
+          },
+          "C->A": {
+            "n": 88,
+            "coverage": 0.9361702127659575,
+            "mae": 0.10380841908288084,
+            "rmse": 0.18685020615486828,
+            "bias": 0.10327811171878784
+          }
+        }
+      },
+      "deterministic_online": {
+        "overall": {
+          "n": 141,
+          "coverage": 1.0,
+          "mae": 0.1197401837179257,
+          "rmse": 0.4372752461543501,
+          "bias": 0.1076230659217717
+        },
+        "by_phase": {
+          "ACTIVE_TRANSITION": {
+            "n": 62,
+            "coverage": 1.0,
+            "mae": 0.25117914873676045,
+            "rmse": 0.6574501688757903,
+            "bias": 0.25110880375200556
+          },
+          "POST_STABILIZATION": {
+            "n": 73,
+            "coverage": 1.0,
+            "mae": 0.009606730035604775,
+            "rmse": 0.01434223205109413,
+            "bias": 0.0011266369576864907
+          },
+          "PRE_BASELINE": {
+            "n": 6,
+            "coverage": 1.0,
+            "mae": 0.1014945649915379,
+            "rmse": 0.15632144880284174,
+            "bias": -0.07935633926094206
+          }
+        },
+        "by_direction": {
+          "B->C": {
+            "n": 47,
+            "coverage": 1.0,
+            "mae": 0.2956154124964538,
+            "rmse": 0.7511688562250158,
+            "bias": 0.26575068065934937
+          },
+          "C->A": {
+            "n": 94,
+            "coverage": 1.0,
+            "mae": 0.03180256932866165,
+            "rmse": 0.06846266185171185,
+            "bias": 0.02855925855298285
+          }
+        }
+      },
+      "linear_process": {
+        "overall": {
+          "n": 141,
+          "coverage": 1.0,
+          "mae": 0.23090069377464187,
+          "rmse": 0.3397742274328331,
+          "bias": -0.020056550916002048
+        },
+        "by_phase": {
+          "ACTIVE_TRANSITION": {
+            "n": 62,
+            "coverage": 1.0,
+            "mae": 0.30831496943991865,
+            "rmse": 0.4522831845047724,
+            "bias": -0.04036546741898068
+          },
+          "POST_STABILIZATION": {
+            "n": 73,
+            "coverage": 1.0,
+            "mae": 0.15844346727546993,
+            "rmse": 0.19767948023464918,
+            "bias": -0.0016072933842925655
+          },
+          "PRE_BASELINE": {
+            "n": 6,
+            "coverage": 1.0,
+            "mae": 0.3125161009733724,
+            "rmse": 0.3518051786249386,
+            "bias": -0.03466371368768795
+          }
+        },
+        "by_direction": {
+          "B->C": {
+            "n": 47,
+            "coverage": 1.0,
+            "mae": 0.326872048266884,
+            "rmse": 0.5027823575970447,
+            "bias": 0.2650093174342007
+          },
+          "C->A": {
+            "n": 94,
+            "coverage": 1.0,
+            "mae": 0.1829150165285208,
+            "rmse": 0.21627468387665394,
+            "bias": -0.16258948509110344
+          }
+        }
+      },
+      "gbm": {
+        "overall": {
+          "n": 141,
+          "coverage": 1.0,
+          "mae": 0.0966900611214271,
+          "rmse": 0.24395421809240203,
+          "bias": -0.07815500464932947
+        },
+        "by_phase": {
+          "ACTIVE_TRANSITION": {
+            "n": 62,
+            "coverage": 1.0,
+            "mae": 0.19454788740857484,
+            "rmse": 0.366056879931603,
+            "bias": -0.1616744157688369
+          },
+          "POST_STABILIZATION": {
+            "n": 73,
+            "coverage": 1.0,
+            "mae": 0.01667768673997194,
+            "rmse": 0.02629425043011973,
+            "bias": -0.008797033028985426
+          },
+          "PRE_BASELINE": {
+            "n": 6,
+            "coverage": 1.0,
+            "mae": 0.05897641112860463,
+            "rmse": 0.07427561220965209,
+            "bias": -0.05897641112860463
+          }
+        },
+        "by_direction": {
+          "B->C": {
+            "n": 47,
+            "coverage": 1.0,
+            "mae": 0.25797055197389085,
+            "rmse": 0.42056866988762376,
+            "bias": -0.24019915964628474
+          },
+          "C->A": {
+            "n": 94,
+            "coverage": 1.0,
+            "mae": 0.016049815695195233,
+            "rmse": 0.028835529162655752,
+            "bias": 0.002867072849148158
+          }
+        }
+      }
+    },
+    "LOCKED_TEST": {
+      "last_lab": {
+        "overall": {
+          "n": 220,
+          "coverage": 0.9361702127659575,
+          "mae": 1.0605118387812629,
+          "rmse": 1.6957200343305343,
+          "bias": -0.23688701014099697
+        },
+        "by_phase": {
+          "ACTIVE_TRANSITION": {
+            "n": 166,
+            "coverage": 0.9707602339181286,
+            "mae": 1.387737323694344,
+            "rmse": 1.9515497437143916,
+            "bias": -0.3109105875103733
+          },
+          "POST_STABILIZATION": {
+            "n": 54,
+            "coverage": 1.0,
+            "mae": 0.05459645923364248,
+            "rmse": 0.08431783989930425,
+            "bias": -0.009333050079580763
+          },
+          "PRE_BASELINE": {
+            "n": 0,
+            "coverage": 0.0,
+            "mae": NaN,
+            "rmse": NaN,
+            "bias": NaN
+          }
+        },
+        "by_direction": {
+          "B->C": {
+            "n": 88,
+            "coverage": 0.9361702127659575,
+            "mae": 1.023696339846294,
+            "rmse": 2.0174714407761454,
+            "bias": 1.021718191580691
+          },
+          "C->B": {
+            "n": 132,
+            "coverage": 0.9361702127659575,
+            "mae": 1.085055504737909,
+            "rmse": 1.4418680181689068,
+            "bias": -1.075957144622122
+          }
+        }
+      },
+      "deterministic_online": {
+        "overall": {
+          "n": 235,
+          "coverage": 1.0,
+          "mae": 0.3262771264966802,
+          "rmse": 0.6018074046249398,
+          "bias": -0.0602891711135223
+        },
+        "by_phase": {
+          "ACTIVE_TRANSITION": {
+            "n": 171,
+            "coverage": 1.0,
+            "mae": 0.42543945748794776,
+            "rmse": 0.7029575322712941,
+            "bias": -0.09255674360118404
+          },
+          "POST_STABILIZATION": {
+            "n": 54,
+            "coverage": 1.0,
+            "mae": 0.05799328553997773,
+            "rmse": 0.0908165765844422,
+            "bias": 0.032374411101485964
+          },
+          "PRE_BASELINE": {
+            "n": 10,
+            "coverage": 1.0,
+            "mae": 0.07933400771219981,
+            "rmse": 0.12866766793425877,
+            "bias": -0.008897025535551417
+          }
+        },
+        "by_direction": {
+          "B->C": {
+            "n": 94,
+            "coverage": 1.0,
+            "mae": 0.2955537842028965,
+            "rmse": 0.7549264485730646,
+            "bias": 0.2831782489564639
+          },
+          "C->B": {
+            "n": 141,
+            "coverage": 1.0,
+            "mae": 0.34675935469253605,
+            "rmse": 0.47294568955175315,
+            "bias": -0.2892674511601797
+          }
+        }
+      },
+      "linear_process": {
+        "overall": {
+          "n": 235,
+          "coverage": 1.0,
+          "mae": 0.2613294040279813,
+          "rmse": 0.3785737469286461,
+          "bias": 0.06472487952905498
+        },
+        "by_phase": {
+          "ACTIVE_TRANSITION": {
+            "n": 171,
+            "coverage": 1.0,
+            "mae": 0.257923291589007,
+            "rmse": 0.40628262062725246,
+            "bias": 0.004147440074917098
+          },
+          "POST_STABILIZATION": {
+            "n": 54,
+            "coverage": 1.0,
+            "mae": 0.2820451558461518,
+            "rmse": 0.3009756849276968,
+            "bias": 0.26355519244650616
+          },
+          "PRE_BASELINE": {
+            "n": 10,
+            "coverage": 1.0,
+            "mae": 0.20770886691632198,
+            "rmse": 0.2370387188895998,
+            "bias": 0.026915404440575517
+          }
+        },
+        "by_direction": {
+          "B->C": {
+            "n": 94,
+            "coverage": 1.0,
+            "mae": 0.31224323933091225,
+            "rmse": 0.48902216185658437,
+            "bias": 0.2821562507978406
+          },
+          "C->B": {
+            "n": 141,
+            "coverage": 1.0,
+            "mae": 0.22738684715936072,
+            "rmse": 0.2818421897352004,
+            "bias": -0.0802293679834688
+          }
+        }
+      },
+      "gbm": {
+        "overall": {
+          "n": 235,
+          "coverage": 1.0,
+          "mae": 0.2720467871821741,
+          "rmse": 0.43525165905304886,
+          "bias": -0.23368113620095216
+        },
+        "by_phase": {
+          "ACTIVE_TRANSITION": {
+            "n": 171,
+            "coverage": 1.0,
+            "mae": 0.3556179292375217,
+            "rmse": 0.5089588968201971,
+            "bias": -0.3097525121544024
+          },
+          "POST_STABILIZATION": {
+            "n": 54,
+            "coverage": 1.0,
+            "mae": 0.05055479690012474,
+            "rmse": 0.0612251035879605,
+            "bias": -0.033175347246792726
+          },
+          "PRE_BASELINE": {
+            "n": 10,
+            "coverage": 1.0,
+            "mae": 0.03903700555879656,
+            "rmse": 0.04607138831234328,
+            "bias": -0.01559186774941338
+          }
+        },
+        "by_direction": {
+          "B->C": {
+            "n": 94,
+            "coverage": 1.0,
+            "mae": 0.2452650580915443,
+            "rmse": 0.3991960855983643,
+            "bias": -0.2234807426359753
+          },
+          "C->B": {
+            "n": 141,
+            "coverage": 1.0,
+            "mae": 0.289901273242594,
+            "rmse": 0.4577135217680904,
+            "bias": -0.24048139857760334
+          }
+        }
+      }
+    }
+  },
+  "largest_residuals_locked_gbm": [
+    {
+      "event_id": "EP-CB-01",
+      "decision_time": "2026-01-23T09:30:00+00:00",
+      "phase": "ACTIVE_TRANSITION",
+      "direction": "C->B",
+      "truth": 5.30982933574014,
+      "pred": 3.980391747560502,
+      "abs_resid": 1.3294375881796383
+    },
+    {
+      "event_id": "EP-BC-02",
+      "decision_time": "2026-01-20T12:10:00+00:00",
+      "phase": "ACTIVE_TRANSITION",
+      "direction": "B->C",
+      "truth": 4.0056165030637,
+      "pred": 2.6812637630649285,
+      "abs_resid": 1.3243527399987713
+    },
+    {
+      "event_id": "EP-BC-01",
+      "decision_time": "2026-01-19T02:50:00+00:00",
+      "phase": "ACTIVE_TRANSITION",
+      "direction": "B->C",
+      "truth": 4.01628136064739,
+      "pred": 2.7004165368315824,
+      "abs_resid": 1.315864823815808
+    },
+    {
+      "event_id": "EP-CB-00",
+      "decision_time": "2026-01-22T00:10:00+00:00",
+      "phase": "ACTIVE_TRANSITION",
+      "direction": "C->B",
+      "truth": 5.287970540425168,
+      "pred": 3.973725849773485,
+      "abs_resid": 1.3142446906516834
+    },
+    {
+      "event_id": "EP-CB-02",
+      "decision_time": "2026-01-24T18:50:00+00:00",
+      "phase": "ACTIVE_TRANSITION",
+      "direction": "C->B",
+      "truth": 5.295437087403529,
+      "pred": 3.9856879046653186,
+      "abs_resid": 1.30974918273821
+    },
+    {
+      "event_id": "EP-BC-02",
+      "decision_time": "2026-01-20T11:50:00+00:00",
+      "phase": "ACTIVE_TRANSITION",
+      "direction": "B->C",
+      "truth": 4.0056165030637,
+      "pred": 2.7754779516906574,
+      "abs_resid": 1.2301385513730425
+    },
+    {
+      "event_id": "EP-CB-01",
+      "decision_time": "2026-01-23T10:50:00+00:00",
+      "phase": "ACTIVE_TRANSITION",
+      "direction": "C->B",
+      "truth": 6.088590768395444,
+      "pred": 4.902878584120803,
+      "abs_resid": 1.1857121842746414
+    },
+    {
+      "event_id": "EP-CB-02",
+      "decision_time": "2026-01-24T20:10:00+00:00",
+      "phase": "ACTIVE_TRANSITION",
+      "direction": "C->B",
+      "truth": 6.067271065528452,
+      "pred": 4.907730984732945,
+      "abs_resid": 1.159540080795507
+    }
+  ],
+  "lineage_example": {
+    "event_id": "EP-CB-00",
+    "direction": "C->B",
+    "decision_time": "2026-01-22T04:10:00+00:00",
+    "reactor_state_online_mfi_at_t": 7.2051248632781535,
+    "material_production_window": [
+      "2026-01-21T19:28:38.409538+00:00",
+      "2026-01-22T03:50:18.360351+00:00"
+    ],
+    "material_time_window": [
+      "2026-01-22T03:10:00+00:00",
+      "2026-01-22T04:10:00+00:00"
+    ],
+    "downstream_route": {
+      "DOWNGRADE": 12.0
+    },
+    "residence_mean_age_min": 162.0,
+    "residence_spread_min": 150.0,
+    "lab_truth_mfi": 7.344949202897885,
+    "lab_truth_sample": "EP-CB-00-lab009",
+    "lab_truth_timing": "available later",
+    "prediction_mfi": 7.1141,
+    "prediction_available": true,
+    "note": "SIMULATED; estimate is UNCALIBRATED (Phase 5) and not a release certification"
+  }
+}

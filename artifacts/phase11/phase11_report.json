@@ -1,0 +1,283 @@
+{
+  "memory_schema_version": "memory-v1",
+  "reconciliation_states": [
+    "PENDING",
+    "PARTIALLY_RECONCILED",
+    "RECONCILED",
+    "INELIGIBLE"
+  ],
+  "statistics": {
+    "total_episodes": 18,
+    "total_versions": 18,
+    "reconciled_episodes": 18,
+    "eligible_episodes": 18,
+    "excluded_ineligible": 0,
+    "by_direction": {
+      "A->B": 3,
+      "A->C": 3,
+      "B->A": 3,
+      "B->C": 3,
+      "C->A": 3,
+      "C->B": 3
+    },
+    "by_unit": {
+      "SIM-UNIT-1": 18
+    },
+    "by_status": {
+      "RECONCILED": 18
+    },
+    "schema_version": "memory-v1",
+    "note": "Counts only. No synthetic 'learning improvement' metric is fabricated from this small SIMULATED corpus."
+  },
+  "canonical_retrieval": {
+    "available": true,
+    "current_context": {
+      "event_id": "CURRENT-A->B-DECISION",
+      "direction": "A->B",
+      "grade_from": "A",
+      "grade_to": "B",
+      "unit": "SIM-UNIT-1",
+      "phase": "ACTIVE_TRANSITION",
+      "process_context": {
+        "phase": "ACTIVE_TRANSITION",
+        "duration_min": 960.0,
+        "initial_mfi": 0.3057265967201457,
+        "final_mfi": 7.016095354660483
+      },
+      "material_window_summary": {
+        "mapped_mass_tonnes": 12.0,
+        "mean_age_min": 162.0,
+        "mapping_quality": "WELL_SUPPORTED",
+        "route_known": true
+      },
+      "feature_summary": {
+        "H2_ratio_lag_30": 0.35,
+        "H2_ratio_last": 0.35,
+        "H2_ratio_mean_30": 0.3499999999999998,
+        "H2_ratio_mean_60": 0.3500000000000002,
+        "H2_ratio_slope_60": 0.0,
+        "H2_ratio_std_30": 1.692862592547962e-16
+      }
+    },
+    "memory_scope": {
+      "direction": "A->B",
+      "allowed_partition": "TRAIN",
+      "excluded_event_ids": [],
+      "unit": null,
+      "unit_policy": "PREFER_SAME_UNIT",
+      "require_reconciled": true,
+      "require_eligible": true,
+      "expected_versions": null
+    },
+    "n_eligible_A_to_B_train_analogs": 3,
+    "analogs": [
+      {
+        "event_id": "EP-AB-00",
+        "similarity": {
+          "score": 1.0,
+          "matching_dimensions": [
+            "duration_min",
+            "features",
+            "final_mfi",
+            "initial_mfi",
+            "mapped_mass_tonnes",
+            "mean_age_min",
+            "phase",
+            "unit"
+          ],
+          "differences": {},
+          "weights_version": "similarity-weighted-v1"
+        },
+        "partition": "TRAIN",
+        "reconciliation_status": "RECONCILED",
+        "provenance": "SIMULATED",
+        "eligible": true,
+        "what_was_similar": [
+          "duration_min",
+          "features",
+          "final_mfi",
+          "initial_mfi",
+          "mapped_mass_tonnes",
+          "mean_age_min",
+          "phase",
+          "unit"
+        ],
+        "what_differed": {},
+        "what_was_predicted": {
+          "point_mfi": 7.018562149939174,
+          "lower_mfi": 6.78169485300943,
+          "upper_mfi": 7.255429446868918,
+          "nominal_coverage": 0.9,
+          "prob_bad_PROVISIONAL": 0.0
+        },
+        "what_happened": {
+          "disposition_action": "HOLD",
+          "revealed_in_spec": false
+        },
+        "how_disposed": {
+          "recommended_action": "HOLD",
+          "actual_route": "DOWNGRADE"
+        },
+        "laboratory_truth": {
+          "revealed_mfi": 7.016095354660483,
+          "was_in_spec": false,
+          "recommended_action": "HOLD"
+        },
+        "realized_value": 900000.0,
+        "counterfactual_value": 240000.0,
+        "note": "Observed historical evidence from an eligible analog. Correlation only \u2014 NOT a causal prediction that the current transition will repeat this outcome."
+      },
+      {
+        "event_id": "EP-AB-01",
+        "similarity": {
+          "score": 0.998948,
+          "matching_dimensions": [
+            "duration_min",
+            "features",
+            "final_mfi",
+            "initial_mfi",
+            "mapped_mass_tonnes",
+            "mean_age_min",
+            "phase",
+            "unit"
+          ],
+          "differences": {},
+          "weights_version": "similarity-weighted-v1"
+        },
+        "partition": "TRAIN",
+        "reconciliation_status": "RECONCILED",
+        "provenance": "SIMULATED",
+        "eligible": true,
+        "what_was_similar": [
+          "duration_min",
+          "features",
+          "final_mfi",
+          "initial_mfi",
+          "mapped_mass_tonnes",
+          "mean_age_min",
+          "phase",
+          "unit"
+        ],
+        "what_differed": {},
+        "what_was_predicted": {
+          "point_mfi": 7.012512557774943,
+          "lower_mfi": 6.775645260845199,
+          "upper_mfi": 7.249379854704687,
+          "nominal_coverage": 0.9,
+          "prob_bad_PROVISIONAL": 0.0
+        },
+        "what_happened": {
+          "disposition_action": "HOLD",
+          "revealed_in_spec": false
+        },
+        "how_disposed": {
+          "recommended_action": "HOLD",
+          "actual_route": "DOWNGRADE"
+        },
+        "laboratory_truth": {
+          "revealed_mfi": 6.960455238869936,
+          "was_in_spec": false,
+          "recommended_action": "HOLD"
+        },
+        "realized_value": 900000.0,
+        "counterfactual_value": 240000.0,
+        "note": "Observed historical evidence from an eligible analog. Correlation only \u2014 NOT a causal prediction that the current transition will repeat this outcome."
+      },
+      {
+        "event_id": "EP-AB-02",
+        "similarity": {
+          "score": 0.99758,
+          "matching_dimensions": [
+            "duration_min",
+            "features",
+            "final_mfi",
+            "initial_mfi",
+            "mapped_mass_tonnes",
+            "mean_age_min",
+            "phase",
+            "unit"
+          ],
+          "differences": {},
+          "weights_version": "similarity-weighted-v1"
+        },
+        "partition": "TRAIN",
+        "reconciliation_status": "RECONCILED",
+        "provenance": "SIMULATED",
+        "eligible": true,
+        "what_was_similar": [
+          "duration_min",
+          "features",
+          "final_mfi",
+          "initial_mfi",
+          "mapped_mass_tonnes",
+          "mean_age_min",
+          "phase",
+          "unit"
+        ],
+        "what_differed": {},
+        "what_was_predicted": {
+          "point_mfi": 7.03790099603783,
+          "lower_mfi": 6.8010336991080855,
+          "upper_mfi": 7.274768292967574,
+          "nominal_coverage": 0.9,
+          "prob_bad_PROVISIONAL": 0.0
+        },
+        "what_happened": {
+          "disposition_action": "HOLD",
+          "revealed_in_spec": false
+        },
+        "how_disposed": {
+          "recommended_action": "HOLD",
+          "actual_route": "DOWNGRADE"
+        },
+        "laboratory_truth": {
+          "revealed_mfi": 7.071116508933366,
+          "was_in_spec": false,
+          "recommended_action": "HOLD"
+        },
+        "realized_value": 900000.0,
+        "counterfactual_value": 240000.0,
+        "note": "Observed historical evidence from an eligible analog. Correlation only \u2014 NOT a causal prediction that the current transition will repeat this outcome."
+      }
+    ],
+    "self_excluded": true,
+    "opposite_direction_excluded": true,
+    "locked_excluded": true
+  },
+  "exclusion_proof": {
+    "opposite_direction_present": [
+      "EP-BA-00",
+      "EP-BA-01",
+      "EP-BA-02"
+    ],
+    "locked_test_present": [
+      "EP-BC-01",
+      "EP-BC-02",
+      "EP-CB-00",
+      "EP-CB-01",
+      "EP-CB-02"
+    ],
+    "current_event_id": "CURRENT-A->B-DECISION",
+    "retrieved_ids": [
+      "EP-AB-00",
+      "EP-AB-01",
+      "EP-AB-02"
+    ],
+    "note": "B->A excluded by direction; LOCKED_TEST excluded by partition scope; the current event id is excluded automatically."
+  },
+  "no_silent_retraining": {
+    "performs_online_learning": false,
+    "touches_model_symbols": false,
+    "contract": "store/reconcile never update model, calibration, thresholds, or policy; promotion is an external action."
+  },
+  "jury_language": "Transition Memory gives PrimePath auditable historical context. It does NOT learn continuously/online from every transition; promotion into training is explicit and external.",
+  "note": "Analogs are observed historical EVIDENCE (correlation), never a causal claim about the current transition. SIMULATION/ASSUMPTION \u2014 not HMEL-validated.",
+  "phase": 11,
+  "interface_for_phase12": {
+    "entrypoint": "retrieve_transition_memory(current_context, memory_scope, k, store)",
+    "returns": "List[HistoricalEvidence]",
+    "scope_enforced_internally": true,
+    "memory_schema_version": "memory-v1",
+    "similarity_version": "similarity-weighted-v1"
+  }
+}
