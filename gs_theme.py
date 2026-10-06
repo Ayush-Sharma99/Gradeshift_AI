@@ -251,27 +251,25 @@ def topbar(
         mode_cls = "gs-status-advisory"
 
     st.markdown(
-        f"""
-<div class="gs-topbar">
-  <div class="gs-topbar-field">
-    <div class="gs-topbar-label">Reactor / Line Context</div>
-    <div class="gs-topbar-value">{unit}</div>
-  </div>
-  <div class="gs-topbar-field">
-    <div class="gs-topbar-label">Transition Direction</div>
-    <div class="gs-topbar-value">Grade {current_grade_from} → Grade {current_grade_to}</div>
-  </div>
-  <div class="gs-topbar-field">
-    <div class="gs-topbar-label">Episode / Partition</div>
-    <div class="gs-topbar-value">{partition_label}</div>
-  </div>
-  <div class="gs-topbar-right">
-    <span class="gs-status gs-status-advisory">READ-ONLY ADVISORY</span>
-    <span class="gs-status {mode_cls}"><span class="gs-status-dot"></span>{mode_label}</span>
-    <span class="gs-status gs-status-demo">SYNTHETIC E2/E3</span>
-  </div>
-</div>
-        """,
+        f'<div class="gs-topbar">'
+        f'<div class="gs-topbar-field">'
+        f'<div class="gs-topbar-label">Reactor / Line Context</div>'
+        f'<div class="gs-topbar-value">{unit}</div>'
+        f'</div>'
+        f'<div class="gs-topbar-field">'
+        f'<div class="gs-topbar-label">Transition Direction</div>'
+        f'<div class="gs-topbar-value">Grade {current_grade_from} → Grade {current_grade_to}</div>'
+        f'</div>'
+        f'<div class="gs-topbar-field">'
+        f'<div class="gs-topbar-label">Episode / Partition</div>'
+        f'<div class="gs-topbar-value">{partition_label}</div>'
+        f'</div>'
+        f'<div class="gs-topbar-right">'
+        f'<span class="gs-status gs-status-advisory">READ-ONLY ADVISORY</span>'
+        f'<span class="gs-status {mode_cls}"><span class="gs-status-dot"></span>{mode_label}</span>'
+        f'<span class="gs-status gs-status-demo">SYNTHETIC E2/E3</span>'
+        f'</div>'
+        f'</div>',
         unsafe_allow_html=True,
     )
 
@@ -288,22 +286,20 @@ def mode_banner(mode_meta: Dict[str, str]):
         border_col = COLOR["blue"]
 
     st.markdown(
-        f"""
-<div style="background:{COLOR['white']}; border:1px solid {COLOR['border']}; border-left:4px solid {border_col};
-            border-radius:6px; padding:12px 18px; margin-bottom:18px; display:flex; align-items:center; justify-content:space-between; gap:16px;">
-  <div>
-    <div style="font-size:0.72rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:{border_col}; margin-bottom:3px;">
-      {mode_meta.get('banner_title', 'PRIMEPATH ADVISORY LAYER')}
-    </div>
-    <div style="font-size:0.84rem; color:{COLOR['text']}; line-height:1.45;">
-      {mode_meta.get('description', '')}
-    </div>
-  </div>
-  <div style="flex-shrink:0; text-align:right;">
-    <span class="gs-badge gs-badge-{bkind}">{mode_meta.get('evidence_level', 'E2/E3')}</span>
-  </div>
-</div>
-        """,
+        f'<div style="background:{COLOR["white"]}; border:1px solid {COLOR["border"]}; border-left:4px solid {border_col}; '
+        f'border-radius:6px; padding:12px 18px; margin-bottom:18px; display:flex; align-items:center; justify-content:space-between; gap:16px;">'
+        f'<div>'
+        f'<div style="font-size:0.72rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:{border_col}; margin-bottom:3px;">'
+        f'{mode_meta.get("banner_title", "PRIMEPATH ADVISORY LAYER")}'
+        f'</div>'
+        f'<div style="font-size:0.84rem; color:{COLOR["text"]}; line-height:1.45;">'
+        f'{mode_meta.get("description", "")}'
+        f'</div>'
+        f'</div>'
+        f'<div style="flex-shrink:0; text-align:right;">'
+        f'<span class="gs-badge gs-badge-{bkind}">{mode_meta.get("evidence_level", "E2/E3")}</span>'
+        f'</div>'
+        f'</div>',
         unsafe_allow_html=True,
     )
 
@@ -332,40 +328,39 @@ def action_hero_card(
             auth_color = COLOR["green"]
         elif approval_status == "REJECTED_OR_HELD":
             auth_color = COLOR["red"]
-        auth_banner = f"""
-        <div style="margin-top:12px; padding:10px 14px; background:rgba(229,161,26,0.08); border-left:3px solid {auth_color}; border-radius:4px; font-size:0.82rem;">
-          <strong>HUMAN / QUALITY AUTHORIZATION REQUIRED:</strong> PrimePath is strictly advisory and never certifies or releases polymer.
-          Required Sign-Off Role: <span class="tech-val">{approver_role}</span> &nbsp;|&nbsp;
-          Current Status: <strong>{approval_status}</strong>
-        </div>
-        """
+        auth_banner = (
+            f'<div style="margin-top:12px; padding:10px 14px; background:rgba(229,161,26,0.08); '
+            f'border-left:3px solid {auth_color}; border-radius:4px; font-size:0.82rem;">'
+            f'<strong>HUMAN / QUALITY AUTHORIZATION REQUIRED:</strong> PrimePath is strictly advisory and never certifies or releases polymer. '
+            f'Required Sign-Off Role: <span class="tech-val">{approver_role}</span> &nbsp;|&nbsp; '
+            f'Current Status: <strong>{approval_status}</strong>'
+            f'</div>'
+        )
 
     st.markdown(
-        f"""
-<div style="background:{COLOR['white']}; border:2px solid {col}; border-radius:8px; padding:20px 24px; margin-bottom:18px;">
-  <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
-    <div>
-      <div style="font-size:0.70rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:{COLOR['text2']}; margin-bottom:4px;">
-        PrimePath Disposition Recommendation (13 Hard Gates Evaluated First)
-      </div>
-      <div style="font-family:{FONT_TECH}; font-size:1.75rem; font-weight:700; color:{col}; letter-spacing:-0.01em;">
-        {action_meta.get('display', action)}
-      </div>
-      <div style="font-size:0.88rem; color:{COLOR['text']}; margin-top:6px; line-height:1.45;">
-        {narrative or action_meta.get('summary', '')}
-      </div>
-    </div>
-    <div style="text-align:right;">
-      <span class="gs-badge gs-badge-{bkind}" style="font-size:0.75rem; padding:5px 12px;">ACTION: {action}</span>
-    </div>
-  </div>
-  <div style="margin-top:12px;">
-    <span style="font-size:0.72rem; font-weight:600; color:{COLOR['text2']}; text-transform:uppercase; margin-right:8px;">Reason Codes:</span>
-    {reasons_html}
-  </div>
-  {auth_banner}
-</div>
-        """,
+        f'<div style="background:{COLOR["white"]}; border:2px solid {col}; border-radius:8px; padding:20px 24px; margin-bottom:18px;">'
+        f'<div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">'
+        f'<div>'
+        f'<div style="font-size:0.70rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:{COLOR["text2"]}; margin-bottom:4px;">'
+        f'PrimePath Disposition Recommendation (13 Hard Gates Evaluated First)'
+        f'</div>'
+        f'<div style="font-family:{FONT_TECH}; font-size:1.75rem; font-weight:700; color:{col}; letter-spacing:-0.01em;">'
+        f'{action_meta.get("display", action)}'
+        f'</div>'
+        f'<div style="font-size:0.88rem; color:{COLOR["text"]}; margin-top:6px; line-height:1.45;">'
+        f'{narrative or action_meta.get("summary", "")}'
+        f'</div>'
+        f'</div>'
+        f'<div style="text-align:right;">'
+        f'<span class="gs-badge gs-badge-{bkind}" style="font-size:0.75rem; padding:5px 12px;">ACTION: {action}</span>'
+        f'</div>'
+        f'</div>'
+        f'<div style="margin-top:12px;">'
+        f'<span style="font-size:0.72rem; font-weight:600; color:{COLOR["text2"]}; text-transform:uppercase; margin-right:8px;">Reason Codes:</span>'
+        f'{reasons_html}'
+        f'</div>'
+        f'{auth_banner}'
+        f'</div>',
         unsafe_allow_html=True,
     )
 
@@ -383,12 +378,10 @@ def sidebar_brand():
         img_src = f"data:image/png;base64,{GS_LOGO_B64}"
 
     st.sidebar.markdown(
-        f"""
-<div class="sidebar-logo-container">
-  <img src="{img_src}" class="sidebar-logo-img" alt="GradeShift PrimePath" style="max-width:175px;">
-  <div class="sidebar-logo-sub">PRIMEPATH DECISION LAYER</div>
-</div>
-        """,
+        f'<div class="sidebar-logo-container">'
+        f'<img src="{img_src}" class="sidebar-logo-img" alt="GradeShift PrimePath" style="max-width:175px;">'
+        f'<div class="sidebar-logo-sub">PRIMEPATH DECISION LAYER</div>'
+        f'</div>',
         unsafe_allow_html=True,
     )
 
@@ -420,27 +413,25 @@ def sidebar_nav():
     _safe_page_link("pages/6_Digital_Twin.py", label="6 · Memory & Assurance")
 
     st.sidebar.markdown(
-        """
-<div style="margin-top: 24px; padding: 14px; border-top: 1px solid rgba(255,255,255,0.12);">
-  <div style="font-size:0.65rem; color:rgba(255,255,255,0.45); text-transform:uppercase; margin-bottom:10px; letter-spacing: 0.1em; font-weight:600;">PrimePath Boundary</div>
-  <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-    <span style="font-size:0.73rem; color:rgba(255,255,255,0.55);">AUTHORITY</span>
-    <span style="font-size:0.73rem; color:#18BFC3; font-weight:600;">ADVISORY ONLY</span>
-  </div>
-  <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-    <span style="font-size:0.73rem; color:rgba(255,255,255,0.55);">DCS / SETPOINTS</span>
-    <span style="font-size:0.73rem; color:white;">READ-ONLY (NONE)</span>
-  </div>
-  <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-    <span style="font-size:0.73rem; color:rgba(255,255,255,0.55);">QC SIGN-OFF</span>
-    <span style="font-size:0.73rem; color:#20A873; font-weight:600;">MANDATORY</span>
-  </div>
-  <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-    <span style="font-size:0.73rem; color:rgba(255,255,255,0.55);">EVIDENCE CEILING</span>
-    <span style="font-size:0.73rem; color:#E5A11A; font-weight:600;">SYNTHETIC E2/E3</span>
-  </div>
-</div>
-        """,
+        '<div style="margin-top: 24px; padding: 14px; border-top: 1px solid rgba(255,255,255,0.12);">'
+        '<div style="font-size:0.65rem; color:rgba(255,255,255,0.45); text-transform:uppercase; margin-bottom:10px; letter-spacing: 0.1em; font-weight:600;">PrimePath Boundary</div>'
+        '<div style="display:flex; justify-content:space-between; margin-bottom:5px;">'
+        '<span style="font-size:0.73rem; color:rgba(255,255,255,0.55);">AUTHORITY</span>'
+        '<span style="font-size:0.73rem; color:#18BFC3; font-weight:600;">ADVISORY ONLY</span>'
+        '</div>'
+        '<div style="display:flex; justify-content:space-between; margin-bottom:5px;">'
+        '<span style="font-size:0.73rem; color:rgba(255,255,255,0.55);">DCS / SETPOINTS</span>'
+        '<span style="font-size:0.73rem; color:white;">READ-ONLY (NONE)</span>'
+        '</div>'
+        '<div style="display:flex; justify-content:space-between; margin-bottom:5px;">'
+        '<span style="font-size:0.73rem; color:rgba(255,255,255,0.55);">QC SIGN-OFF</span>'
+        '<span style="font-size:0.73rem; color:#20A873; font-weight:600;">MANDATORY</span>'
+        '</div>'
+        '<div style="display:flex; justify-content:space-between; margin-bottom:5px;">'
+        '<span style="font-size:0.73rem; color:rgba(255,255,255,0.55);">EVIDENCE CEILING</span>'
+        '<span style="font-size:0.73rem; color:#E5A11A; font-weight:600;">SYNTHETIC E2/E3</span>'
+        '</div>'
+        '</div>',
         unsafe_allow_html=True,
     )
 
@@ -465,13 +456,13 @@ def kpi_card(label: str, value: str, unit: str = "", delta: str = "", delta_type
     """Return HTML for a structured KPI item."""
     delta_class = f"delta-{delta_type}"
     delta_html = f'<div class="gs-kpi-delta {delta_class}">{delta}</div>' if delta else ""
-    return f"""
-<div class="gs-kpi-container">
-  <div class="gs-kpi-label">{label}</div>
-  <div class="gs-kpi-value">{value}<span class="gs-kpi-unit">{unit}</span></div>
-  {delta_html}
-</div>
-    """
+    return (
+        f'<div class="gs-kpi-container">'
+        f'<div class="gs-kpi-label">{label}</div>'
+        f'<div class="gs-kpi-value">{value}<span class="gs-kpi-unit">{unit}</span></div>'
+        f'{delta_html}'
+        f'</div>'
+    )
 
 
 def insight(text: str, kind: str = "blue"):
@@ -496,12 +487,12 @@ def panel_close():
 
 
 def data_row(label: str, value: str):
-    return f"""
-<div class="gs-data-row">
-  <span class="gs-data-row-label">{label}</span>
-  <span class="gs-data-row-value">{value}</span>
-</div>
-    """
+    return (
+        f'<div class="gs-data-row">'
+        f'<span class="gs-data-row-label">{label}</span>'
+        f'<span class="gs-data-row-value">{value}</span>'
+        f'</div>'
+    )
 
 
 def chart_layout(title: str = "", height: int = 380, show_legend: bool = True, **kwargs):

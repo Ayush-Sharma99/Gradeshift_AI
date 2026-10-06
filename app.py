@@ -187,12 +187,10 @@ q_cols = st.columns(5, gap="small")
 for idx, q_item in enumerate(view.get("five_jury_questions", [])):
     with q_cols[idx]:
         st.markdown(
-            f"""
-            <div style="background:{COLOR['card']}; border:1px solid {COLOR['border']}; border-top:3px solid {COLOR['blue']}; border-radius:6px; padding:10px 12px; min-height:118px; margin-bottom:10px;">
-                <div style="font-size:0.66rem; font-weight:700; letter-spacing:0.06em; color:{COLOR['blue']}; text-transform:uppercase; margin-bottom:4px;">{q_item['question']}</div>
-                <div style="font-size:0.76rem; line-height:1.38; color:{COLOR['text']};">{q_item['answer']}</div>
-            </div>
-            """,
+            f'<div style="background:{COLOR["card"]}; border:1px solid {COLOR["border"]}; border-top:3px solid {COLOR["blue"]}; border-radius:6px; padding:10px 12px; min-height:118px; margin-bottom:10px;">'
+            f'<div style="font-size:0.66rem; font-weight:700; letter-spacing:0.06em; color:{COLOR["blue"]}; text-transform:uppercase; margin-bottom:4px;">{q_item["question"]}</div>'
+            f'<div style="font-size:0.76rem; line-height:1.38; color:{COLOR["text"]};">{q_item["answer"]}</div>'
+            f'</div>',
             unsafe_allow_html=True,
         )
 

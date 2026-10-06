@@ -355,3 +355,29 @@ def test_cli_demo_script_succeeds():
     assert "100% abstention is not commercial success." in res.stdout
     assert "All 10 Phase-13 Validation Criteria Passed: True" in res.stdout
 
+
+def test_no_markdown_html_indented_code_blocks():
+    """Ensure no st.markdown block in app.py or pages/1..6 emits 4+ space indented HTML that CommonMark renders as a raw code block."""
+    import re
+    from streamlit.testing.v1 import AppTest
+
+    indented_html_re = re.compile(r"(^|\n)[ \t]{4,}<(div|span|strong|p|ul|li|/div)", re.MULTILINE)
+    pages = [
+        REPO_ROOT / "app.py",
+        REPO_ROOT / "pages" / "1_Grade_Transition.py",
+        REPO_ROOT / "pages" / "2_Soft_Sensor.py",
+        REPO_ROOT / "pages" / "3_AI_Optimizer.py",
+        REPO_ROOT / "pages" / "4_Safety.py",
+        REPO_ROOT / "pages" / "5_Economics.py",
+        REPO_ROOT / "pages" / "6_Digital_Twin.py",
+    ]
+    for page_path in pages:
+        at = AppTest.from_file(str(page_path), default_timeout=30).run()
+        assert not at.exception, f"AppTest exception in {page_path.name}: {at.exception}"
+        for md in at.markdown:
+            val = md.value or ""
+            assert not indented_html_re.search(val), (
+                f"Indented HTML in {page_path.name} would render as a code block:\n{val}"
+            )
+
+
